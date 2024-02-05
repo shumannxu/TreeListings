@@ -12,6 +12,8 @@ export default function AppLayout() {
           fontWeight: "bold",
         },
       }}
-    />
+    >
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+    </Stack>
   );
 }

@@ -20,7 +20,9 @@ export default function Login() {
   };
 
   const onLoginPress = () => {
-    signIn(email, password).then(() => router.replace("/home"));
+    signIn(email, password).then((user) =>
+      router.replace({ pathname: "/preferenceSurvey", params: { user: user } })
+    );
   };
 
   return (

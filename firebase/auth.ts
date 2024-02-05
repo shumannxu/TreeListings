@@ -6,12 +6,13 @@ import {
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { User } from "../types";
 
 const registerUserEmailPassword = async (
   email: string,
   password: string,
   fullName: string
-) => {
+): Promise<void> => {
   return createUserWithEmailAndPassword(auth, email, password)
     .then((response) => {
       // Signed in
@@ -29,10 +30,11 @@ const registerUserEmailPassword = async (
           .then(() => {
             // After verification email is sent, save user data to firestore
             const uid = user.uid;
-            const data = {
+            const data: User = {
               id: uid,
               email,
               fullName,
+              dateCreated: new Date(),
             };
             const usersRef = collection(firestore, "users");
             const userDoc = doc(usersRef, uid);
@@ -52,30 +54,31 @@ const registerUserEmailPassword = async (
     });
 };
 
-const signIn = async (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password)
-    .then((response) => {
-      const user = response.user;
-      if (!user.emailVerified) {
-        alert("Email is not yet Verfied");
-      } else {
-        const uid = response.user.uid;
-        const userDocRef = doc(firestore, "users", uid);
-        getDoc(userDocRef)
-          .then((firestoreDocument) => {
-            if (!firestoreDocument.exists()) {
-              alert("User does not exist anymore.");
-              return;
-            }
-          })
-          .catch((error) => {
-            alert(error);
-          });
+const signIn = async (
+  email: string,
+  password: string
+): Promise<User | null> => {
+  try {
+    const response = await signInWithEmailAndPassword(auth, email, password);
+    const user = response.user;
+    if (!user.emailVerified) {
+      alert("Email is not yet Verified");
+      return null;
+    } else {
+      const uid = user.uid;
+      const userDocRef = doc(firestore, "users", uid);
+      const firestoreDocument = await getDoc(userDocRef);
+      if (!firestoreDocument.exists()) {
+        alert("User does not exist anymore.");
+        return null;
       }
-    })
-
-    .catch((error) => {
-      alert(error);
-    });
+      const userData = firestoreDocument.data();
+      userData.dateCreated = userData.dateCreated.toDate();
+      return userData as User;
+    }
+  } catch (error) {
+    alert(error);
+    return null;
+  }
 };
 export { registerUserEmailPassword, signIn };
