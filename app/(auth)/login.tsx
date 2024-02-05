@@ -9,9 +9,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth, firestore } from "../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { signIn } from "../../firebase/auth";
 
 export default function Login() {
   const [email, setEmail] = useState<string>("");
@@ -22,26 +20,7 @@ export default function Login() {
   };
 
   const onLoginPress = () => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        const uid = response.user.uid;
-        const userDocRef = doc(firestore, "users", uid);
-        getDoc(userDocRef)
-          .then((firestoreDocument) => {
-            if (!firestoreDocument.exists()) {
-              alert("User does not exist anymore.");
-              return;
-            }
-            const user = firestoreDocument.data();
-            router.push("/home");
-          })
-          .catch((error) => {
-            alert(error);
-          });
-      })
-      .catch((error) => {
-        alert(error);
-      });
+    signIn(email, password).then(() => router.replace("/home"));
   };
 
   return (

@@ -9,13 +9,7 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { router } from "expo-router";
-import { auth, firestore } from "../../firebaseConfig";
-import {
-  sendEmailVerification,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { collection, doc, setDoc } from "firebase/firestore";
+import { registerUserEmailPassword } from "../../firebase/auth";
 
 export default function RegistrationScreen() {
   const [fullName, setFullName] = useState("");
@@ -32,45 +26,13 @@ export default function RegistrationScreen() {
       alert("Passwords don't match.");
       return;
     }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        // Signed in
-        const user = response.user;
-        const uid = response.user.uid;
-        const data = {
-          id: uid,
-          email,
-          fullName,
-        };
-        const usersRef = collection(firestore, "users");
-        const userDoc = doc(usersRef, uid);
-        setDoc(userDoc, data)
-          .then(() => {
-            router.push("/home");
-          })
-          .catch((error) => {
-            alert(error.message);
-          });
-        sendEmailVerification(user)
-          .then((response) => {
-            // Email verification sent
-            // Save the email locally so you don't need to ask the user for it again
-            // if they open the link on the same device.
-            AsyncStorage.setItem("emailForSignIn", email);
-            // Inform the user that the verification email has been sent
-          })
-          .catch((error) => {
-            // Error occurred in sending email verification
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            // Handle errors here
-          });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // Handle errors here
-      });
+    if (!email.endsWith("@stanford.edu")) {
+      alert("Email Must be a valid @stanford.edu email address.");
+      return;
+    }
+    registerUserEmailPassword(email, password, fullName).then(() => {
+      router.replace("/login");
+    });
   };
 
   return (
