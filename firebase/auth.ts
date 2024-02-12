@@ -3,6 +3,7 @@ import {
   sendEmailVerification,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
@@ -61,8 +62,18 @@ const signIn = async (
   try {
     const response = await signInWithEmailAndPassword(auth, email, password);
     const user = response.user;
+
     if (!user.emailVerified) {
-      alert("Email is not yet Verified");
+      alert(
+        "Email is not yet Verified. Check Your Email For a New Email Confirmation"
+      );
+      sendEmailVerification(user).then(() => {
+        // Email verification sent
+        console.log("Verification email sent.");
+        // Save the email locally so you don't need to ask the user for it again
+        // if they open the link on the same device.
+        return AsyncStorage.setItem("emailForSignIn", email);
+      });
       return null;
     } else {
       const uid = user.uid;
@@ -74,6 +85,7 @@ const signIn = async (
       }
       const userData = firestoreDocument.data();
       userData.dateCreated = userData.dateCreated.toDate();
+      AsyncStorage.setItem("userInfo", JSON.stringify(userData));
       return userData as User;
     }
   } catch (error) {
@@ -81,4 +93,8 @@ const signIn = async (
     return null;
   }
 };
-export { registerUserEmailPassword, signIn };
+
+const signOutUser = (): Promise<void> => {
+  return signOut(auth);
+};
+export { registerUserEmailPassword, signIn, signOutUser };
