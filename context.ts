@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { User, UserContextType } from "./types";
 import { useRouter, useSegments } from "expo-router";
+import { auth } from "./firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Create the context with a default value
-export const UserContext = createContext<UserContextType | null>(null);
+export const UserContext = React.createContext<UserContextType | null>(null);
 
 // This hook can be used to access the user info.
 export function useAuth() {

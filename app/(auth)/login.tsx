@@ -10,9 +10,10 @@ import {
 import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { signIn } from "../../firebase/auth";
+import { useAuth } from "../../context";
 
 export default function Login() {
-  // const { setUser } = useUser();
+  const { setUser } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -23,6 +24,7 @@ export default function Login() {
   const onLoginPress = () => {
     signIn(email, password).then((user) => {
       // setUser(user);
+      setUser(user);
       if (user) router.replace({ pathname: "/preferenceSurvey" });
     });
   };

@@ -4,9 +4,11 @@ import { View, Text, Button } from "react-native";
 // import { useUser } from "../../context";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../../../firebase/auth";
+import { useAuth } from "../../../context";
 
 export default function Home() {
-  // const { setUser } = useUser();
+  const { user, setUser } = useAuth();
+
   const handleLogout = async () => {
     signOutUser().then(async () => {
       await AsyncStorage.removeItem("userInfo");

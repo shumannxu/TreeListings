@@ -1,25 +1,4 @@
-// import { Stack } from "expo-router";
-
-// export default function AppLayout() {
-
-//   return (
-//     <Stack
-//       screenOptions={{
-//         headerStyle: {
-//           backgroundColor: "#f4511e",
-//         },
-//         headerTintColor: "#fff",
-//         headerTitleStyle: {
-//           fontWeight: "bold",
-//         },
-//       }}
-//     >
-//       <Stack.Screen name="login" options={{ headerShown: false }} />
-//     </Stack>
-//   );
-// }
-
-import { Link, Stack, router } from "expo-router";
+import { Link, Slot, Stack, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
 import { User } from "../types";
@@ -30,6 +9,7 @@ export default function AppLayout() {
   const [user, setUser] = useState<User | null>(null);
 
   useProtectedRoute(user);
+
   const initAuthenticatedUser = async () => {
     setLoading(true);
     const authenticatedUser = await AsyncStorage.getItem("userInfo");
@@ -43,7 +23,24 @@ export default function AppLayout() {
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
-      <Stack screenOptions={{ headerShown: false }} />
+      <Slot screenOptions={{ headerShown: false }} />
     </UserContext.Provider>
   );
 }
+
+// export function Provider(props) {
+//   const [user, setUser] = useState<User | null>(null);
+
+//   useProtectedRoute(user);
+
+//   return (
+//     <UserContext.Provider
+//       value={{
+//         setUser: setUser,
+//         user,
+//       }}
+//     >
+//       {props.children}
+//     </UserContext.Provider>
+//   );
+// }
