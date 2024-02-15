@@ -8,26 +8,25 @@ import {
   ScrollView,
   Image,
   KeyboardAvoidingView,
+  ActivityIndicator,
 } from "react-native";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as ImagePicker from "expo-image-picker";
 import { ImagePickerResult } from "expo-image-picker";
 import { uploadImageAsync } from "../../firebase/storage";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Listing } from "../../types";
+import { CategoryType, Listing } from "../../types";
 import { uploadListing } from "../../firebase/db";
 import { useAuth } from "../../context";
+import { CATEGORIES } from "../../constants";
+import { router } from "expo-router";
 
 export default function PostListings() {
   const { user } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
   const [title, setTitle] = useState("");
   const [categories, setCategories] = useState([]);
-  const [items, setItems] = useState([
-    { label: "Electronics", value: "electronic" },
-    { label: "Services", value: "service" },
-    { label: "Bikes", value: "bike" },
-  ]);
+  const [items, setItems] = useState(CATEGORIES);
   const [open, setOpen] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -77,7 +76,6 @@ export default function PostListings() {
 
   const handleImagePicked = async (pickerResult: ImagePickerResult) => {
     try {
-      setLoading(true);
       if (!pickerResult.canceled) {
         // const uploadUrl = await uploadImageAsync(pickerResult.assets[0]?.uri);
         setImage(pickerResult.assets[0]?.uri);
@@ -86,12 +84,12 @@ export default function PostListings() {
       console.log(e);
       alert("Upload failed, sorry :(");
     } finally {
-      setLoading(false);
     }
   };
 
   const uploadListingToFirestore = async () => {
-    await uploadListing({
+    setLoading(true);
+    uploadListing({
       title,
       description,
       price: parseFloat(price),
@@ -99,13 +97,25 @@ export default function PostListings() {
       image,
       sellerId: user.id,
       datePosted: new Date(),
-      isListingActive: false,
+      isListingActive: true,
+    }).then(() => {
+      setLoading(false);
+      setTitle("");
+      setCategories([]);
+      setPrice("");
+      setDescription("");
+      router.replace("/home");
     });
   };
 
   return (
     <ScrollView style={styles.container}>
       <SafeAreaView style={styles.container}>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" />
+          </View>
+        )}
         <View
           style={{
             alignItems: "center",
@@ -159,13 +169,14 @@ export default function PostListings() {
           />
         </KeyboardAvoidingView>
         <DropDownPicker
-          style={styles.input}
+          style={styles.dropdown}
           listMode="SCROLLVIEW"
           mode="BADGE"
           badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
           multiple={true}
           min={1}
-          max={3}
+          max={4}
+          // searchable={true}
           open={open}
           value={categories}
           items={items}
@@ -217,6 +228,13 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
   },
+  dropdown: {
+    borderColor: "#e7e7e7",
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 10,
+    borderRadius: 5,
+  },
   pickerContainer: {
     borderColor: "gray",
     borderWidth: 1,
@@ -261,5 +279,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "bold",
     marginBottom: 3,
+  },
+  loadingContainer: {
+    top: 0, // Align to the top of the parent container
+    left: 0, // Align to the left of the parent container
+    right: 0, // Stretch to the right of the parent container
+    bottom: 0,
+    position: "absolute",
+    alignContent: "center",
+    justifyContent: "center",
   },
 });
