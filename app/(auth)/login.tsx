@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   Text,
@@ -10,8 +10,10 @@ import {
 import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { signIn } from "../../firebase/auth";
+import { useAuth } from "../../context";
 
 export default function Login() {
+  const { setUser } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -20,10 +22,13 @@ export default function Login() {
   };
 
   const onLoginPress = () => {
-    signIn(email, password).then((user) =>
-      router.replace({ pathname: "/preferenceSurvey", params: { user: user } })
-    );
+    signIn(email, password).then((user) => {
+      // setUser(user);
+      setUser(user);
+      if (user) router.replace({ pathname: "/preferenceSurvey" });
+    });
   };
+  const sendVerificationEmail = () => {};
 
   return (
     <View style={styles.container}>
@@ -53,6 +58,12 @@ export default function Login() {
         />
         <TouchableOpacity style={styles.button} onPress={() => onLoginPress()}>
           <Text style={styles.buttonTitle}>Log in</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => sendVerificationEmail()}
+        >
+          <Text style={styles.buttonTitle}>Send Verification Email Again</Text>
         </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>
