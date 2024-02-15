@@ -1,6 +1,13 @@
 import { firestore } from "../firebaseConfig";
 
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  increment,
+  runTransaction,
+  setDoc,
+} from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import { Listing, ListingId, UserId } from "../types";
 
@@ -69,24 +76,47 @@ const uploadListing = async ({
   categories: string[];
   isListingActive: boolean;
 }): Promise<void> => {
-  const collectionRef = collection(firestore, "listings");
-  const documentRef = doc(collectionRef);
-  const listingData = {
-    listingId: documentRef.id,
-    sellerId: sellerId,
-    title: title,
-    price: price,
-    datePosted: datePosted,
-    description: description,
-    categories: categories,
-    isListingActive: isListingActive,
-  } as Listing;
+  await runTransaction(firestore, async (transaction) => {
+    const collectionRef = collection(firestore, "listings");
+    const documentRef = doc(collectionRef);
+    let uploadUrl = null;
 
-  if (image) {
-    const uploadUrl = await uploadImageAsync(image, documentRef.id);
-    listingData.imagePath = uploadUrl;
-  }
-  await setDocument(`listings/${listingData.listingId}`, listingData);
+    if (image) {
+      uploadUrl = await uploadImageAsync(image, documentRef.id);
+    }
+
+    // First, read all necessary documents
+    const categoryRefs = categories.map((category) =>
+      doc(firestore, "categories", category)
+    );
+    const categoryDocs = await Promise.all(
+      categoryRefs.map((categoryRef) => transaction.get(categoryRef))
+    );
+
+    // Then, proceed with writes
+    const listingData = {
+      listingId: documentRef.id,
+      sellerId: sellerId,
+      title: title,
+      price: price,
+      datePosted: datePosted,
+      description: description,
+      categories: categories,
+      isListingActive: isListingActive,
+      ...(uploadUrl && { imagePath: uploadUrl }),
+    } as Listing;
+
+    transaction.set(documentRef, listingData);
+
+    categoryDocs.forEach((categoryDoc, index) => {
+      const categoryRef = categoryRefs[index];
+      if (categoryDoc.exists()) {
+        transaction.update(categoryRef, { countActiveListings: increment(1) });
+      } else {
+        transaction.set(categoryRef, { countActiveListings: 1 });
+      }
+    });
+  });
 };
 
 export { getDocument, setDocument, uploadListing };
