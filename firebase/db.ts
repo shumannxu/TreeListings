@@ -7,6 +7,7 @@ import {
   increment,
   runTransaction,
   setDoc,
+  getDocs
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import { Listing, ListingId, UserId } from "../types";
@@ -119,4 +120,17 @@ const uploadListing = async ({
   });
 };
 
-export { getDocument, setDocument, uploadListing };
+/**
+ * Retrieves all listings from Firestore.
+ * @returns {Promise<Listing[]>} - An array of all listing documents.
+ */
+const getAllListings = async (): Promise<Listing[]> => {
+  const listingsRef = collection(firestore, "listings");
+  const querySnapshot = await getDocs(listingsRef);
+  return querySnapshot.docs.map(doc => ({
+    ...doc.data(),
+  })) as Listing[];
+};
+
+
+export { getDocument, setDocument, uploadListing, getAllListings};

@@ -3,10 +3,23 @@ import { View, Text, Button, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../../../firebase/auth";
 import { useAuth } from "../../../context";
-import ListingItem from "../../components/listingItem"; // Assuming the component exists at this path
+import ListingItem from "../../components/listingItem"; 
+import { getAllListings } from "../../../firebase/db";
+import { useEffect, useState} from "react";
+import { Listing } from "../../../types";
 
 export default function Home() {
   const { user, setUser } = useAuth();
+  const [listings, setListings] = useState<Listing[] | [] >([]);
+
+  useEffect(() => {
+    // Fetch user data from AsyncStorage
+    const fetchAllListings = async () => {
+      const listings = await getAllListings();
+      setListings(listings);
+    }
+    fetchAllListings();
+  }, []);
 
   // Mock data for the lists, replace with your actual data source
   const recommendedList = [
@@ -30,35 +43,35 @@ export default function Home() {
   };
 
   // Render method for FlatList items
-  const renderItem = ({ item }) => <ListingItem item={item} />;
+  const renderItem = ({ item }:{item:Listing}) => <ListingItem item={item} />;
 
   return (
     <SafeAreaView>
       <View>
-        <Text>Feed screen</Text>
-        <Button onPress={handleLogout} title="Sign Out" />
-        <Text>We think you’ll like</Text>
+        <Text style={{alignSelf: "center", fontSize: 30}}>TreeListing</Text>
+        <Text>We think you&apos;ll like ❤️</Text>
         <FlatList
-          data={recommendedList}
+          data={listings}
           renderItem={renderItem}
           horizontal
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.listingId}
         />
-        <Text>Recently Browsed</Text>
+        <Text>Recently Browsed 🕒</Text>
         <FlatList
-          data={recentlyBrowsedList}
+          data={listings}
           renderItem={renderItem}
           horizontal
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.listingId}
         />
-        <Text>Trending</Text>
+        <Text>Trending 📈</Text>
         <FlatList
-          data={trendingList}
+          data={listings}
           renderItem={renderItem}
           horizontal
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.listingId}
         />
       </View>
+      <Button onPress={handleLogout} title="Sign Out" />
     </SafeAreaView>
   );
 }
