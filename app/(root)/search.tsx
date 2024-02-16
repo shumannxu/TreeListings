@@ -4,69 +4,76 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../../firebase/auth";
 import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
-import getTimeAgo from "../components/getTimeAgo";
+import { Listing } from "../../types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /* Search Result Screen */
 export default function Search() {
   const { user, setUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [searchResultList, setSearchResultList] = useState([]);
+  const [searchResultList, setSearchResultList] = useState<Listing[]>([]);
 
   // Mock data for the list, replace with your actual data source
-  const searchResultListData = [
+  const searchResultListData: Listing[] = [
     {
-      id: "1",
+      listingId: "1",
+      sellerId: user.id,
       title: "Nike Shoes",
-      price: 26, // Updated to number
-      username: "Caleb C.",
-      sellerRating: 4.8, // Updated to number
-      timeSincePosted: getTimeAgo(new Date(Date.now() - 3 * 60 * 60 * 1000)), // 3 hrs * 60 min * 60 sec * 1000 milisec
+      price: 26,
+      datePosted: new Date(Date.now() - 3 * 60 * 60 * 1000),
+      description: "A pair of lightly used Nike shoes.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     {
-      id: "2",
+      listingId: "2",
+      sellerId: user.id,
       title: "Adidas Sneakers",
-      price: 41, // Updated to number
-      username: "Juan B.",
-      sellerRating: 4.8, // Updated to number
-      timeSincePosted: getTimeAgo(new Date(Date.now() - 6.5 * 60 * 60 * 1000)), // 6hrs and 30 min ago
+      price: 41,
+      datePosted: new Date(Date.now() - 6.5 * 60 * 60 * 1000),
+      description: "Brand new Adidas sneakers.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     {
-      id: "3",
+      listingId: "3",
+      sellerId: user.id,
       title: "Puma Running Shoes",
-      price: 6, // Updated to number
-      username: "Ara A.",
-      sellerRating: 4.3, // Updated to number
-      timeSincePosted: getTimeAgo(
-        new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)
-      ), // Updated to Date
+      price: 6,
+      datePosted: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000),
+      description: "Puma running shoes in great condition.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     {
-      id: "4",
+      listingId: "4",
+      sellerId: user.id,
       title: "Aldo Chelsea",
-      price: 100, // Updated to number
-      username: "Young K.",
-      sellerRating: 4.9, // Updated to number
-      timeSincePosted: getTimeAgo(new Date(Date.now() - 6 * 60 * 60 * 1000)),
+      price: 100,
+      datePosted: new Date(Date.now() - 6 * 60 * 60 * 1000),
+      description: "Elegant Aldo Chelsea boots for formal occasions.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     {
-      id: "5",
+      listingId: "5",
+      sellerId: user.id,
       title: "Used Tap Dance Shoes",
-      price: 16, // Updated to number
-      username: "Shina H.",
-      sellerRating: 4.1, // Updated to number
-      timeSincePosted: getTimeAgo(
-        new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      ),
+      price: 16,
+      datePosted: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      description: "Used tap dance shoes, good for beginners.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     {
-      id: "6",
+      listingId: "6",
+      sellerId: user.id,
       title: "Converse All Stars",
-      price: 16, // Updated to number
-      username: "Houston Y.",
-      sellerRating: 4.4, // Updated to number
-      timeSincePosted: getTimeAgo(
-        new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
-      ),
+      price: 16,
+      datePosted: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+      description: "Classic Converse All Stars, lightly worn.",
+      categories: ["APPAREL"],
+      isListingActive: true,
     },
     // Add more shoe listings as needed
   ];
@@ -92,7 +99,9 @@ export default function Search() {
     });
   };
 
-  const renderItem = ({ item }) => <SearchItem item={item} />;
+  const renderItem = ({ item }: { item: Listing }) => (
+    <SearchItem item={item} />
+  );
 
   return (
     <SafeAreaView>
@@ -123,7 +132,7 @@ export default function Search() {
           style={{ marginTop: 30 }}
           data={searchResultList}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.listingId}
           style={{ marginBottom: 100 }}
         />
       </View>

@@ -9,6 +9,8 @@ export type User = {
   dateCreated: Date;
   interests?: string[];
   id: UserId;
+  sellerRating?: number;
+  buyerRating?: number;
 };
 
 export interface UserContextType {
