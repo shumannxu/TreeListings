@@ -8,7 +8,7 @@ export default function HomeLayout() {
 
   return (
     <SafeAreaProvider>
-      <Tabs screenOptions={{ headerShown: false }}>
+      <Tabs screenOptions={{ headerShown: false}} >
         <Tabs.Screen
           name="home/index"
           options={{
@@ -17,13 +17,6 @@ export default function HomeLayout() {
             tabBarIcon: ({}) => (
               <Icon color={"#B0DCC5"} height={20} width={20}>home</Icon>
             ),
-          }}
-        />
-        <Tabs.Screen
-          name="search"
-          options={{
-            href: "/search",
-            tabBarLabel: "Search",
           }}
         />
         <Tabs.Screen
@@ -36,15 +29,32 @@ export default function HomeLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="search"
+          options={{
+            href: "/search",
+            tabBarLabel: "Search",
+            tabBarIcon: ({}) => (
+              <Icon color={"#B0DCC5"} height={20} width={20}>search</Icon>
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            href: "/profile",
+            tabBarLabel: "profile",
+            tabBarIcon: ({}) => (
+              <Icon color={"#B0DCC5"} height={20} width={20}>user</Icon>
+            ),
+          }}
+        />
       </Tabs>
     </SafeAreaProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: '#e0f2f1', // Your tab bar's background color
-    // Add other styling to match the design image provided
-  },
-  // Add more styles if needed
+
+
 });

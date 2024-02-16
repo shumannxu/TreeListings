@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { View, Text, Button, FlatList, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../../firebase/auth";
@@ -6,12 +6,24 @@ import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
 import { Listing } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAllListings } from "../../firebase/db";
 
 /* Search Result Screen */
 export default function Search() {
   const { user, setUser } = useAuth();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResultList, setSearchResultList] = useState<Listing[]>([]);
+
+
+  useEffect(() => {
+    // Fetch user data from AsyncStorage
+    const fetchAllListings = async () => {
+      const listings = await getAllListings();
+      setSearchResultList(listings);
+    }
+    fetchAllListings();
+  }, []);
+
 
   // Mock data for the list, replace with your actual data source
   const searchResultListData: Listing[] = [
@@ -86,7 +98,7 @@ export default function Search() {
   const handleSearch = () => {
     // Perform search logic here, based on the searchQuery state
     // For simplicity, just filter the searchResultListData based on the title containing the searchQuery
-    const filteredResults = searchResultListData.filter((item) =>
+    const filteredResults = searchResultList.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
     setSearchResultList(filteredResults);
@@ -126,7 +138,7 @@ export default function Search() {
             onChangeText={setSearchQuery}
             onSubmitEditing={handleSearch}
           />
-          <Button onPress={handleLogout} title="Sign Out" />
+          {/* <Button onPress={handleLogout} title="Sign Out" /> */}
         </View>
         <FlatList
           style={{ marginTop: 30 }}
