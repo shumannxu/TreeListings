@@ -10,7 +10,7 @@ import {
   getDocs
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
-import { Listing, ListingId, UserId } from "../types";
+import { Listing, ListingId, User, UserId } from "../types";
 
 /**
  * Retrieves a document from Firestore.
@@ -120,6 +120,22 @@ const uploadListing = async ({
   });
 };
 
+const getUserProfile = async (userId: UserId): Promise<User | null> => {
+  try {
+    const userRef = doc(firestore, "users", userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      return userSnap.data() as User;
+    } else {
+      console.log("No such user!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+};
+
 /**
  * Retrieves all listings from Firestore.
  * @returns {Promise<Listing[]>} - An array of all listing documents.
@@ -133,4 +149,4 @@ const getAllListings = async (): Promise<Listing[]> => {
 };
 
 
-export { getDocument, setDocument, uploadListing, getAllListings};
+export { getDocument, setDocument, uploadListing, getAllListings, getUserProfile};
