@@ -1,0 +1,1019 @@
+.iphone-pro-max {
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .iphone-pro-max .div {
+    background-color: #ffffff;
+    height: 2400px;
+    overflow: hidden;
+    position: relative;
+    width: 430px;
+  }
+  
+  .iphone-pro-max .navigation-bar {
+    height: 85px;
+    left: -3px;
+    position: absolute;
+    top: 2315px;
+    width: 430px;
+  }
+  
+  .iphone-pro-max .overlap-group {
+    height: 85px;
+    position: relative;
+  }
+  
+  .iphone-pro-max .home-button {
+    background-color: #2f9c95;
+    border-radius: 20px 0px 0px 0px;
+    height: 85px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 107px;
+  }
+  
+  .iphone-pro-max .user-profile-button {
+    background-color: #2f9c95;
+    border-radius: 0px 20px 0px 0px;
+    height: 85px;
+    left: 323px;
+    position: absolute;
+    top: 0;
+    width: 107px;
+  }
+  
+  .iphone-pro-max .search-button {
+    background-color: #2f9c95;
+    height: 85px;
+    left: 215px;
+    position: absolute;
+    top: 0;
+    width: 108px;
+  }
+  
+  .iphone-pro-max .post-button {
+    background-color: #2f9c95;
+    height: 85px;
+    left: 107px;
+    position: absolute;
+    top: 0;
+    width: 108px;
+  }
+  
+  .iphone-pro-max .search-logo {
+    height: 40px;
+    left: 249px;
+    position: absolute;
+    top: 23px;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .home-logo {
+    height: 40px;
+    left: 36px;
+    position: absolute;
+    top: 23px;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .post-logo {
+    height: 40px;
+    left: 141px;
+    position: absolute;
+    top: 23px;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .user-logo {
+    height: 40px;
+    left: 354px;
+    position: absolute;
+    top: 23px;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .separator {
+    height: 85px;
+    left: 211px;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    width: 9px;
+  }
+  
+  .iphone-pro-max .img {
+    height: 85px;
+    left: 103px;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    width: 9px;
+  }
+  
+  .iphone-pro-max .separator-2 {
+    height: 85px;
+    left: 317px;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    width: 9px;
+  }
+  
+  .iphone-pro-max .selling-history {
+    height: 983px;
+    left: 26px;
+    position: absolute;
+    top: 1290px;
+    width: 381px;
+  }
+  
+  .iphone-pro-max .past {
+    height: 354px;
+    left: 3px;
+    position: absolute;
+    top: 629px;
+    width: 370px;
+  }
+  
+  .iphone-pro-max .past-title {
+    height: 14px;
+    left: 3px;
+    position: absolute;
+    top: 4px;
+    width: 41px;
+  }
+  
+  .iphone-pro-max .active-buying {
+    height: 147px;
+    left: 0;
+    position: absolute;
+    top: 40px;
+    width: 380px;
+  }
+  
+  .iphone-pro-max .price-label {
+    height: 16px;
+    left: 132px;
+    position: absolute;
+    top: 40px;
+    width: 58px;
+  }
+  
+  .iphone-pro-max .price-value {
+    height: 12px;
+    left: 201px;
+    position: absolute;
+    top: 42px;
+    width: 27px;
+  }
+  
+  .iphone-pro-max .item-title {
+    height: 16px;
+    left: 131px;
+    position: absolute;
+    top: 12px;
+    width: 177px;
+  }
+  
+  .iphone-pro-max .sold-label {
+    height: 12px;
+    left: 132px;
+    position: absolute;
+    top: 72px;
+    width: 34px;
+  }
+  
+  .iphone-pro-max .contact-sent {
+    height: 41px;
+    left: 221px;
+    position: absolute;
+    top: 74px;
+    width: 139px;
+  }
+  
+  .iphone-pro-max .item-photo {
+    background-color: #d9d9d9;
+    height: 120px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 120px;
+  }
+  
+  .iphone-pro-max .div-2 {
+    height: 23px;
+    left: 1px;
+    position: absolute;
+    top: 124px;
+    width: 122px;
+  }
+  
+  .iphone-pro-max .img-2 {
+    height: 19px;
+    left: 0;
+    position: absolute;
+    top: 2px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .img-3 {
+    height: 11px;
+    left: 23px;
+    position: absolute;
+    top: 6px;
+    width: 53px;
+  }
+  
+  .iphone-pro-max .rating {
+    height: 23px;
+    left: 81px;
+    position: absolute;
+    top: 0;
+    width: 41px;
+  }
+  
+  .iphone-pro-max .star {
+    height: 15px;
+    left: 23px;
+    position: absolute;
+    top: 4px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .rating-value {
+    height: 10px;
+    left: 3px;
+    position: absolute;
+    top: 7px;
+    width: 18px;
+  }
+  
+  .iphone-pro-max .time-posted {
+    height: 9px;
+    left: 333px;
+    position: absolute;
+    top: 2px;
+    width: 33px;
+  }
+  
+  .iphone-pro-max .active-selling {
+    height: 147px;
+    left: 0;
+    position: absolute;
+    top: 207px;
+    width: 370px;
+  }
+  
+  .iphone-pro-max .offer {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 42px;
+    width: 115px;
+  }
+  
+  .iphone-pro-max .offer-label {
+    height: 16px;
+    left: 1px;
+    position: absolute;
+    top: 3px;
+    width: 59px;
+  }
+  
+  .iphone-pro-max .offer-value {
+    height: 12px;
+    left: 68px;
+    position: absolute;
+    top: 5px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .img-wrapper {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 71px;
+    width: 107px;
+  }
+  
+  .iphone-pro-max .img-4 {
+    height: 16px;
+    left: 1px;
+    position: absolute;
+    top: 5px;
+    width: 67px;
+  }
+  
+  .iphone-pro-max .item-title-2 {
+    height: 16px;
+    left: 131px;
+    position: absolute;
+    top: 12px;
+    width: 184px;
+  }
+  
+  .iphone-pro-max .img-5 {
+    height: 11px;
+    left: 23px;
+    position: absolute;
+    top: 6px;
+    width: 58px;
+  }
+  
+  .iphone-pro-max .rating-2 {
+    height: 23px;
+    left: 82px;
+    position: absolute;
+    top: 0;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .star-2 {
+    height: 15px;
+    left: 22px;
+    position: absolute;
+    top: 4px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .rating-3 {
+    height: 9px;
+    left: 4px;
+    position: absolute;
+    top: 7px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .time-posted-2 {
+    height: 10px;
+    left: 328px;
+    position: absolute;
+    top: 2px;
+    width: 37px;
+  }
+  
+  .iphone-pro-max .ongoing {
+    height: 564px;
+    left: 0;
+    position: absolute;
+    top: 40px;
+    width: 381px;
+  }
+  
+  .iphone-pro-max .ongoing-title {
+    height: 18px;
+    left: 3px;
+    position: absolute;
+    top: 3px;
+    width: 81px;
+  }
+  
+  .iphone-pro-max .active-selling-2 {
+    height: 147px;
+    left: 0;
+    position: absolute;
+    top: 40px;
+    width: 372px;
+  }
+  
+  .iphone-pro-max .no-offers-yet-label {
+    height: 12px;
+    left: 137px;
+    position: absolute;
+    top: 71px;
+    width: 105px;
+  }
+  
+  .iphone-pro-max .price {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 37px;
+    width: 116px;
+  }
+  
+  .iphone-pro-max .price-label-2 {
+    height: 16px;
+    left: 1px;
+    position: absolute;
+    top: 3px;
+    width: 58px;
+  }
+  
+  .iphone-pro-max .price-value-2 {
+    height: 12px;
+    left: 70px;
+    position: absolute;
+    top: 5px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .edit-post-button {
+    left: 277px !important;
+    position: absolute !important;
+    top: 92px !important;
+  }
+  
+  .iphone-pro-max .active-selling-3 {
+    height: 156px;
+    left: 0;
+    position: absolute;
+    top: 207px;
+    width: 372px;
+  }
+  
+  .iphone-pro-max .price-2 {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 42px;
+    width: 116px;
+  }
+  
+  .iphone-pro-max .sold-label-2 {
+    height: 12px;
+    left: 1px;
+    position: absolute;
+    top: 5px;
+    width: 34px;
+  }
+  
+  .iphone-pro-max .time-posted-3 {
+    height: 10px;
+    left: 347px;
+    position: absolute;
+    top: 2px;
+    width: 18px;
+  }
+  
+  .iphone-pro-max .send-button {
+    left: 301px !important;
+    position: absolute !important;
+    top: 124px !important;
+  }
+  
+  .iphone-pro-max .edit-button {
+    left: 305px !important;
+    position: absolute !important;
+    top: 88px !important;
+  }
+  
+  .iphone-pro-max .your-contact-info {
+    height: 41px;
+    left: 136px;
+    position: absolute;
+    top: 102px;
+    width: 140px;
+  }
+  
+  .iphone-pro-max .active-buying-2 {
+    height: 175px;
+    left: 0;
+    position: absolute;
+    top: 389px;
+    width: 383px;
+  }
+  
+  .iphone-pro-max .your-offer {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 42px;
+    width: 152px;
+  }
+  
+  .iphone-pro-max .your-offer-label {
+    height: 16px;
+    left: 0;
+    position: absolute;
+    top: 3px;
+    width: 100px;
+  }
+  
+  .iphone-pro-max .your-offer-value {
+    height: 12px;
+    left: 106px;
+    position: absolute;
+    top: 5px;
+    width: 9px;
+  }
+  
+  .iphone-pro-max .countered {
+    height: 23px;
+    left: 134px;
+    position: absolute;
+    top: 71px;
+    width: 157px;
+  }
+  
+  .iphone-pro-max .countered-value {
+    height: 12px;
+    left: 110px;
+    position: absolute;
+    top: 5px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .countered-label {
+    height: 16px;
+    left: 1px;
+    position: absolute;
+    top: 3px;
+    width: 103px;
+  }
+  
+  .iphone-pro-max .decline-offer-button {
+    left: 261px !important;
+    position: absolute !important;
+    top: 108px !important;
+  }
+  
+  .iphone-pro-max .accept-offer-button {
+    left: 136px !important;
+    position: absolute !important;
+    top: 108px !important;
+  }
+  
+  .iphone-pro-max .counter-offer-button {
+    left: 259px !important;
+    position: absolute !important;
+    top: 143px !important;
+  }
+  
+  .iphone-pro-max .counter-offer-enter {
+    height: 29px;
+    left: 136px;
+    position: absolute;
+    top: 146px;
+    width: 116px;
+  }
+  
+  .iphone-pro-max .overlap-group-2 {
+    background-image: url(./counter-offer-prrce-2.png);
+    background-size: 100% 100%;
+    height: 29px;
+    position: relative;
+    width: 114px;
+  }
+  
+  .iphone-pro-max .img-6 {
+    height: 17px;
+    left: 10px;
+    position: absolute;
+    top: 5px;
+    width: 10px;
+  }
+  
+  .iphone-pro-max .selling-history-2 {
+    height: 22px;
+    left: 3px;
+    position: absolute;
+    top: 2px;
+    width: 166px;
+  }
+  
+  .iphone-pro-max .line {
+    height: 1px;
+    left: 15px;
+    object-fit: cover;
+    position: absolute;
+    top: 1257px;
+    width: 400px;
+  }
+  
+  .iphone-pro-max .buying-history {
+    height: 793px;
+    left: 26px;
+    position: absolute;
+    top: 440px;
+    width: 381px;
+  }
+  
+  .iphone-pro-max .buying-history-title {
+    height: 22px;
+    left: 4px;
+    position: absolute;
+    top: 2px;
+    width: 167px;
+  }
+  
+  .iphone-pro-max .ongoing-2 {
+    height: 382px;
+    left: 0;
+    position: absolute;
+    top: 40px;
+    width: 381px;
+  }
+  
+  .iphone-pro-max .active-buying-3 {
+    height: 147px;
+    left: 0;
+    position: absolute;
+    top: 40px;
+    width: 376px;
+  }
+  
+  .iphone-pro-max .your-offer-label-2 {
+    height: 16px;
+    left: 131px;
+    position: absolute;
+    top: 40px;
+    width: 100px;
+  }
+  
+  .iphone-pro-max .your-offer-value-2 {
+    height: 12px;
+    left: 238px;
+    position: absolute;
+    top: 42px;
+    width: 27px;
+  }
+  
+  .iphone-pro-max .pending-label {
+    height: 16px;
+    left: 132px;
+    position: absolute;
+    top: 72px;
+    width: 63px;
+  }
+  
+  .iphone-pro-max .active-buying-4 {
+    height: 175px;
+    left: 0;
+    position: absolute;
+    top: 207px;
+    width: 383px;
+  }
+  
+  .iphone-pro-max .overlap-group-3 {
+    background-image: url(./counter-offer-prrce.png);
+    background-size: 100% 100%;
+    height: 29px;
+    position: relative;
+    width: 114px;
+  }
+  
+  .iphone-pro-max .past-2 {
+    height: 354px;
+    left: 2px;
+    position: absolute;
+    top: 439px;
+    width: 370px;
+  }
+  
+  .iphone-pro-max .accepted-label {
+    height: 15px;
+    left: 131px;
+    position: absolute;
+    top: 72px;
+    width: 75px;
+  }
+  
+  .iphone-pro-max .accepted-label-2 {
+    height: 41px;
+    left: 220px;
+    position: absolute;
+    top: 74px;
+    width: 139px;
+  }
+  
+  .iphone-pro-max .overlap-group-wrapper {
+    height: 147px;
+    left: 0;
+    position: absolute;
+    top: 207px;
+    width: 368px;
+  }
+  
+  .iphone-pro-max .overlap-group-4 {
+    height: 147px;
+    position: relative;
+    width: 370px;
+  }
+  
+  .iphone-pro-max .your-offer-value-3 {
+    height: 12px;
+    left: 105px;
+    position: absolute;
+    top: 5px;
+    width: 16px;
+  }
+  
+  .iphone-pro-max .seller-info {
+    height: 147px;
+    left: 1px;
+    position: absolute;
+    top: 0;
+    width: 369px;
+  }
+  
+  .iphone-pro-max .seller-profile {
+    height: 19px;
+    left: 0;
+    position: absolute;
+    top: 126px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .seller-username {
+    height: 11px;
+    left: 23px;
+    position: absolute;
+    top: 130px;
+    width: 58px;
+  }
+  
+  .iphone-pro-max .rating-4 {
+    height: 23px;
+    left: 82px;
+    position: absolute;
+    top: 124px;
+    width: 40px;
+  }
+  
+  .iphone-pro-max .time-posted-4 {
+    height: 10px;
+    left: 327px;
+    position: absolute;
+    top: 2px;
+    width: 37px;
+  }
+  
+  .iphone-pro-max .line-2 {
+    height: 1px;
+    left: 15px;
+    object-fit: cover;
+    position: absolute;
+    top: 407px;
+    width: 400px;
+  }
+  
+  .iphone-pro-max .user-information {
+    height: 297px;
+    left: 28px;
+    position: absolute;
+    top: 88px;
+    width: 365px;
+  }
+  
+  .iphone-pro-max .user-information-2 {
+    height: 18px;
+    left: 2px;
+    position: absolute;
+    top: 2px;
+    width: 190px;
+  }
+  
+  .iphone-pro-max .overlap {
+    height: 258px;
+    left: 0;
+    position: absolute;
+    top: 39px;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .buyer-rating {
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 196px;
+    width: 196px;
+  }
+  
+  .iphone-pro-max .buyer-rating-label {
+    height: 18px;
+    left: 1px;
+    position: absolute;
+    top: 3px;
+    width: 117px;
+  }
+  
+  .iphone-pro-max .buyer-rating-value {
+    height: 14px;
+    left: 125px;
+    position: absolute;
+    top: 4px;
+    width: 38px;
+  }
+  
+  .iphone-pro-max .seller-rating {
+    height: 24px;
+    left: 0;
+    position: absolute;
+    top: 234px;
+    width: 197px;
+  }
+  
+  .iphone-pro-max .seller-rating-label {
+    height: 18px;
+    left: 1px;
+    position: absolute;
+    top: 4px;
+    width: 116px;
+  }
+  
+  .iphone-pro-max .seller-rating-value {
+    height: 14px;
+    left: 126px;
+    position: absolute;
+    top: 4px;
+    width: 32px;
+  }
+  
+  .iphone-pro-max .first-name {
+    height: 55px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .first-name-label {
+    height: 14px;
+    left: 1px;
+    position: absolute;
+    top: 4px;
+    width: 99px;
+  }
+  
+  .iphone-pro-max .first-name-value {
+    height: 14px;
+    left: 111px;
+    position: absolute;
+    top: 5px;
+    width: 41px;
+  }
+  
+  .iphone-pro-max .first-name-edit {
+    height: 24px;
+    left: 343px;
+    position: absolute;
+    top: 31px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .username {
+    height: 73px;
+    left: 0;
+    position: absolute;
+    top: 78px;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .username-label {
+    height: 14px;
+    left: 1px;
+    position: absolute;
+    top: 5px;
+    width: 94px;
+  }
+  
+  .iphone-pro-max .username-value {
+    height: 17px;
+    left: 110px;
+    position: absolute;
+    top: 5px;
+    width: 47px;
+  }
+  
+  .iphone-pro-max .username-edit {
+    height: 24px;
+    left: 343px;
+    position: absolute;
+    top: 48px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .last-name {
+    height: 62px;
+    left: 0;
+    position: absolute;
+    top: 39px;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .last-name-label {
+    height: 14px;
+    left: 1px;
+    position: absolute;
+    top: 5px;
+    width: 97px;
+  }
+  
+  .iphone-pro-max .last-name-value {
+    height: 14px;
+    left: 112px;
+    position: absolute;
+    top: 4px;
+    width: 47px;
+  }
+  
+  .iphone-pro-max .last-name-edit {
+    height: 24px;
+    left: 343px;
+    position: absolute;
+    top: 37px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .mobile-number {
+    height: 81px;
+    left: 0;
+    position: absolute;
+    top: 117px;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .mobile-label {
+    height: 14px;
+    left: 1px;
+    position: absolute;
+    top: 4px;
+    width: 80px;
+  }
+  
+  .iphone-pro-max .mobile-number-value {
+    height: 18px;
+    left: 94px;
+    position: absolute;
+    top: 4px;
+    width: 101px;
+  }
+  
+  .iphone-pro-max .mobile-number-edit {
+    height: 24px;
+    left: 343px;
+    position: absolute;
+    top: 57px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .email {
+    height: 92px;
+    left: 0;
+    position: absolute;
+    top: 156px;
+    width: 367px;
+  }
+  
+  .iphone-pro-max .email-label {
+    height: 14px;
+    left: 1px;
+    position: absolute;
+    top: 4px;
+    width: 51px;
+  }
+  
+  .iphone-pro-max .email-value {
+    height: 17px;
+    left: 61px;
+    position: absolute;
+    top: 4px;
+    width: 173px;
+  }
+  
+  .iphone-pro-max .email-edit {
+    height: 24px;
+    left: 343px;
+    position: absolute;
+    top: 68px;
+    width: 20px;
+  }
+  
+  .iphone-pro-max .user-dashboard {
+    height: 50px;
+    left: 76px;
+    position: absolute;
+    top: 19px;
+    width: 281px;
+  }
+  
+  .iphone-pro-max .user-profile-icon {
+    height: 45px;
+    left: 0;
+    position: absolute;
+    top: 2px;
+    width: 45px;
+  }
+  
+  .iphone-pro-max .dashboard-title {
+    height: 16px;
+    left: 62px;
+    position: absolute;
+    top: 16px;
+    width: 205px;
+  }
+  
+  .iphone-pro-max .back-button {
+    height: 40px;
+    left: 10px;
+    position: absolute;
+    top: 24px;
+    width: 40px;
+  }
+  
