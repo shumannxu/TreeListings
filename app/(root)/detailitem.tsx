@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, useWindowDimensions, FlatList} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, useWindowDimensions, FlatList, ScrollView} from "react-native";
 import { useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllListings, getDocument } from "../../firebase/db";
@@ -7,6 +7,7 @@ import { Listing, User } from "../../types";
 import getTimeAgo from "../components/getTimeAgo";
 import Icon from "../../components/icon";
 import ListingItem from "../components/listingItem";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function DetailItem() {
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
@@ -15,6 +16,7 @@ export default function DetailItem() {
   const [price, setPrice] = useState("");
   const {height, width} = useWindowDimensions();
   const [listings, setListings] = useState<Listing[] | [] >([]);
+  const [timeAgo, setTimeAgo] = useState("");
 
   useEffect(() => {
     const fetchAllListings = async () => {
@@ -29,7 +31,8 @@ export default function DetailItem() {
       if (itemId) { 
         const listingDocPath = `listings/${itemId}`; 
         const listing = await getDocument(listingDocPath);
-        console.log(listing);
+        setTimeAgo(getTimeAgo(listing.datePosted));
+        // console.log(listing);
         setListing(listing);
       }
     };
@@ -39,7 +42,7 @@ export default function DetailItem() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (listing) {
+      if (listing){
         const userDocPath = `users/${listing.sellerId}`;
         const user = await getDocument(userDocPath);
         setUser(user);
@@ -47,7 +50,7 @@ export default function DetailItem() {
     };
 
     fetchUser();
-  }, [user]);
+  }, [user, listing]);
 
   const styles = StyleSheet.create({
     image: {
@@ -87,37 +90,46 @@ export default function DetailItem() {
     );
   }
 
-  // Render your listing details
+  const onBuyNow = () => {
+    console.log("Buy Now");
+  }
+  const onSubmitOffer = () => {
+    console.log("Submit Offer");
+  }
   return (
-    <SafeAreaView>
-      <View style={{alignItems: "center"}}>
+    <ScrollView>
+      <View style={{alignItems: "center", paddingVertical: 40}}>
         <Text style={{fontSize: 30, fontWeight: "bold", letterSpacing: 1}}>{listing.title}</Text>
         <View style={{flexDirection: "row", alignItems: "center"}}>
           <Icon height={30} color="black">profile</Icon>
           <Text style={styles.defaultTextSize}>{user?.fullName} </Text>
           <Text style={styles.defaultTextSize}>{user?.sellerRating}</Text>
           <Icon height={20} color="black">star</Icon>
-          <Text style={styles.defaultTextSize}>{getTimeAgo(listing.datePosted)}</Text>
+          <Text style={styles.defaultTextSize}>{timeAgo}</Text>
         </View>
        
         <Image source={{ uri: listing.imagePath }} style={styles.image} />
         <Text style={styles.defaultTextSize}>{listing.description}</Text>
-        <View style={{flexDirection: "row", alignContent: "flex-end", alignItems: "center"}}>
-          <Text style={styles.defaultTextSize}>Asking Price: ${listing.price}</Text>
-          <TouchableOpacity style={styles.button}>
+        <View style={{flexDirection: "row", alignContent: "flex-end", alignItems: "center", marginVertical:10}}>
+          <Text style={[styles.defaultTextSize, {marginHorizontal: 10}]}>Asking Price: ${listing.price}</Text>
+          <TouchableOpacity style={styles.button}
+          onPress={onBuyNow}
+          >
             <Text>Buy Now</Text>
           </TouchableOpacity>
         </View>    
-        <View style={{flexDirection: "row", alignContent: "flex-end", alignItems: "center"}}>
+        <View style={{flexDirection: "row", alignContent: "flex-end", alignItems: "center", marginVertical: 10}}>
           <Text style={styles.defaultTextSize} >Best Offer$</Text>
           <TextInput
-            style={{}}
+            style={{marginHorizontal: 10}}
             placeholder="Amount"
             keyboardType="numeric"
             value={price}
             onChangeText={setPrice}
           />
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button}
+          onPress={onSubmitOffer}
+          >
             <Text >Submit Offer</Text>
           </TouchableOpacity>
         </View>    
@@ -130,6 +142,6 @@ export default function DetailItem() {
           horizontal
           keyExtractor={(item) => item.listingId}
         />
-    </SafeAreaView>
+      </ScrollView>
   );
 }
