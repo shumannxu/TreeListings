@@ -49,6 +49,13 @@ export default function HomeLayout() {
             ),
           }}
         />
+        <Tabs.Screen
+          name="detailitem"
+          options={{
+            // href: "/detailitem",
+            href: null,
+          }}
+        />
       </Tabs>
     </SafeAreaProvider>
   );

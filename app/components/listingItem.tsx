@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Listing } from "../../types";
+import {router} from "expo-router";
 
 interface ItemProps {
   recommend: boolean;
@@ -8,9 +9,19 @@ interface ItemProps {
 }
 
 const ListingItem: React.FC<ItemProps> = ({ recommend, item }) => {
+
+  const navigateToDetail = () => {
+    router.push(`/detailitem?itemId=${item.listingId}`);
+  };
+
+  
   return (
     <View style={styles.container}>
-      <Image source={{ uri: item.imagePath }} style={styles.image} />
+      <TouchableOpacity
+      onPress={navigateToDetail}
+      >
+          <Image source={{ uri: item.imagePath }} style={styles.image} />
+      </TouchableOpacity>
       <Text>{item.title}</Text>
       <Text>{item.price}</Text>
       {recommend && (
