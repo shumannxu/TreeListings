@@ -13,6 +13,13 @@ export default function HomeLayout() {
           }}
         />
         <Tabs.Screen
+          name="search"
+          options={{
+            href: "/search",
+            tabBarLabel: "Search",
+          }}
+        />
+        <Tabs.Screen
           name="postListings"
           options={{
             href: "/postListings",

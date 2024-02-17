@@ -9,7 +9,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
-import { Listing, ListingId, UserId } from "../types";
+import { Listing, ListingId, User, UserId } from "../types";
 
 /**
  * Retrieves a document from Firestore.
@@ -119,4 +119,20 @@ const uploadListing = async ({
   });
 };
 
-export { getDocument, setDocument, uploadListing };
+const getUserProfile = async (userId: UserId): Promise<User | null> => {
+  try {
+    const userRef = doc(firestore, "users", userId);
+    const userSnap = await getDoc(userRef);
+    if (userSnap.exists()) {
+      return userSnap.data() as User;
+    } else {
+      console.log("No such user!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+};
+
+export { getDocument, setDocument, uploadListing, getUserProfile };
