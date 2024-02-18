@@ -103,8 +103,10 @@ export default function DetailItem() {
         <View style={{flexDirection: "row", alignItems: "center"}}>
           <Icon height={30} color="black">profile</Icon>
           <Text style={styles.defaultTextSize}>{user?.fullName} </Text>
-          <Text style={styles.defaultTextSize}>{user?.sellerRating}</Text>
-          <Icon height={20} color="black">star</Icon>
+          { user?.sellerRating && <><Text style={styles.defaultTextSize}>{user?.sellerRating}</Text>
+           <Icon height={20} color="black">star</Icon>
+           </>
+          }   
           <Text style={styles.defaultTextSize}>{timeAgo}</Text>
         </View>
        

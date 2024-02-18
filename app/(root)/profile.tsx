@@ -48,7 +48,6 @@ export default function Profile(){
             alignItems: "center",
         }}
         >
-        {console.log(user)}
         
         <View style={{flexDirection:"row", alignItems: "center"}}>
             <Icon color={"#664147"} height={30} style={{marginHorizontal: 10}}>profile</Icon>
