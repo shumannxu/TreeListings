@@ -12,8 +12,9 @@ import { View, Text, Image, StyleSheet } from "react-native";
 //
 // Input: Date type
 // Returns: formatted String  ("X hours ago" or "Y minutes ago" or "Z seconds ago" or "J days ago")
-const getTimeAgo = (time: Date): string => {
+const getTimeAgo = (time:any): string => {
   const now = new Date();
+  time = new Date( new Date(time.seconds * 1000 + time.nanoseconds / 1000000));
   const diff = Math.floor((now.getTime() - time.getTime()) / 1000); // Difference in seconds
 
   if (diff < 60) {

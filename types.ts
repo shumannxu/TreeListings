@@ -11,6 +11,10 @@ export type User = {
   id: UserId;
   sellerRating?: number;
   buyerRating?: number;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
 };
 
 export interface UserContextType {

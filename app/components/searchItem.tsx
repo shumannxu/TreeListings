@@ -1,11 +1,12 @@
 /* listingItem.tsx , but for the usage of search results */
 
 import React, { useEffect, useState } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 import { Listing, User, UserId } from "../../types";
 import getTimeAgo from "./getTimeAgo";
 import { getUserProfile } from "../../firebase/db";
+import { router } from "expo-router";
 
 interface ItemProps {
   item: Listing;
@@ -26,9 +27,18 @@ const SearchItem: React.FC<ItemProps> = ({ item }) => {
     fetchUserProfile();
   }, [userId]);
 
+  const navigateToDetail = () => {
+    router.push({
+      pathname: "/detailitem/[listingId]",
+      params: { listingId: item.listingId },
+    });
+  };
+
   return (
     <View style={styles.container}>
-      <Image source={{ uri: item.imagePath }} style={styles.image} />
+      <TouchableOpacity onPress={navigateToDetail}>
+        <Image source={{ uri: item.imagePath }} style={styles.image} />
+      </TouchableOpacity>
       <View style={styles.detailsContainer}>
         <Text style={styles.title}>{item.title}</Text>
         <View style={styles.rowContainer}>

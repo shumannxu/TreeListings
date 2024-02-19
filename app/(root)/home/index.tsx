@@ -1,64 +1,89 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, Text, Button, FlatList } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { signOutUser } from "../../../firebase/auth";
+import {
+  View,
+  Text,
+  Button,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+
 import { useAuth } from "../../../context";
-import ListingItem from "../../components/listingItem"; // Assuming the component exists at this path
+import ListingItem from "../../components/listingItem";
+import { getAllListings } from "../../../firebase/db";
+import { useEffect, useState } from "react";
+import { Listing } from "../../../types";
 
 export default function Home() {
   const { user, setUser } = useAuth();
+  const [listings, setListings] = useState<Listing[] | []>([]);
 
-  // Mock data for the lists, replace with your actual data source
-  const recommendedList = [
-    { id: "1", title: "Listing 1" },
-    // ... more items
-  ];
-  const recentlyBrowsedList = [
-    { id: "2", title: "Listing 2" },
-    // ... more items
-  ];
-  const trendingList = [
-    { id: "3", title: "Listing 3" },
-    // ... more items
-  ];
+  useEffect(() => {
+    // Fetch user data from AsyncStorage
+    const fetchAllListings = async () => {
+      const listings = await getAllListings();
+      setListings(listings);
+    };
+    fetchAllListings();
+  }, []);
 
-  const handleLogout = async () => {
-    signOutUser().then(async () => {
-      await AsyncStorage.removeItem("userInfo");
-      setUser(null);
-    });
-  };
+  const renderRecommend = ({ item }: { item: Listing }) => (
+    <ListingItem recommend={true} item={item} />
+  );
 
   // Render method for FlatList items
-  const renderItem = ({ item }) => <ListingItem item={item} />;
+  const renderItem = ({ item }: { item: Listing }) => (
+    <ListingItem recommend={false} item={item} />
+  );
 
   return (
     <SafeAreaView>
-      <View>
-        <Text>Feed screen</Text>
-        <Button onPress={handleLogout} title="Sign Out" />
-        <Text>We think you’ll like</Text>
-        <FlatList
-          data={recommendedList}
-          renderItem={renderItem}
-          horizontal
-          keyExtractor={(item) => item.id}
-        />
-        <Text>Recently Browsed</Text>
-        <FlatList
-          data={recentlyBrowsedList}
-          renderItem={renderItem}
-          horizontal
-          keyExtractor={(item) => item.id}
-        />
-        <Text>Trending</Text>
-        <FlatList
-          data={trendingList}
-          renderItem={renderItem}
-          horizontal
-          keyExtractor={(item) => item.id}
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={{
+          paddingBottom: useSafeAreaInsets().bottom + 50,
+        }}
+      >
+        <View>
+          <Text style={{ alignSelf: "center", fontSize: 30 }}>TreeListing</Text>
+          <Text style={styles.textStyle}>We think you&apos;ll like ❤️</Text>
+          <FlatList
+            data={listings}
+            renderItem={renderRecommend}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.listingId}
+            scrollEnabled={false}
+          />
+          <Text style={styles.textStyle}>Recently Browsed 🕒</Text>
+          <FlatList
+            data={listings}
+            renderItem={renderItem}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.listingId}
+            scrollEnabled={false}
+          />
+          <Text style={styles.textStyle}>Trending 📈</Text>
+          <FlatList
+            data={listings}
+            renderItem={renderItem}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.listingId}
+            scrollEnabled={false}
+          />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  textStyle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});
