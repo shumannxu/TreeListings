@@ -1,15 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, useWindowDimensions, FlatList, ScrollView} from "react-native";
 import { useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaFrameContext, SafeAreaView } from "react-native-safe-area-context";
 import { getAllListings, getDocument } from "../../firebase/db";
 import { Listing, User } from "../../types";
 import getTimeAgo from "../components/getTimeAgo";
 import Icon from "../../components/icon";
 import ListingItem from "../components/listingItem";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import * as MailComposer from 'expo-mail-composer';
+import { useAuth } from "../../context";
 
 export default function DetailItem() {
+  const { selfuser, setSelfUser } = useAuth();
+  const safeAreaInsets = useSafeAreaInsets();
+  const [selfUserInfo, setSelfUserInfo] = useState<User | null>(null);
   const { itemId } = useLocalSearchParams<{ itemId: string }>();
   const [listing, setListing] = useState<Listing | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -17,6 +22,11 @@ export default function DetailItem() {
   const {height, width} = useWindowDimensions();
   const [listings, setListings] = useState<Listing[] | [] >([]);
   const [timeAgo, setTimeAgo] = useState("");
+
+
+  useEffect(() => {
+    setSelfUserInfo(selfuser);
+  }, [selfuser]);
 
   useEffect(() => {
     const fetchAllListings = async () => {
@@ -93,12 +103,37 @@ export default function DetailItem() {
   const onBuyNow = () => {
     console.log("Buy Now");
   }
-  const onSubmitOffer = () => {
-    console.log("Submit Offer");
-  }
+
+  const onSubmitOffer = async () => {
+    const isAvailable = await MailComposer.isAvailableAsync();
+    
+    if (!isAvailable) {
+      console.log('Mail services are not available');
+      return;
+    }
+    if(!user){
+      console.log("User not loaded yet");
+      return;
+    }
+  
+    await MailComposer.composeAsync({
+      recipients: [user.email], 
+      subject: 'Offer for Your Listing',
+      body: `Hello ${user.fullName},\n\nI would like to submit an offer of $${price} for the item listed.\n\nBest regards,\n ${selfUserInfo?.firstName}`, 
+      isHtml: false, // Set to true if you want to use HTML content in the body
+    });
+  
+    console.log("Offer submitted via email");
+  };
+
   return (
-    <ScrollView>
-      <View style={{alignItems: "center", paddingVertical: 40}}>
+    <ScrollView
+    contentContainerStyle={{
+      alignItems: "center",
+      paddingVertical: safeAreaInsets.top,
+    }}
+    >
+      <View style={{alignItems: "center"}}>
         <Text style={{fontSize: 30, fontWeight: "bold", letterSpacing: 1}}>{listing.title}</Text>
         <View style={{flexDirection: "row", alignItems: "center"}}>
           <Icon height={30} color="black">profile</Icon>
@@ -129,8 +164,10 @@ export default function DetailItem() {
             value={price}
             onChangeText={setPrice}
           />
-          <TouchableOpacity style={styles.button}
+          <TouchableOpacity 
+          style={[styles.button, {backgroundColor: price === "" ? "grey" : "#38B39C"}]}
           onPress={onSubmitOffer}
+          disabled={price === ""}
           >
             <Text >Submit Offer</Text>
           </TouchableOpacity>
