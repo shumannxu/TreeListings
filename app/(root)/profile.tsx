@@ -45,11 +45,14 @@ export default function Profile() {
   const [change, setChange] = useState(false);
   const [preferences, setPreferences] = useState(user?.preferences || []);
   const [isUserInformationExpanded, setIsUserInformationExpanded] =
-    useState(true);
+    useState(false);
   const [isSellerInformationExpanded, setIsSellerInformationExpanded] =
     useState(false);
   const [isBuyerInformationExpanded, setIsBuyerInformationExpanded] =
     useState(false);
+  const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
+  const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
+    useState(true); // For seller active/past toggle
 
   const toggleUserInformation = () => {
     setIsUserInformationExpanded(!isUserInformationExpanded);
@@ -62,7 +65,21 @@ export default function Profile() {
   const toggleSellerInformation = () => {
     setIsSellerInformationExpanded(!isSellerInformationExpanded);
   };
+  const toggleActiveListings = () => {
+    setActiveListingsSelected(true);
+  };
 
+  const togglePastListings = () => {
+    setActiveListingsSelected(false);
+  };
+
+  const toggleSellerActiveListings = () => {
+    setSellerActiveListingsSelected(true);
+  };
+
+  const toggleSellerPastListings = () => {
+    setSellerActiveListingsSelected(false);
+  };
   useEffect(() => {
     setUserInfo(user);
   }, [user]);
@@ -121,7 +138,7 @@ export default function Profile() {
       </View>
       <TouchableOpacity onPress={toggleUserInformation}>
         <View style={styles.expandButton}>
-          <Text style={styles.expandButtonText}>
+          <Text style={styles.buttonText}>
             {isUserInformationExpanded
               ? "Collapse User Information"
               : "Expand User Information"}
@@ -264,7 +281,7 @@ export default function Profile() {
       )}
       <TouchableOpacity onPress={toggleBuyerInformation}>
         <View style={styles.expandButton}>
-          <Text style={styles.expandButtonText}>
+          <Text style={styles.buttonText}>
             {isBuyerInformationExpanded
               ? "Collapse Buyer Information"
               : "Expand Buyer Information"}
@@ -275,11 +292,34 @@ export default function Profile() {
       {isBuyerInformationExpanded && (
         <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
           {/* Buyer Information content */}
+          <View style={styles.listingsToggleContainer}>
+            <TouchableOpacity onPress={toggleActiveListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  activeListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Active</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={togglePastListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  !activeListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Past</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
+
       <TouchableOpacity onPress={toggleSellerInformation}>
         <View style={styles.expandButton}>
-          <Text style={styles.expandButtonText}>
+          <Text style={styles.buttonText}>
             {isSellerInformationExpanded
               ? "Collapse Seller Information"
               : "Expand Seller Information"}
@@ -290,8 +330,31 @@ export default function Profile() {
       {isSellerInformationExpanded && (
         <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
           {/* Seller Information content */}
+          <View style={styles.listingsToggleContainer}>
+            <TouchableOpacity onPress={toggleSellerActiveListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  sellerActiveListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Active</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleSellerPastListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  !sellerActiveListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Past</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
+
       <Button onPress={handleLogout} title="Sign Out" />
     </ScrollView>
   );
@@ -359,9 +422,30 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
   },
-  expandButtonText: {
+  buttonText: {
     fontSize: 16,
     fontWeight: "bold",
     color: "white",
+  },
+  listingsToggleContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginVertical: 10,
+  },
+  listingsToggleButton: {
+    backgroundColor: "#ddd",
+    paddingVertical: 10,
+    paddingHorizontal: 50,
+    borderRadius: 2,
+    marginHorizontal: 0,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  activeButton: {
+    backgroundColor: "#2F9C95",
+  },
+  inactiveText: {
+    color: "#888",
   },
 });
