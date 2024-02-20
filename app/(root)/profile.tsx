@@ -46,9 +46,21 @@ export default function Profile() {
   const [preferences, setPreferences] = useState(user?.preferences || []);
   const [isUserInformationExpanded, setIsUserInformationExpanded] =
     useState(true);
+  const [isSellerInformationExpanded, setIsSellerInformationExpanded] =
+    useState(false);
+  const [isBuyerInformationExpanded, setIsBuyerInformationExpanded] =
+    useState(false);
 
   const toggleUserInformation = () => {
     setIsUserInformationExpanded(!isUserInformationExpanded);
+  };
+
+  const toggleBuyerInformation = () => {
+    setIsBuyerInformationExpanded(!isBuyerInformationExpanded);
+  };
+
+  const toggleSellerInformation = () => {
+    setIsSellerInformationExpanded(!isSellerInformationExpanded);
   };
 
   useEffect(() => {
@@ -108,11 +120,13 @@ export default function Profile() {
         </Text>
       </View>
       <TouchableOpacity onPress={toggleUserInformation}>
-        <Text style={styles.toggleButtonText}>
-          {isUserInformationExpanded
-            ? "Collapse User Information"
-            : "Expand User Information"}
-        </Text>
+        <View style={styles.expandButton}>
+          <Text style={styles.expandButtonText}>
+            {isUserInformationExpanded
+              ? "Collapse User Information"
+              : "Expand User Information"}
+          </Text>
+        </View>
       </TouchableOpacity>
       {isUserInformationExpanded && (
         <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
@@ -248,6 +262,36 @@ export default function Profile() {
           </View>
         </View>
       )}
+      <TouchableOpacity onPress={toggleBuyerInformation}>
+        <View style={styles.expandButton}>
+          <Text style={styles.expandButtonText}>
+            {isBuyerInformationExpanded
+              ? "Collapse Buyer Information"
+              : "Expand Buyer Information"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {isBuyerInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* Buyer Information content */}
+        </View>
+      )}
+      <TouchableOpacity onPress={toggleSellerInformation}>
+        <View style={styles.expandButton}>
+          <Text style={styles.expandButtonText}>
+            {isSellerInformationExpanded
+              ? "Collapse Seller Information"
+              : "Expand Seller Information"}
+          </Text>
+        </View>
+      </TouchableOpacity>
+
+      {isSellerInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* Seller Information content */}
+        </View>
+      )}
       <Button onPress={handleLogout} title="Sign Out" />
     </ScrollView>
   );
@@ -307,5 +351,17 @@ const styles = StyleSheet.create({
     color: "#2F9C95",
     textAlign: "center",
     marginVertical: 10,
+  },
+  expandButton: {
+    backgroundColor: "#2F9C95",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginVertical: 10,
+    borderRadius: 10,
+  },
+  expandButtonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
   },
 });
