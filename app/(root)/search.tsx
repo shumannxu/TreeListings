@@ -47,7 +47,7 @@ export default function Search() {
   );
 
   return (
-    <View style={{ paddingTop: safeAreaInsets.top }}>
+    <View style={{ flex: 1, marginTop: safeAreaInsets.top }}>
       <View
         style={{
           flexDirection: "row",
@@ -69,7 +69,6 @@ export default function Search() {
         />
       </View>
       <FlatList
-        style={{ marginTop: 30, marginBottom: 100, height: "100%" }}
         data={filteredResults}
         renderItem={renderItem}
         keyExtractor={(item) => item.listingId}
