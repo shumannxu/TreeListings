@@ -260,7 +260,7 @@ export default function Profile() {
             <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
           </View>
           {/* User Preferences */}
-          <Text style={styles.textFirst}>User Preferences:</Text>
+          <Text style={styles.textFirst}>I want to see more:</Text>
           <View style={styles.userPreferencesContainer}>
             {preferencesData.map((preference) => (
               <TouchableOpacity
