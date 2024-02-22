@@ -7,7 +7,7 @@ import {
   increment,
   runTransaction,
   setDoc,
-  getDocs
+  getDocs,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import { Listing, ListingId, User, UserId } from "../types";
@@ -140,13 +140,22 @@ const getUserProfile = async (userId: UserId): Promise<User | null> => {
  * Retrieves all listings from Firestore.
  * @returns {Promise<Listing[]>} - An array of all listing documents.
  */
-const getAllListings = async (): Promise<Listing[]> => {
+const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
   const listingsRef = collection(firestore, "listings");
   const querySnapshot = await getDocs(listingsRef);
-  return querySnapshot.docs.map(doc => ({
-    ...doc.data(),
-  })) as Listing[];
+  return querySnapshot.docs.reduce(
+    (acc, doc) => ({
+      ...acc,
+      [doc.id]: doc.data(),
+    }),
+    {}
+  ) as { [id: string]: Listing };
 };
 
-
-export { getDocument, setDocument, uploadListing, getAllListings, getUserProfile};
+export {
+  getDocument,
+  setDocument,
+  uploadListing,
+  getAllListings,
+  getUserProfile,
+};

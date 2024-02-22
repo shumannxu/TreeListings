@@ -18,6 +18,8 @@ export type User = {
 };
 
 export interface UserContextType {
+  listings: { [id: ListingId]: Listing } | null;
+  setListings: (listing: { [id: ListingId]: Listing } | null) => void;
   user: User | null;
   setUser: (user: User | null) => void;
 }

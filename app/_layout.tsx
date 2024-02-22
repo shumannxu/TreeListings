@@ -1,12 +1,16 @@
 import { Link, Slot, Stack, router } from "expo-router";
 import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
-import { User } from "../types";
+import { Listing, ListingId, User } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getAllListings } from "../firebase/db";
 
 export default function AppLayout() {
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
+  const [listings, setListings] = useState<{ [id: ListingId]: Listing } | null>(
+    null
+  );
 
   useProtectedRoute(user);
 
@@ -14,6 +18,8 @@ export default function AppLayout() {
     setLoading(true);
     const authenticatedUser = await AsyncStorage.getItem("userInfo");
     setUser(() => (authenticatedUser ? JSON.parse(authenticatedUser) : null));
+    const listing = await getAllListings();
+    setListings(listing);
     setLoading(false);
   };
 
@@ -22,7 +28,7 @@ export default function AppLayout() {
   }, []); // Added dependency array to ensure it runs only once
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, setListings, listings }}>
       <Slot screenOptions={{ headerShown: false }} />
     </UserContext.Provider>
   );

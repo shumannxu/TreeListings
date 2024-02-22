@@ -16,7 +16,7 @@ import {
   SafeAreaView,
 } from "react-native-safe-area-context";
 import { getAllListings, getDocument } from "../../../../firebase/db";
-import { Listing, User } from "../../../../types";
+import { Listing, User, UserContextType } from "../../../../types";
 import getTimeAgo from "../../../components/getTimeAgo";
 import Icon from "../../../../components/icon";
 import ListingItem from "../../../components/listingItem";
@@ -25,38 +25,24 @@ import * as MailComposer from "expo-mail-composer";
 import { useAuth } from "../../../../context";
 
 export default function DetailItem() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, listings, setListings } = useAuth() as UserContextType;
+  const { listingId } = useLocalSearchParams<{ listingId: string }>();
+
   const safeAreaInsets = useSafeAreaInsets();
   const [selfUserInfo, setSelfUserInfo] = useState<User | null>(null);
-  const { listingId } = useLocalSearchParams<{ listingId: string }>();
 
   // TODO: CREATE GLOBAL STORE FOR LISTING
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<User | null>(null);
   const [price, setPrice] = useState("");
   const { height, width } = useWindowDimensions();
-  const [listings, setListings] = useState<Listing[] | []>([]);
   const [timeAgo, setTimeAgo] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchAllListings = async () => {
-      setLoading(true);
-      const listings = await getAllListings();
-      setLoading(true);
-      setListings(listings);
-    };
-
-    fetchAllListings();
-  }, []);
-
-  useEffect(() => {
     const fetchListing = async () => {
-      if (listingId) {
-        const listingDocPath = `listings/${listingId}`;
-        const listing = await getDocument(listingDocPath);
-        setTimeAgo(getTimeAgo(listing.datePosted));
-        setListing(listing);
+      if (listingId && listings) {
+        setListing(listings[listingId]);
       }
     };
 
@@ -214,9 +200,9 @@ export default function DetailItem() {
       <View style={{ width: "100%", height: 1, backgroundColor: "black" }} />
       <Text style={styles.defaultTextSize}>Similar Items</Text>
       <FlatList
-        data={listings}
+        data={listings ? Object.values(listings) : []}
         renderItem={({ item }: { item: Listing }) => (
-          <ListingItem recommend={false} item={item} />
+          <ListingItem item={item} />
         )}
         horizontal
         keyExtractor={(item) => item.listingId}

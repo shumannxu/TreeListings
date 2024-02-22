@@ -9,7 +9,7 @@ function UniqueURLLayout() {
         {/* ... other stack screens */}
         <Stack.Screen
           name="index" // Note the change here
-          options={{ gestureEnabled: true }}
+          options={{ headerShown: false, gestureEnabled: true }}
         />
       </Stack>
     </SafeAreaProvider>

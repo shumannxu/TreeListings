@@ -4,38 +4,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { signOutUser } from "../../firebase/auth";
 import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
-import { Listing } from "../../types";
+import { Listing, UserContextType } from "../../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getAllListings } from "../../firebase/db";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /* Search Result Screen */
 export default function Search() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, listings } = useAuth() as UserContextType;
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [listings, setlistings] = useState<Listing[]>([]);
-  const [filteredResults, setFilteredResults] = useState<Listing[]>([]);
+  const [filteredResults, setFilteredResults] = useState<Listing[] | null>(
+    listings ? Object.values(listings) : null
+  );
 
   const safeAreaInsets = useSafeAreaInsets();
 
   useEffect(() => {
-    // Fetch user data from AsyncStorage
-    const fetchAllListings = async () => {
-      const listings = await getAllListings();
-      setlistings(listings);
-    };
-    fetchAllListings();
-  }, []);
-
-  useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (searchQuery) {
-        const results = listings.filter((listing) =>
+      if (searchQuery && listings) {
+        const results = Object.values(listings).filter((listing) =>
           listing.title.toLowerCase().includes(searchQuery.toLowerCase())
         );
         setFilteredResults(results);
       } else {
-        setFilteredResults(listings);
+        setFilteredResults(listings ? Object.values(listings) : null);
       }
     }, 500); // 500 ms delay
 
