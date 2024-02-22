@@ -1,4 +1,4 @@
-import { Link, Slot, Stack, router } from "expo-router";
+import { Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
 import { Listing, ListingId, User } from "../types";
@@ -33,20 +33,3 @@ export default function AppLayout() {
     </UserContext.Provider>
   );
 }
-
-// export function Provider(props) {
-//   const [user, setUser] = useState<User | null>(null);
-
-//   useProtectedRoute(user);
-
-//   return (
-//     <UserContext.Provider
-//       value={{
-//         setUser: setUser,
-//         user,
-//       }}
-//     >
-//       {props.children}
-//     </UserContext.Provider>
-//   );
-// }

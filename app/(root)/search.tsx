@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, Button, FlatList, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { signOutUser } from "../../firebase/auth";
 import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
 import { Listing, UserContextType } from "../../types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAllListings } from "../../firebase/db";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 /* Search Result Screen */
@@ -34,8 +30,9 @@ export default function Search() {
     return () => clearTimeout(delayDebounce);
   }, [searchQuery, listings]);
 
-  const renderItem = ({ item }: { item: Listing }) => (
-    <SearchItem item={item} />
+  const renderItem = useCallback(
+    ({ item }: { item: Listing }) => <SearchItem item={item} />,
+    []
   );
 
   return (
@@ -61,7 +58,8 @@ export default function Search() {
         />
       </View>
       <FlatList
-        data={filteredResults}
+        data={filteredResults ? filteredResults : []}
+        initialNumToRender={7}
         renderItem={renderItem}
         keyExtractor={(item) => item.listingId}
       />
