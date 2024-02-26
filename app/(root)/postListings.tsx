@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,19 +10,20 @@ import {
   KeyboardAvoidingView,
   ActivityIndicator,
 } from "react-native";
+import { Entypo } from "@expo/vector-icons";
 import DropDownPicker from "react-native-dropdown-picker";
 import * as ImagePicker from "expo-image-picker";
 import { ImagePickerResult } from "expo-image-picker";
-import { uploadImageAsync } from "../../firebase/storage";
+import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CategoryType, Listing } from "../../types";
+import { CategoryType, Listing, UserContextType } from "../../types";
 import { uploadListing } from "../../firebase/db";
 import { useAuth } from "../../context";
 import { CATEGORIES } from "../../constants";
 import { router } from "expo-router";
 
 export default function PostListings() {
-  const { user } = useAuth();
+  const { user } = useAuth() as UserContextType;
   const [loading, setLoading] = useState<boolean>(false);
   const [title, setTitle] = useState("");
   const [categories, setCategories] = useState([]);
@@ -31,6 +32,7 @@ export default function PostListings() {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -87,26 +89,63 @@ export default function PostListings() {
     }
   };
 
-  const uploadListingToFirestore = async () => {
-    setLoading(true);
-    uploadListing({
-      title,
-      description,
-      price: parseFloat(price),
-      categories,
-      image,
-      sellerId: user.id,
-      datePosted: new Date(),
-      isListingActive: true,
-    }).then(() => {
-      setLoading(false);
-      setTitle("");
-      setCategories([]);
-      setPrice("");
-      setDescription("");
-      router.replace("/home");
-    });
-  };
+  const uploadListingToFirestore = useCallback(async () => {
+    if (user) {
+      if (!image) {
+        setError("Please include an image or photo");
+      } else if (!title) {
+        setError("Please include a title");
+      } else if (!price) {
+        setError("Please include a price");
+      } else if (categories.length == 0) {
+        setError("Please include at least 1 category");
+      } else {
+        setLoading(true);
+        uploadListing({
+          title,
+          description,
+          price: parseFloat(price),
+          categories,
+          image,
+          sellerId: user.id,
+          datePosted: new Date(),
+          isListingActive: true,
+        }).then(() => {
+          setLoading(false);
+          setTitle("");
+          setCategories([]);
+          setPrice("");
+          setDescription("");
+          setImage(null);
+          setError(null);
+          router.replace("/home");
+          let toast = Toast.show("Listing Successfully Posted", {
+            duration: Toast.durations.SHORT,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+            delay: 0,
+            onShow: () => {
+              // calls on toast\`s appear animation start
+            },
+            onShown: () => {
+              // calls on toast\`s appear animation end.
+            },
+            onHide: () => {
+              // calls on toast\`s hide animation start.
+            },
+            onHidden: () => {
+              // calls on toast\`s hide animation end.
+            },
+          });
+          setTimeout(function () {
+            Toast.hide(toast);
+          }, 1500);
+        });
+      }
+    }
+  }, [user, title, price, description, categories, image]);
 
   return (
     <ScrollView style={styles.container}>
@@ -123,19 +162,26 @@ export default function PostListings() {
             justifyContent: "space-around",
           }}
         >
-          {image && (
+          {image ? (
             <TouchableOpacity
               style={styles.imageUploadButton}
               onPress={pickImage}
             >
               <Image source={{ uri: image }} style={styles.imagePreview} />
             </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.imageUploadButton}
+              onPress={takePhoto}
+            >
+              <Entypo name="camera" size={48} color="black" />
+            </TouchableOpacity>
           )}
           <TouchableOpacity
             style={styles.imageUploadButton}
             onPress={pickImage}
           >
-            <Text style={styles.imageUploadText}>Add Images</Text>
+            <Entypo name="folder-images" size={48} color="black" />
           </TouchableOpacity>
         </View>
         <View>
@@ -196,6 +242,7 @@ export default function PostListings() {
             <Text style={styles.buttonText}>Post</Text>
           </TouchableOpacity>
         </View>
+        {error && <Text style={styles.error}>{error}</Text>}
       </SafeAreaView>
     </ScrollView>
   );
@@ -288,5 +335,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignContent: "center",
     justifyContent: "center",
+  },
+  error: {
+    marginTop: 10,
+    alignSelf: "flex-end",
+    color: "red",
   },
 });
