@@ -43,7 +43,7 @@ export default function Profile() {
   const [change, setChange] = useState(false);
   const [preferences, setPreferences] = useState(user?.preferences || []);
   const [isUserInformationExpanded, setIsUserInformationExpanded] =
-    useState(false);
+    useState(true);
   const [isSellerInformationExpanded, setIsSellerInformationExpanded] =
     useState(false);
   const [isBuyerInformationExpanded, setIsBuyerInformationExpanded] =
@@ -51,17 +51,38 @@ export default function Profile() {
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
+  const [selectedTab, setSelectedTab] = useState<"user" | "buyer" | "seller">(
+    "user"
+  );
 
   const toggleUserInformation = () => {
-    setIsUserInformationExpanded(!isUserInformationExpanded);
+    if (isUserInformationExpanded) {
+      return;
+    }
+    setIsUserInformationExpanded(true);
+    setIsBuyerInformationExpanded(false);
+    setIsSellerInformationExpanded(false);
+    setSelectedTab("user");
   };
 
   const toggleBuyerInformation = () => {
-    setIsBuyerInformationExpanded(!isBuyerInformationExpanded);
+    if (isBuyerInformationExpanded) {
+      return;
+    }
+    setIsBuyerInformationExpanded(true);
+    setIsUserInformationExpanded(false);
+    setIsSellerInformationExpanded(false);
+    setSelectedTab("buyer");
   };
 
   const toggleSellerInformation = () => {
-    setIsSellerInformationExpanded(!isSellerInformationExpanded);
+    if (isSellerInformationExpanded) {
+      return;
+    }
+    setIsSellerInformationExpanded(true);
+    setIsUserInformationExpanded(false);
+    setIsBuyerInformationExpanded(false);
+    setSelectedTab("seller");
   };
   const toggleActiveListings = () => {
     setActiveListingsSelected(true);
@@ -134,34 +155,48 @@ export default function Profile() {
           {userInfo?.fullName}&apos;s Dashboard
         </Text>
       </View>
-      <TouchableOpacity onPress={toggleUserInformation}>
-        <View style={styles.expandButton}>
-          <Text style={styles.buttonText}>
-            {isUserInformationExpanded
-              ? "Collapse User Information"
-              : "Expand User Information"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-      {isUserInformationExpanded && (
-        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-          {change && (
-            <TouchableOpacity
-              onPress={saveChanges}
-              style={{
-                backgroundColor: "#2F9C95",
-                padding: 10,
-                borderRadius: 10,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Text style={[styles.textFirst, { color: "white" }]}>
-                Save Changes
-              </Text>
-            </TouchableOpacity>
-          )}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={toggleUserInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "user" &&
+                isUserInformationExpanded &&
+                styles.activeButton,
+            ]}
+          >
+            <Text style={styles.buttonText}>User Info</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleBuyerInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "buyer" &&
+                isBuyerInformationExpanded &&
+                styles.activeButton,
+            ]}
+          >
+            <Text style={styles.buttonText}>Buyer Info</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleSellerInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "seller" &&
+                isSellerInformationExpanded &&
+                styles.activeButton,
+            ]}
+          >
+            <Text style={styles.buttonText}>Seller Info</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
 
+      {selectedTab === "user" && isUserInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* User Information content */}
           <View style={styles.userInformationContainer}>
             <Text style={styles.textFirst}>First name:</Text>
             <TextInput
@@ -173,7 +208,7 @@ export default function Profile() {
                 setChange(true);
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={saveChanges}>
               <Icon color={"black"} height={20}>
                 edit
               </Icon>
@@ -191,7 +226,7 @@ export default function Profile() {
                 setChange(true);
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={saveChanges}>
               <Icon color={"black"} height={20}>
                 edit
               </Icon>
@@ -208,7 +243,7 @@ export default function Profile() {
                 setChange(true);
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={saveChanges}>
               <Icon color={"black"} height={20}>
                 edit
               </Icon>
@@ -226,7 +261,7 @@ export default function Profile() {
                 setChange(true);
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={saveChanges}>
               <Icon color={"black"} height={20}>
                 edit
               </Icon>
@@ -243,7 +278,7 @@ export default function Profile() {
                 setChange(true);
               }}
             />
-            <TouchableOpacity>
+            <TouchableOpacity onPress={saveChanges}>
               <Icon color={"black"} height={20}>
                 edit
               </Icon>
@@ -258,7 +293,7 @@ export default function Profile() {
             <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
           </View>
           {/* User Preferences */}
-          <Text style={styles.textFirst}>I want to see more:</Text>
+          <Text style={styles.textFirst}>My Preferences:</Text>
           <View style={styles.userPreferencesContainer}>
             {preferencesData.map((preference) => (
               <TouchableOpacity
@@ -277,17 +312,8 @@ export default function Profile() {
           </View>
         </View>
       )}
-      <TouchableOpacity onPress={toggleBuyerInformation}>
-        <View style={styles.expandButton}>
-          <Text style={styles.buttonText}>
-            {isBuyerInformationExpanded
-              ? "Collapse Buyer Information"
-              : "Expand Buyer Information"}
-          </Text>
-        </View>
-      </TouchableOpacity>
 
-      {isBuyerInformationExpanded && (
+      {selectedTab === "buyer" && isBuyerInformationExpanded && (
         <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
           {/* Buyer Information content */}
           <View style={styles.listingsToggleContainer}>
@@ -315,17 +341,7 @@ export default function Profile() {
         </View>
       )}
 
-      <TouchableOpacity onPress={toggleSellerInformation}>
-        <View style={styles.expandButton}>
-          <Text style={styles.buttonText}>
-            {isSellerInformationExpanded
-              ? "Collapse Seller Information"
-              : "Expand Seller Information"}
-          </Text>
-        </View>
-      </TouchableOpacity>
-
-      {isSellerInformationExpanded && (
+      {selectedTab === "seller" && isSellerInformationExpanded && (
         <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
           {/* Seller Information content */}
           <View style={styles.listingsToggleContainer}>
@@ -361,14 +377,33 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  button: {
+    backgroundColor: "#2F9C95",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    borderWidth: 1,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+  },
+  activeButton: {
+    backgroundColor: "#007bff",
   },
   userInformationContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginVertical: 5,
+    marginVertical: 10,
   },
   textFirst: {
     fontSize: 18,
@@ -395,8 +430,8 @@ const styles = StyleSheet.create({
   preferenceButton: {
     backgroundColor: "#ddd",
     padding: 10,
-    margin: 2,
-    borderRadius: 10,
+    margin: 3,
+    borderRadius: 50,
   },
   selectedPreference: {
     backgroundColor: "#2F9C95",
@@ -420,11 +455,6 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     borderRadius: 10,
   },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "white",
-  },
   listingsToggleContainer: {
     flexDirection: "row",
     justifyContent: "center",
@@ -439,9 +469,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
-  },
-  activeButton: {
-    backgroundColor: "#2F9C95",
   },
   inactiveText: {
     color: "#888",
