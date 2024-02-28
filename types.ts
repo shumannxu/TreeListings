@@ -11,9 +11,15 @@ export type User = {
   id: UserId;
   sellerRating?: number;
   buyerRating?: number;
+  phone?: string;
+  firstName?: string;
+  lastName?: string;
+  username?: string;
 };
 
 export interface UserContextType {
+  listings: { [id: ListingId]: Listing } | null;
+  setListings: (listing: { [id: ListingId]: Listing } | null) => void;
   user: User | null;
   setUser: (user: User | null) => void;
 }
