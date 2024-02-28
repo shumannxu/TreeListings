@@ -12,29 +12,78 @@ import React, { useEffect, useState } from "react";
 import { signOutUser } from "../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../context";
-import { User, UserContextType } from "../../types";
+import { User } from "../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/icon";
 import { setDocument } from "../../firebase/db";
-import { Tabs } from "react-native-collapsible-tab-view";
-import { CATEGORIES } from "../../constants";
 
-const preferencesData = CATEGORIES.map((category) => ({
-  id: category.value,
-  label: category.label,
-}));
+const preferencesData = [
+  { id: "ELECT", label: "Electronics" },
+  { id: "PROP_RENT", label: "Property Rentals" },
+  { id: "APRL", label: "Apparel" },
+  { id: "ENT", label: "Entertainment" },
+  { id: "FAM", label: "Family" },
+  { id: "FREE", label: "Free Stuff" },
+  { id: "GARD_OUT", label: "Garden & Outdoor" },
+  { id: "HOB", label: "Hobbies" },
+  { id: "HOME", label: "Home Goods" },
+  { id: "MI", label: "Musical Instruments" },
+  { id: "OFF_SUP", label: "Office Supplies" },
+  { id: "PET_SUP", label: "Pet Supplies" },
+  { id: "SPORT", label: "Sporting Goods" },
+  { id: "TOYS", label: "Toys & Games" },
+  { id: "SERV", label: "Services" },
+];
 
 export default function Profile() {
-  const { user, setUser } = useAuth() as UserContextType;
+  const { user, setUser } = useAuth();
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [change, setChange] = useState(false);
-  const [preferences, setPreferences] = useState(user?.interests || []);
+  const [preferences, setPreferences] = useState(user?.preferences || []);
+  const [isUserInformationExpanded, setIsUserInformationExpanded] =
+    useState(true);
+  const [isSellerInformationExpanded, setIsSellerInformationExpanded] =
+    useState(false);
+  const [isBuyerInformationExpanded, setIsBuyerInformationExpanded] =
+    useState(false);
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
+  const [selectedTab, setSelectedTab] = useState<"user" | "buyer" | "seller">(
+    "user"
+  );
 
+  const toggleUserInformation = () => {
+    if (isUserInformationExpanded) {
+      return;
+    }
+    setIsUserInformationExpanded(true);
+    setIsBuyerInformationExpanded(false);
+    setIsSellerInformationExpanded(false);
+    setSelectedTab("user");
+  };
+
+  const toggleBuyerInformation = () => {
+    if (isBuyerInformationExpanded) {
+      return;
+    }
+    setIsBuyerInformationExpanded(true);
+    setIsUserInformationExpanded(false);
+    setIsSellerInformationExpanded(false);
+    setSelectedTab("buyer");
+  };
+
+  const toggleSellerInformation = () => {
+    if (isSellerInformationExpanded) {
+      return;
+    }
+    setIsSellerInformationExpanded(true);
+    setIsUserInformationExpanded(false);
+    setIsBuyerInformationExpanded(false);
+    setSelectedTab("seller");
+  };
   const toggleActiveListings = () => {
     setActiveListingsSelected(true);
   };
@@ -84,212 +133,244 @@ export default function Profile() {
   }; */
 
   return (
-    <Tabs.Container
-      minHeaderHeight={90}
-      renderHeader={() => (
-        <View
+    <ScrollView
+      contentContainerStyle={{
+        paddingTop: safeAreaInsets.top,
+        ...styles.container,
+      }}
+    >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <Icon color={"#664147"} height={30} style={{ marginHorizontal: 10 }}>
+          profile
+        </Icon>
+        <Text
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: safeAreaInsets.top,
+            fontSize: 26,
+            fontWeight: "bold",
+            letterSpacing: 1,
+            color: "#664147",
+            maxWidth: width * 0.95,
           }}
         >
-          <Icon color={"#664147"} height={30} style={{ marginHorizontal: 10 }}>
-            profile
-          </Icon>
-          <Text
-            style={{
-              fontSize: 26,
-              fontWeight: "bold",
-              letterSpacing: 1,
-              color: "#664147",
-              maxWidth: width * 0.95,
-            }}
+          {userInfo?.fullName}&apos;s Dashboard
+        </Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity onPress={toggleUserInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "user" &&
+                isUserInformationExpanded &&
+                styles.activeButton,
+            ]}
           >
-            {userInfo?.fullName}&apos;s Dashboard
-          </Text>
+            <Text style={styles.buttonText}>User Info</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleBuyerInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "buyer" &&
+                isBuyerInformationExpanded &&
+                styles.activeButton,
+            ]}
+          >
+            <Text style={styles.buttonText}>Buyer Info</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={toggleSellerInformation}>
+          <View
+            style={[
+              styles.button,
+              selectedTab == "seller" &&
+                isSellerInformationExpanded &&
+                styles.activeButton,
+            ]}
+          >
+            <Text style={styles.buttonText}>Seller Info</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {selectedTab === "user" && isUserInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* User Information content */}
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>First name:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Input your first name"
+              value={userInfo?.firstName}
+              onChangeText={(text) => {
+                setUserInfo({ ...userInfo, firstName: text });
+                setChange(true);
+              }}
+            />
+            <TouchableOpacity onPress={saveChanges}>
+              <Icon color={"black"} height={20}>
+                edit
+              </Icon>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Last name:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Input your last name"
+              value={userInfo?.lastName}
+              onChangeText={(text) => {
+                setUserInfo({ ...userInfo, lastName: text });
+                setChange(true);
+              }}
+            />
+            <TouchableOpacity onPress={saveChanges}>
+              <Icon color={"black"} height={20}>
+                edit
+              </Icon>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Username:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Input your username"
+              value={userInfo?.username}
+              onChangeText={(text) => {
+                setUserInfo({ ...userInfo, username: text });
+                setChange(true);
+              }}
+            />
+            <TouchableOpacity onPress={saveChanges}>
+              <Icon color={"black"} height={20}>
+                edit
+              </Icon>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Phone:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Input your phone number"
+              value={userInfo?.phone}
+              inputMode="numeric"
+              onChangeText={(text) => {
+                setUserInfo({ ...userInfo, phone: text });
+                setChange(true);
+              }}
+            />
+            <TouchableOpacity onPress={saveChanges}>
+              <Icon color={"black"} height={20}>
+                edit
+              </Icon>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Email:</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Input your email"
+              value={userInfo?.email}
+              onChangeText={(text) => {
+                setUserInfo({ ...userInfo, email: text });
+                setChange(true);
+              }}
+            />
+            <TouchableOpacity onPress={saveChanges}>
+              <Icon color={"black"} height={20}>
+                edit
+              </Icon>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Buyer Rating:</Text>
+            <Text style={styles.textSecond}> {userInfo?.buyerRating}</Text>
+          </View>
+          <View style={styles.userInformationContainer}>
+            <Text style={styles.textFirst}>Seller Rating:</Text>
+            <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
+          </View>
+          {/* User Preferences */}
+          <Text style={styles.textFirst}>My Preferences:</Text>
+          <View style={styles.userPreferencesContainer}>
+            {preferencesData.map((preference) => (
+              <TouchableOpacity
+                key={preference.id}
+                style={[
+                  styles.preferenceButton,
+                  preferences.includes(preference.id) &&
+                    styles.selectedPreference,
+                ]}
+                onPress={() => togglePreference(preference.id)}
+              >
+                <Text style={styles.preferenceText}>{preference.label}</Text>
+              </TouchableOpacity>
+            ))}
+            {/* Add buttons for other preferences */}
+          </View>
         </View>
       )}
-    >
-      <Tabs.Tab name="User">
-        <Tabs.ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* User Information content */}
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>First name:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your first name"
-                value={userInfo?.firstName}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, firstName: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
 
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Last name:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your last name"
-                value={userInfo?.lastName}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, lastName: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Username:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your username"
-                value={userInfo?.username}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, username: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Phone:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your phone number"
-                value={userInfo?.phone}
-                inputMode="numeric"
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, phone: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Email:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your email"
-                value={userInfo?.email}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, email: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Buyer Rating:</Text>
-              <Text style={styles.textSecond}> {userInfo?.buyerRating}</Text>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Seller Rating:</Text>
-              <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
-            </View>
-            {/* User Preferences */}
-            <Text style={styles.textFirst}>My Preferences:</Text>
-            <View style={styles.userPreferencesContainer}>
-              {preferencesData.map((preference) => (
-                <TouchableOpacity
-                  key={preference.id}
-                  style={[
-                    styles.preferenceButton,
-                    preferences.includes(preference.id) &&
-                      styles.selectedPreference,
-                  ]}
-                  onPress={() => togglePreference(preference.id)}
-                >
-                  <Text style={styles.preferenceText}>{preference.label}</Text>
-                </TouchableOpacity>
-              ))}
-              {/* Add buttons for other preferences */}
-            </View>
+      {selectedTab === "buyer" && isBuyerInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* Buyer Information content */}
+          <View style={styles.listingsToggleContainer}>
+            <TouchableOpacity onPress={toggleActiveListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  activeListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Active</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={togglePastListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  !activeListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Past</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </Tabs.ScrollView>
-      </Tabs.Tab>
-      <Tabs.Tab name="Buyer">
-        <Tabs.ScrollView>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* Buyer Information content */}
-            <View style={styles.listingsToggleContainer}>
-              <TouchableOpacity onPress={toggleActiveListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    activeListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Active</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={togglePastListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    !activeListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Past</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+        </View>
+      )}
+
+      {selectedTab === "seller" && isSellerInformationExpanded && (
+        <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
+          {/* Seller Information content */}
+          <View style={styles.listingsToggleContainer}>
+            <TouchableOpacity onPress={toggleSellerActiveListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  sellerActiveListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Active</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleSellerPastListings}>
+              <View
+                style={[
+                  styles.listingsToggleButton,
+                  !sellerActiveListingsSelected && styles.activeButton,
+                ]}
+              >
+                <Text style={styles.buttonText}>Past</Text>
+              </View>
+            </TouchableOpacity>
           </View>
-        </Tabs.ScrollView>
-      </Tabs.Tab>
-      <Tabs.Tab name="Seller">
-        <Tabs.ScrollView>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* Seller Information content */}
-            <View style={styles.listingsToggleContainer}>
-              <TouchableOpacity onPress={toggleSellerActiveListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    sellerActiveListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Active</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={toggleSellerPastListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    !sellerActiveListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Past</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Tabs.ScrollView>
-      </Tabs.Tab>
-    </Tabs.Container>
+        </View>
+      )}
+
+      <Button onPress={handleLogout} title="Sign Out" />
+    </ScrollView>
   );
 }
 
