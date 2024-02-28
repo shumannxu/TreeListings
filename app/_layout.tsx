@@ -3,8 +3,10 @@ import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
 import { Listing, ListingId, User } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAllListings } from "../firebase/db";
+import { createPostListingListener, getAllListings } from "../firebase/db";
 import { RootSiblingParent } from "react-native-root-siblings";
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { firestore } from "../firebaseConfig";
 
 export default function AppLayout() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -14,6 +16,11 @@ export default function AppLayout() {
   );
 
   useProtectedRoute(user);
+
+  useEffect(() => {
+    const unsubscribe = createPostListingListener(setListings);
+    return () => unsubscribe();
+  }, []);
 
   const initAuthenticatedUser = async () => {
     setLoading(true);

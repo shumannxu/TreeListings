@@ -8,6 +8,8 @@ import {
   runTransaction,
   setDoc,
   getDocs,
+  onSnapshot,
+  query,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import { Listing, ListingId, User, UserId } from "../types";
@@ -152,10 +154,27 @@ const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
   ) as { [id: string]: Listing };
 };
 
+const createPostListingListener = (
+  setListings: (listings: { [id: ListingId]: Listing } | null) => void
+): (() => void) => {
+  const q = query(collection(firestore, "listings"));
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    const newListings = querySnapshot.docs.reduce(
+      (acc, doc) => ({
+        ...acc,
+        [doc.id]: doc.data(),
+      }),
+      {}
+    ) as { [id: string]: Listing };
+    setListings(newListings); // Assuming you want to do something with newListings here
+  });
+  return unsubscribe;
+};
 export {
   getDocument,
   setDocument,
   uploadListing,
   getAllListings,
   getUserProfile,
+  createPostListingListener,
 };
