@@ -12,31 +12,20 @@ import React, { useEffect, useState } from "react";
 import { signOutUser } from "../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../context";
-import { User } from "../../types";
+import { User, UserContextType } from "../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../components/icon";
 import { setDocument } from "../../firebase/db";
+import { Tabs } from "react-native-collapsible-tab-view";
+import { CATEGORIES } from "../../constants";
 
-const preferencesData = [
-  { id: "ELECT", label: "Electronics" },
-  { id: "PROP_RENT", label: "Property Rentals" },
-  { id: "APRL", label: "Apparel" },
-  { id: "ENT", label: "Entertainment" },
-  { id: "FAM", label: "Family" },
-  { id: "FREE", label: "Free Stuff" },
-  { id: "GARD_OUT", label: "Garden & Outdoor" },
-  { id: "HOB", label: "Hobbies" },
-  { id: "HOME", label: "Home Goods" },
-  { id: "MI", label: "Musical Instruments" },
-  { id: "OFF_SUP", label: "Office Supplies" },
-  { id: "PET_SUP", label: "Pet Supplies" },
-  { id: "SPORT", label: "Sporting Goods" },
-  { id: "TOYS", label: "Toys & Games" },
-  { id: "SERV", label: "Services" },
-];
+const preferencesData = CATEGORIES.map((category) => ({
+  id: category.value,
+  label: category.label,
+}));
 
 export default function Profile() {
-  const { user, setUser } = useAuth();
+  const { user, setUser } = useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -378,7 +367,27 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     justifyContent: "flex-start",
+    justifyContent: "flex-start",
     alignItems: "center",
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  button: {
+    backgroundColor: "#2F9C95",
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    borderWidth: 1,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "white",
+  },
+  activeButton: {
+    backgroundColor: "#007bff",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -403,6 +412,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    marginVertical: 10,
     marginVertical: 10,
   },
   textFirst: {
@@ -430,6 +440,8 @@ const styles = StyleSheet.create({
   preferenceButton: {
     backgroundColor: "#ddd",
     padding: 10,
+    margin: 3,
+    borderRadius: 50,
     margin: 3,
     borderRadius: 50,
   },
