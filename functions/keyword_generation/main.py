@@ -1,10 +1,10 @@
 import os
 
-# The Cloud Functions for Firebase SDK to create Cloud Functions and set up triggers.
-from firebase_functions import firestore_fn, https_fn
-
 # The Firebase Admin SDK to access Cloud Firestore.
-from firebase_admin import initialize_app, firestore
+from google.cloud import firestore
+from google.events.cloud import firestore as firestoredata
+from cloudevents.http import CloudEvent
+import functions_framework
 
 import contractions
 from nltk.corpus import stopwords
@@ -16,8 +16,12 @@ from typing import List
 import google.generativeai as genai
 import nltk
 
+nltk.download("punkt")
 nltk.download("stopwords")
 nltk.download("wordnet")
+
+client = firestore.Client()
+
 
 """
 This file is responsible for generating key words pertaining to a listing, based on listing title, desc, and categories.
@@ -124,7 +128,7 @@ prompting to gemini-pro. There may be extremely small chance that the returned l
 
 
 def find_key_words(
-    title: str, desc: str, categories: List[str], num_key_words: int
+    title: str, desc: str, categories: List[str], num_key_words: int = 5
 ) -> List[str]:
     # preprocessing
     combined_str = combine_title_desc_categories(title, desc, categories)
@@ -238,15 +242,62 @@ def EXAMPLE_USAGE():
         )
 
 
-@firestore_fn.on_document_created(document="listings/{listing_id}")
+@functions_framework.cloud_event
 def keyword_generation(
-    event: firestore_fn.Event[firestore_fn.DocumentSnapshot | None],
+    event: CloudEvent,
 ) -> None:
     """Listens for new documents to be added to /messages. If the document has
     an "original" field, creates an "uppercase" field containg the contents of
     "original" in upper case."""
 
-    EXAMPLE_USAGE()
+    # firestore_payload = firestoredata.DocumentEventData()
+    # firestore_payload._pb.ParseFromString(cloud_event.data)
+
+    # path_parts = firestore_payload.value.name.split("/")
+    # separator_idx = path_parts.index("documents")
+    # collection_path = path_parts[separator_idx + 1]
+    # document_path = "/".join(path_parts[(separator_idx + 2) :])
+
+    # print(f"Collection path: {collection_path}")
+    # print(f"Document path: {document_path}")
+
+    # affected_doc = client.collection(collection_path).document(document_path)
+    # doc_snapshot = event.get("value")
+    # if doc_snapshot:
+    #     doc_data = doc_snapshot.get("fields", {})
+    #     title = doc_data.get("title", {}).get("stringValue", "")
+    #     desc = doc_data.get("description", {}).get("stringValue", "")
+    #     categories = doc_data.get("categories", {}).get("arrayValue", {}).get("values", [])
+    #     categories = [category.get("stringValue", "") for category in categories]
+    # else:
+    #     title, desc, categories = "", "", []
+
+    try:
+        firestore_payload = firestoredata.DocumentEventData()
+        firestore_payload._pb.ParseFromString(event.data)
+
+        path_parts = firestore_payload.value.name.split("/")
+        separator_idx = path_parts.index("documents")
+        collection_path = path_parts[separator_idx + 1]
+        document_path = "/".join(path_parts[(separator_idx + 2) :])
+
+        print(f"Collection path: {collection_path}")
+        print(f"Document path: {document_path}")
+
+        affected_doc = client.collection(collection_path).document(document_path)
+
+        title = firestore_payload.value.fields["title"].string_value.strip()
+        description = firestore_payload.value.fields["description"].string_value.strip()
+        categories = firestore_payload.value.fields["categories"].array_value.values
+        categories = [category.string_value for category in categories]
+        keywords = find_key_words(title, description, categories)
+
+        # Update the document with keywords while preserving other fields
+        affected_doc.update({"keywords": firestore.ArrayUnion(keywords)})
+    except KeyError as e:
+        print(f"KeyError encountered: {e}. Please check the document structure.")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
 
 
 def main():
