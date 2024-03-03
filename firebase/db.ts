@@ -10,6 +10,7 @@ import {
   getDocs,
   onSnapshot,
   query,
+  where,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import { Listing, ListingId, User, UserId } from "../types";
@@ -43,7 +44,7 @@ const setDocument = async (
   merge: boolean = true
 ): Promise<void> => {
   const documentRef = doc(firestore, path);
-  await setDoc(documentRef, data, { merge });
+  await setDoc(documentRef, data, { merge: true });
 };
 
 /**
@@ -142,8 +143,13 @@ const getUserProfile = async (userId: UserId): Promise<User | null> => {
  * Retrieves all listings from Firestore.
  * @returns {Promise<Listing[]>} - An array of all listing documents.
  */
-const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
-  const listingsRef = collection(firestore, "listings");
+const getAllListings = async (
+  id: UserId
+): Promise<{ [id: ListingId]: Listing }> => {
+  const listingsRef = query(
+    collection(firestore, "listings"),
+    where("sellerId", "!=", id)
+  );
   const querySnapshot = await getDocs(listingsRef);
   return querySnapshot.docs.reduce(
     (acc, doc) => ({
@@ -153,11 +159,17 @@ const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
     {}
   ) as { [id: string]: Listing };
 };
-
-const createPostListingListener = (
-  setListings: (listings: { [id: ListingId]: Listing } | null) => void
-): (() => void) => {
-  const q = query(collection(firestore, "listings"));
+const createPostListingListener = ({
+  userId,
+  setListings,
+}: {
+  userId: UserId;
+  setListings: (listings: { [id: ListingId]: Listing } | null) => void;
+}): (() => void) => {
+  const q = query(
+    collection(firestore, "listings"),
+    where("sellerId", "!=", userId)
+  );
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const newListings = querySnapshot.docs.reduce(
       (acc, doc) => ({

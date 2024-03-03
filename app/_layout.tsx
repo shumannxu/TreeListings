@@ -15,22 +15,35 @@ export default function AppLayout() {
     null
   );
 
+  const [offers, setOffers] = useState<{ [id: ListingId]: Listing } | null>(
+    null
+  );
+
   useProtectedRoute(user);
 
   useEffect(() => {
-    const unsubscribe = createPostListingListener(setListings);
-    return () => unsubscribe();
-  }, []);
+    if (user) {
+      const unsubscribe = createPostListingListener({
+        setListings,
+        userId: user.id,
+      });
+      return () => unsubscribe();
+    }
+  }, [user]);
 
   const initAuthenticatedUser = async () => {
     setLoading(true);
-    const authenticatedUser = await AsyncStorage.getItem("userInfo");
-    setUser(() => (authenticatedUser ? JSON.parse(authenticatedUser) : null));
-    const listing = await getAllListings();
-    setListings(listing);
+    const authenticatedUserString = await AsyncStorage.getItem("userInfo");
+    const authenticatedUser = authenticatedUserString
+      ? JSON.parse(authenticatedUserString)
+      : null;
+    setUser(authenticatedUser);
+    if (authenticatedUser) {
+      const listing = await getAllListings(authenticatedUser.id);
+      setListings(listing);
+    }
     setLoading(false);
   };
-
   useEffect(() => {
     initAuthenticatedUser();
   }, []); // Added dependency array to ensure it runs only once

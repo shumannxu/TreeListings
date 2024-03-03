@@ -7,17 +7,25 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   TextInput,
+  ViewProps,
 } from "react-native";
-import React, { useEffect, useState } from "react";
-import { signOutUser } from "../../firebase/auth";
+import React, { useCallback, useEffect, useState } from "react";
+import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth } from "../../context";
-import { User, UserContextType } from "../../types";
+import { useAuth } from "../../../context";
+import { User, UserContextType } from "../../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon from "../../components/icon";
-import { setDocument } from "../../firebase/db";
-import { Tabs } from "react-native-collapsible-tab-view";
-import { CATEGORIES } from "../../constants";
+import Icon from "../../../components/icon";
+import { setDocument } from "../../../firebase/db";
+import {
+  HeaderMeasurements,
+  Tabs,
+  useHeaderMeasurements,
+} from "react-native-collapsible-tab-view";
+import { CATEGORIES } from "../../../constants";
+import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
+import { router } from "expo-router";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const preferencesData = CATEGORIES.map((category) => ({
   id: category.value,
@@ -34,7 +42,7 @@ export default function Profile() {
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
-
+  const scrollY = useSharedValue<Number>(0);
   const toggleActiveListings = () => {
     setActiveListingsSelected(true);
   };
@@ -63,175 +71,108 @@ export default function Profile() {
 
   const saveChanges = () => {
     if (userInfo) {
-      setDocument(`users/${userInfo?.id}`, userInfo, true);
+      const newUserinfo = { ...userInfo, interests: preferences };
+      setDocument(`users/${userInfo?.id}`, newUserinfo, true);
       setChange(false);
-      setUser(userInfo);
-      AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
+      setUser(newUserinfo);
+      AsyncStorage.setItem("userInfo", JSON.stringify(newUserinfo));
     } // need to implement storing user preferences into firebase
   };
+  const navigateToEditProfile = useCallback(() => {
+    router.push("/profile/editProfile");
+  }, []);
 
-  const togglePreference = (preferenceId) => {
+  const togglePreference = (preferenceId: string) => {
     const updatedPreferences = preferences.includes(preferenceId)
       ? preferences.filter((id) => id !== preferenceId)
       : [...preferences, preferenceId];
     setPreferences(updatedPreferences);
+    if (userInfo) {
+      const newUserinfo = { ...userInfo, interests: updatedPreferences };
+      setDocument(`users/${userInfo?.id}`, newUserinfo, true);
+      setChange(false);
+      setUser(newUserinfo);
+      AsyncStorage.setItem("userInfo", JSON.stringify(newUserinfo));
+    } // need
     // Update user's preferences in Firebase
     // updateUserPreferences(updatedPreferences); not implemented yet
   };
 
   /* const updateUserPreferences = (updatedPreferences) => {
-    // Update user's preferences in Firebase
-  }; */
-
+      // Update user's preferences in Firebase
+    }; */
+  const [headerHeight, setHeaderHeight] = useState(0);
+  const handleHeaderLayout = useCallback<NonNullable<ViewProps["onLayout"]>>(
+    (event) => setHeaderHeight(event.nativeEvent.layout.height),
+    []
+  );
   return (
     <Tabs.Container
-      minHeaderHeight={90}
+      minHeaderHeight={40}
+      lazy
+      // revealHeaderOnScroll={true}
       renderHeader={() => (
-        <View
+        <Animated.View
           style={{
-            flexDirection: "row",
-            alignItems: "center",
-            marginTop: safeAreaInsets.top,
-            paddingHorizontal: 10,
+            flexDirection: "column",
           }}
         >
-          <Icon color={"#664147"} height={30} style={{ marginHorizontal: 10 }}>
-            profile
-          </Icon>
-          <Text
+          <View style={{ height: 100, backgroundColor: "black" }} />
+          <View style={{ height: 100, backgroundColor: "white" }} />
+          <TouchableOpacity
             style={{
-              fontSize: 24,
-              fontWeight: "bold",
-              letterSpacing: 1,
-              color: "#664147",
-              maxWidth: width * 0.95,
+              position: "absolute",
+              bottom: "25%",
+              padding: 10,
+              left: "75%",
+              zIndex: 2,
+            }}
+            onPress={navigateToEditProfile}
+          >
+            <MaterialCommunityIcons
+              name="pencil-circle"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+          <View
+            style={{
+              position: "absolute",
+              justifyContent: "center",
+              alignItems: "center",
+              left: 0,
+              right: 0,
+              top: "50%",
+              opacity: 1,
+              transform: [{ translateY: -35 }], // Adjust based on the height of the icon for vertical centering
             }}
           >
-            {userInfo?.fullName}&apos;s Dashboard
-          </Text>
-        </View>
-      )}
-    >
-      <Tabs.Tab name="User" label="User">
-        <Tabs.ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* User Information content */}
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>First name:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your first name"
-                value={userInfo?.firstName}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, firstName: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
+            <View
+              style={{
+                padding: 3,
+                backgroundColor: "white",
+                borderRadius: 999,
+              }}
+            >
+              <Icon color={"#664147"} height={100}>
+                profile
+              </Icon>
             </View>
-
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Last name:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your last name"
-                value={userInfo?.lastName}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, lastName: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Username:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your username"
-                value={userInfo?.username}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, username: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Phone:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your phone number"
-                value={userInfo?.phone}
-                inputMode="numeric"
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, phone: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Email:</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Input your email"
-                value={userInfo?.email}
-                onChangeText={(text) => {
-                  setUserInfo({ ...userInfo, email: text });
-                  setChange(true);
-                }}
-              />
-              <TouchableOpacity onPress={saveChanges}>
-                <Icon color={"black"} height={20}>
-                  edit
-                </Icon>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Buyer Rating:</Text>
-              <Text style={styles.textSecond}> {userInfo?.buyerRating}</Text>
-            </View>
-            <View style={styles.userInformationContainer}>
-              <Text style={styles.textFirst}>Seller Rating:</Text>
-              <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
-            </View>
-            {/* User Preferences */}
-            <Text style={styles.textFirst}>My Preferences:</Text>
-            <View style={styles.userPreferencesContainer}>
-              {preferencesData.map((preference) => (
-                <TouchableOpacity
-                  key={preference.id}
-                  style={[
-                    styles.preferenceButton,
-                    preferences.includes(preference.id) &&
-                      styles.selectedPreference,
-                  ]}
-                  onPress={() => togglePreference(preference.id)}
-                >
-                  <Text style={styles.preferenceText}>{preference.label}</Text>
-                </TouchableOpacity>
-              ))}
-              {/* Add buttons for other preferences */}
+            <View
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Text>{user?.fullName}</Text>
+              <Text>{user?.sellerRating}</Text>
             </View>
           </View>
-        </Tabs.ScrollView>
-      </Tabs.Tab>
+        </Animated.View>
+      )}
+    >
+      {/* / */}
       <Tabs.Tab name="Buyer" label="Buying History">
         <Tabs.ScrollView>
           <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
