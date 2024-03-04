@@ -196,6 +196,13 @@ export default function Profile() {
         ))}
         {/* Add buttons for other preferences */}
       </View>
+
+    <TouchableOpacity
+      style={styles.button}
+      onPress={handleLogout}
+    >
+      <Text style={[styles.toggleButtonText, {color:"black"}]}>Log Out</Text>
+    </TouchableOpacity>
     </ScrollView>
   );
 }

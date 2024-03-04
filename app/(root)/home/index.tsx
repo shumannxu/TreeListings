@@ -12,20 +12,31 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Listing, UserContextType } from "../../../types";
+import { Listing, ListingId, UserContextType } from "../../../types";
 import RecommendItem from "../../components/recommendItem";
 import { getAllListings } from "../../../firebase/db";
 
 export default function Home() {
-  const { user, setUser, listings, setListings } = useAuth() as UserContextType;
+  const { user, setUser, listings, setListings, setSelfListings } =
+    useAuth() as UserContextType;
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
     if (user) {
       setRefreshing(true);
-      const newListings = await getAllListings(user.id);
-      setListings(newListings);
+      const listing = await getAllListings();
+      const filteredListings = {} as { [id: ListingId]: Listing };
+      const selfListing = {} as { [id: ListingId]: Listing };
+      Object.entries(listing).forEach(([id, listingItem]) => {
+        if (listingItem.sellerId !== user.id) {
+          filteredListings[id] = listingItem;
+        } else {
+          selfListing[id] = listingItem;
+        }
+      });
+      setListings(filteredListings);
+      setSelfListings(Object.values(selfListing));
       setRefreshing(false);
     }
   }, [user]);
@@ -95,8 +106,8 @@ export default function Home() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff00ff"]} // Customize the color of the loading indicator
-            tintColor={"#ff00ff"} // Customize the tint color of the iOS loading indicator
+            colors={["#B0DCC5"]} // Customize the color of the loading indicator
+            tintColor={"#B0DCC5"} // Customize the tint color of the iOS loading indicator
           />
         }
       />

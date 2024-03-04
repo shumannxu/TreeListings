@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListingItem;
+export default React.memo(ListingItem);

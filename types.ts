@@ -22,6 +22,12 @@ export interface UserContextType {
   setListings: (listing: { [id: ListingId]: Listing } | null) => void;
   user: User | null;
   setUser: (user: User | null) => void;
+  selfListings: Listing[];
+  setSelfListings: (listing: Listing[]) => void;
+  outgoingOffers: Offer[];
+  setOutgoingOffers: (offers: Offer[]) => void;
+  incomingOffers: Offer[];
+  setIncomingOffers: (offers: Offer[]) => void;
 }
 
 export type Listing = {
@@ -66,3 +72,14 @@ export enum CategoryType {
   TOYS_GAMES = "TOY", // Toys & games
   SERVICE = "SERV",
 }
+
+export type Offer = {
+  offerId: string;
+  listingId: string;
+  buyerId: UserId;
+  sellerId: UserId;
+  price: number;
+  dateOffered: Date;
+  dateActionTaken?: Date;
+  accepted: boolean | null;
+};

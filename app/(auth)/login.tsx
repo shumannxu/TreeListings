@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { signIn } from "../../firebase/auth";
+import { signIn, resetPassword } from "../../firebase/auth";
 import { useAuth } from "../../context";
 
 export default function Login() {
@@ -29,6 +29,14 @@ export default function Login() {
     });
   };
   const sendVerificationEmail = () => {};
+
+  const forgotPassword = () => {
+    if (email.trim()) { // Check if the email field is not empty
+      resetPassword(email).catch(console.error);
+    } else {
+      alert("Please enter your email address.");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -73,7 +81,13 @@ export default function Login() {
             </Text>
           </Text>
         </View>
-      </KeyboardAwareScrollView>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => forgotPassword()}
+        >
+          <Text style={styles.buttonTitle}>Forgot Password</Text>
+        </TouchableOpacity>
+          </KeyboardAwareScrollView>
     </View>
   );
 }
