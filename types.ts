@@ -22,6 +22,8 @@ export interface UserContextType {
   setListings: (listing: { [id: ListingId]: Listing } | null) => void;
   user: User | null;
   setUser: (user: User | null) => void;
+  selfListings: Listing[];
+  setSelfListings: (listing: Listing[]) => void;
 }
 
 export type Listing = {
@@ -38,6 +40,15 @@ export type Listing = {
   imagePath?: string;
   isListingActive: boolean;
   allInteractions?: string[];
+};
+
+export type Offer = {
+  listingId: ListingId;
+  sellerId: UserId;
+  buyerId: UserId;
+  offerPrice: number;
+  dateOffered: Date;
+  approved: boolean;
 };
 
 export type Category = {

@@ -3,7 +3,11 @@ import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
 import { Listing, ListingId, User } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { createPostListingListener, getAllListings } from "../firebase/db";
+import {
+  createPostListingListener,
+  getAllListings,
+  getSelfListings,
+} from "../firebase/db";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
@@ -14,6 +18,7 @@ export default function AppLayout() {
   const [listings, setListings] = useState<{ [id: ListingId]: Listing } | null>(
     null
   );
+  const [selfListings, setSelfListings] = useState<Listing[]>([]);
 
   const [offers, setOffers] = useState<{ [id: ListingId]: Listing } | null>(
     null
@@ -40,7 +45,9 @@ export default function AppLayout() {
     setUser(authenticatedUser);
     if (authenticatedUser) {
       const listing = await getAllListings(authenticatedUser.id);
+      const selfListing = await getSelfListings(authenticatedUser.id);
       setListings(listing);
+      setSelfListings(Object.values(selfListing));
     }
     setLoading(false);
   };
@@ -50,7 +57,16 @@ export default function AppLayout() {
 
   return (
     <RootSiblingParent>
-      <UserContext.Provider value={{ user, setUser, setListings, listings }}>
+      <UserContext.Provider
+        value={{
+          user,
+          setUser,
+          setListings,
+          listings,
+          selfListings,
+          setSelfListings,
+        }}
+      >
         <Slot screenOptions={{ headerShown: false }} />
       </UserContext.Provider>
     </RootSiblingParent>

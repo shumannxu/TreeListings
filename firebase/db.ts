@@ -159,6 +159,24 @@ const getAllListings = async (
     {}
   ) as { [id: string]: Listing };
 };
+
+const getSelfListings = async (
+  id: UserId
+): Promise<{ [id: ListingId]: Listing }> => {
+  const listingsRef = query(
+    collection(firestore, "listings"),
+    where("sellerId", "==", id)
+  );
+  const querySnapshot = await getDocs(listingsRef);
+  return querySnapshot.docs.reduce(
+    (acc, doc) => ({
+      ...acc,
+      [doc.id]: doc.data(),
+    }),
+    {}
+  ) as { [id: string]: Listing };
+};
+
 const createPostListingListener = ({
   userId,
   setListings,
@@ -188,5 +206,6 @@ export {
   uploadListing,
   getAllListings,
   getUserProfile,
+  getSelfListings,
   createPostListingListener,
 };

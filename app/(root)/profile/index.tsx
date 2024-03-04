@@ -9,15 +9,16 @@ import {
   TextInput,
   ViewProps,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../context";
-import { User, UserContextType } from "../../../types";
+import { Listing, User, UserContextType } from "../../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../../components/icon";
-import { setDocument } from "../../../firebase/db";
+import { getSelfListings, setDocument } from "../../../firebase/db";
 import {
+  FlatList,
   HeaderMeasurements,
   Tabs,
   useHeaderMeasurements,
@@ -26,6 +27,7 @@ import { CATEGORIES } from "../../../constants";
 import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import SearchItem from "../../components/searchItem";
 
 const preferencesData = CATEGORIES.map((category) => ({
   id: category.value,
@@ -33,7 +35,8 @@ const preferencesData = CATEGORIES.map((category) => ({
 }));
 
 export default function Profile() {
-  const { user, setUser } = useAuth() as UserContextType;
+  const { user, setUser, selfListings, listings } =
+    useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -97,15 +100,15 @@ export default function Profile() {
     // Update user's preferences in Firebase
     // updateUserPreferences(updatedPreferences); not implemented yet
   };
-
-  /* const updateUserPreferences = (updatedPreferences) => {
-      // Update user's preferences in Firebase
-    }; */
-  const [headerHeight, setHeaderHeight] = useState(0);
-  const handleHeaderLayout = useCallback<NonNullable<ViewProps["onLayout"]>>(
-    (event) => setHeaderHeight(event.nativeEvent.layout.height),
-    []
-  );
+  const sellerFilteredResults = useMemo(() => {
+    if (user) {
+      const filter = Object.values(selfListings).filter(
+        (listing: Listing) =>
+          listing && listing.isListingActive === sellerActiveListingsSelected
+      );
+      return filter;
+    }
+  }, [sellerActiveListingsSelected, user]);
   return (
     <Tabs.Container
       minHeaderHeight={40}
@@ -174,62 +177,77 @@ export default function Profile() {
     >
       {/* / */}
       <Tabs.Tab name="Buyer" label="Buying History">
-        <Tabs.ScrollView>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* Buyer Information content */}
-            <View style={styles.listingsToggleContainer}>
-              <TouchableOpacity onPress={toggleActiveListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    activeListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Active</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={togglePastListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    !activeListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Past</Text>
-                </View>
-              </TouchableOpacity>
+        {/*  */}
+        <Tabs.FlatList
+          ListHeaderComponent={() => (
+            <View style={{ width: "100%" }}>
+              {/* Buyer Information content */}
+              <View style={styles.listingsToggleContainer}>
+                <TouchableOpacity onPress={toggleActiveListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      activeListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Active</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={togglePastListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      !activeListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Past</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Tabs.ScrollView>
+          )}
+          data={sellerFilteredResults}
+          renderItem={({ item, index }) => {
+            return <SearchItem item={item} />;
+          }}
+          keyExtractor={(item) => item.listingId}
+        />
       </Tabs.Tab>
       <Tabs.Tab name="Seller" label="Selling History">
-        <Tabs.ScrollView>
-          <View style={{ width: "100%", paddingHorizontal: width * 0.1 }}>
-            {/* Seller Information content */}
-            <View style={styles.listingsToggleContainer}>
-              <TouchableOpacity onPress={toggleSellerActiveListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    sellerActiveListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Active</Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={toggleSellerPastListings}>
-                <View
-                  style={[
-                    styles.listingsToggleButton,
-                    !sellerActiveListingsSelected && styles.activeButton,
-                  ]}
-                >
-                  <Text style={styles.buttonText}>Past</Text>
-                </View>
-              </TouchableOpacity>
+        <Tabs.FlatList
+          ListHeaderComponent={() => (
+            <View style={{ width: "100%" }}>
+              {/* Seller Information content */}
+              <View style={styles.listingsToggleContainer}>
+                <TouchableOpacity onPress={toggleSellerActiveListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      sellerActiveListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Active</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleSellerPastListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      !sellerActiveListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Past</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </Tabs.ScrollView>
+          )}
+          data={sellerFilteredResults}
+          renderItem={({ item, index }) => {
+            return <SearchItem item={item} />;
+          }}
+          keyExtractor={(item) => item.listingId}
+        />
       </Tabs.Tab>
     </Tabs.Container>
   );

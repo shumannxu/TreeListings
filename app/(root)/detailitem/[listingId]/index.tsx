@@ -10,7 +10,7 @@ import {
   FlatList,
   ScrollView,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import {
   SafeAreaFrameContext,
   SafeAreaView,
@@ -131,6 +131,18 @@ export default function DetailItem() {
         paddingVertical: safeAreaInsets.top,
       }}
     >
+      <TouchableOpacity
+        style={{
+          position: "absolute",
+          top: safeAreaInsets.top + 10, // Adjust for safe area
+          left: 10,
+          zIndex: 10, // Ensure it's above other elements
+        }}
+        onPress={() => router.back()}
+      >
+        <Text style={{ fontSize: 18 }}>Go Back</Text>
+      </TouchableOpacity>
+
       <View style={{ alignItems: "center" }}>
         <Text style={{ fontSize: 30, fontWeight: "bold", letterSpacing: 1 }}>
           {listing.title}
