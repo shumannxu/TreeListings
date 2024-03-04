@@ -1,16 +1,19 @@
 import { Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
-import { Listing, ListingId, User } from "../types";
+import { Listing, ListingId, Offer, User } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createPostListingListener,
+  getAllIncomingOffersUser,
   getAllListings,
+  getAllOutgoingOffersUser,
   getSelfListings,
 } from "../firebase/db";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
+import Toast from "react-native-toast-message";
 
 export default function AppLayout() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -20,9 +23,8 @@ export default function AppLayout() {
   );
   const [selfListings, setSelfListings] = useState<Listing[]>([]);
 
-  const [offers, setOffers] = useState<{ [id: ListingId]: Listing } | null>(
-    null
-  );
+  const [outgoingOffers, setOutgoingOffers] = useState<Offer[]>([]);
+  const [incomingOffers, setIncomingOffers] = useState<Offer[]>([]);
 
   useProtectedRoute(user);
 
@@ -30,6 +32,7 @@ export default function AppLayout() {
     if (user) {
       const unsubscribe = createPostListingListener({
         setListings,
+        setSelfListings,
         userId: user.id,
       });
       return () => unsubscribe();
@@ -44,10 +47,22 @@ export default function AppLayout() {
       : null;
     setUser(authenticatedUser);
     if (authenticatedUser) {
-      const listing = await getAllListings(authenticatedUser.id);
-      const selfListing = await getSelfListings(authenticatedUser.id);
-      setListings(listing);
+      const listing = await getAllListings();
+      const filteredListings = {} as { [id: ListingId]: Listing };
+      const selfListing = {} as { [id: ListingId]: Listing };
+      Object.entries(listing).forEach(([id, listingItem]) => {
+        if (listingItem.sellerId !== authenticatedUser.id) {
+          filteredListings[id] = listingItem;
+        } else {
+          selfListing[id] = listingItem;
+        }
+      });
+      setListings(filteredListings);
       setSelfListings(Object.values(selfListing));
+      const incoming = await getAllIncomingOffersUser(authenticatedUser.id);
+      const outgoing = await getAllOutgoingOffersUser(authenticatedUser.id);
+      setIncomingOffers(Object.values(incoming));
+      setOutgoingOffers(Object.values(outgoing));
     }
     setLoading(false);
   };
@@ -65,10 +80,15 @@ export default function AppLayout() {
           listings,
           selfListings,
           setSelfListings,
+          outgoingOffers,
+          setOutgoingOffers,
+          incomingOffers,
+          setIncomingOffers,
         }}
       >
         <Slot screenOptions={{ headerShown: false }} />
       </UserContext.Provider>
+      <Toast />
     </RootSiblingParent>
   );
 }

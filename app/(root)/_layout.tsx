@@ -63,6 +63,18 @@ export default function HomeLayout() {
             href: null,
           }}
         />
+        <Tabs.Screen
+          name="offers"
+          options={{
+            href: "/offers",
+            tabBarLabel: "offers",
+            tabBarIcon: ({}) => (
+              <Icon color={"#B0DCC5"} height={20} width={20}>
+                offer
+              </Icon>
+            ),
+          }}
+        />
       </Tabs>
     </SafeAreaProvider>
   );

@@ -11,9 +11,10 @@ import {
   onSnapshot,
   query,
   where,
+  collectionGroup,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
-import { Listing, ListingId, User, UserId } from "../types";
+import { Listing, ListingId, User, UserId, Offer } from "../types";
 
 /**
  * Retrieves a document from Firestore.
@@ -42,9 +43,15 @@ const setDocument = async (
   path: string,
   data: Object,
   merge: boolean = true
-): Promise<void> => {
+): Promise<boolean> => {
   const documentRef = doc(firestore, path);
-  await setDoc(documentRef, data, { merge: true });
+  try {
+    await setDoc(documentRef, data, { merge: true });
+    return true;
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
 };
 
 /**
@@ -143,13 +150,8 @@ const getUserProfile = async (userId: UserId): Promise<User | null> => {
  * Retrieves all listings from Firestore.
  * @returns {Promise<Listing[]>} - An array of all listing documents.
  */
-const getAllListings = async (
-  id: UserId
-): Promise<{ [id: ListingId]: Listing }> => {
-  const listingsRef = query(
-    collection(firestore, "listings"),
-    where("sellerId", "!=", id)
-  );
+const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
+  const listingsRef = query(collection(firestore, "listings"));
   const querySnapshot = await getDocs(listingsRef);
   return querySnapshot.docs.reduce(
     (acc, doc) => ({
@@ -179,15 +181,14 @@ const getSelfListings = async (
 
 const createPostListingListener = ({
   userId,
+  setSelfListings,
   setListings,
 }: {
   userId: UserId;
+  setSelfListings: (listings: Listing[]) => void;
   setListings: (listings: { [id: ListingId]: Listing } | null) => void;
 }): (() => void) => {
-  const q = query(
-    collection(firestore, "listings"),
-    where("sellerId", "!=", userId)
-  );
+  const q = query(collection(firestore, "listings"));
   const unsubscribe = onSnapshot(q, (querySnapshot) => {
     const newListings = querySnapshot.docs.reduce(
       (acc, doc) => ({
@@ -196,9 +197,171 @@ const createPostListingListener = ({
       }),
       {}
     ) as { [id: string]: Listing };
-    setListings(newListings); // Assuming you want to do something with newListings here
+    const filteredListings = {} as { [id: ListingId]: Listing };
+    const selfListing = {} as { [id: ListingId]: Listing };
+    Object.entries(newListings).forEach(([id, listingItem]) => {
+      if (listingItem.sellerId !== userId) {
+        filteredListings[id] = listingItem;
+      } else {
+        selfListing[id] = listingItem;
+      }
+    });
+    setListings(filteredListings);
+    setSelfListings(Object.values(selfListing)); // Assuming you want to do something with newListings here
   });
   return unsubscribe;
+};
+
+/**
+ * Uploads an offer to Firestore database.
+ * @param {string} listingId - The unique identifier for the listing.
+ * @param {string} buyerId - The unique identifier for the buyer.
+ * @param {string} sellerId - The unique identifier for the seller.
+ * @param {number} price - The price of the offer.
+ * @param {string} message - The message of the offer (assuming from your code).
+ * @param {Date} date - The date of the offer (assuming from your code).
+ */
+const createOffer = async ({
+  listingId,
+  buyerId,
+  sellerId,
+  price,
+}: {
+  listingId: ListingId;
+  buyerId: UserId;
+  sellerId: UserId;
+  price: number;
+}) => {
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      // Define the path to the specific seller's offer collection
+      const sellerOffersPath = `offers/${sellerId}/sellerOffers`;
+      const sellerOffersCollectionRef = collection(firestore, sellerOffersPath);
+
+      // Create a new document reference within the seller's offer collection
+      const newOfferRef = doc(sellerOffersCollectionRef);
+
+      // Prepare the offer data, including the generated offer ID
+      const offerData = {
+        offerId: newOfferRef.id,
+        listingId,
+        buyerId,
+        sellerId,
+        price,
+        dateOffered: new Date(),
+        accepted: null,
+      } as Offer;
+
+      // Set the new offer data in the transaction
+      transaction.set(newOfferRef, offerData);
+    });
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+/**
+ * Retrieves all offers made to a specific user from Firestore where the 'accepted' field is null.
+ * @param {string} userId - The unique identifier for the user (seller).
+ * @returns {Promise<{ [offerId: string]: Offer }>} - An object of all offer documents made to the user, keyed by offerId.
+ */
+const getAllIncomingOffersUser = async (
+  userId: string
+): Promise<{ [offerId: string]: Offer }> => {
+  // Define the path to the specific user's offers collection
+  const userOffersPath = `offers/${userId}/sellerOffers`;
+  const offersRef = collection(firestore, userOffersPath);
+  // Create a query that looks for documents where `accepted` is null
+  const offersQuery = query(offersRef, where("accepted", "==", null));
+
+  const querySnapshot = await getDocs(offersQuery);
+  return querySnapshot.docs.reduce(
+    (acc, doc) => ({
+      ...acc,
+      [doc.id]: doc.data(),
+    }),
+    {}
+  ) as { [offerId: string]: Offer };
+};
+
+/**
+ * Retrieves all offers made to a specific user from Firestore where the 'accepted' field is null.
+ * @param {string} userId - The unique identifier for the user (seller).
+ * @returns {Promise<{ [offerId: string]: Offer }>} - An object of all offer documents made to the user, keyed by offerId.
+ */
+const getAllOutgoingOffersUser = async (
+  userId: string
+): Promise<{ [offerId: string]: Offer }> => {
+  // Define the path to the specific user's offers collection
+  const outgoingOffersRef = collectionGroup(firestore, "sellerOffers");
+  const outgoingOffersQuery = query(
+    outgoingOffersRef,
+    where("buyerId", "==", userId)
+  );
+
+  const querySnapshot = await getDocs(outgoingOffersQuery);
+  return querySnapshot.docs.reduce(
+    (acc, doc) => ({
+      ...acc,
+      [doc.id]: doc.data(),
+    }),
+    {}
+  ) as { [offerId: string]: Offer };
+};
+
+const createOfferListener = ({
+  userId,
+  setOutgoingOffers,
+  setIncomingOffers,
+}: {
+  userId: UserId;
+  setOutgoingOffers: (offers: Offer[]) => void;
+  setIncomingOffers: (offers: Offer[]) => void;
+}): (() => void) => {
+  const userOffersPath = `offers/${userId}/sellerOffers`;
+  const incomingOffersRef = collection(firestore, userOffersPath);
+
+  const incomingOffersQuery = query(
+    incomingOffersRef,
+    where("accepted", "==", null)
+  );
+  const outgoingOffersRef = collectionGroup(firestore, "sellerOffers");
+  const outgoingOffersQuery = query(
+    outgoingOffersRef,
+    where("buyerId", "==", userId)
+  );
+
+  const unsubscribeIncoming = onSnapshot(
+    incomingOffersQuery,
+    (querySnapshot) => {
+      const newListings = querySnapshot.docs.reduce(
+        (acc, doc) => ({
+          ...acc,
+          [doc.id]: doc.data(),
+        }),
+        {}
+      ) as { [id: string]: Offer };
+      setIncomingOffers(Object.values(newListings));
+    }
+  );
+  const unsubscribeOutgoing = onSnapshot(
+    outgoingOffersQuery,
+    (querySnapshot) => {
+      const newListings = querySnapshot.docs.reduce(
+        (acc, doc) => ({
+          ...acc,
+          [doc.id]: doc.data(),
+        }),
+        {}
+      ) as { [id: string]: Offer };
+      setOutgoingOffers(Object.values(newListings));
+    }
+  );
+  return () => {
+    unsubscribeIncoming();
+    unsubscribeOutgoing();
+  };
 };
 export {
   getDocument,
@@ -208,4 +371,8 @@ export {
   getUserProfile,
   getSelfListings,
   createPostListingListener,
+  createOfferListener,
+  createOffer,
+  getAllIncomingOffersUser,
+  getAllOutgoingOffersUser,
 };

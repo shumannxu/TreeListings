@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,7 +15,7 @@ import {
   SafeAreaFrameContext,
   SafeAreaView,
 } from "react-native-safe-area-context";
-import { getAllListings, getDocument } from "../../../../firebase/db";
+import { getAllListings, getDocument, createOffer } from "../../../../firebase/db";
 import { Listing, User, UserContextType } from "../../../../types";
 import getTimeAgo from "../../../components/getTimeAgo";
 import Icon from "../../../../components/icon";
@@ -23,6 +23,7 @@ import ListingItem from "../../../components/listingItem";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as MailComposer from "expo-mail-composer";
 import { useAuth } from "../../../../context";
+import Toast from "react-native-root-toast";
 
 export default function DetailItem() {
   const { user, setUser, listings, setListings } = useAuth() as UserContextType;
@@ -46,7 +47,7 @@ export default function DetailItem() {
     };
 
     fetchListing();
-  }, [listingId]);
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -78,52 +79,101 @@ export default function DetailItem() {
     },
   });
 
-  if (!listingId) {
-    return (
-      <SafeAreaView>
-        <View>
-          <Text>No item ID provided</Text>
-        </View>
-      </SafeAreaView>
-    );
+
+  const showSuccessToast = () => {
+    let toast = Toast.show("Offer succesfully made", {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
+      onShow: () => {
+        // calls on toast\`s appear animation start
+      },
+      onShown: () => {
+        // calls on toast\`s appear animation end.
+      },
+      onHide: () => {
+        // calls on toast\`s hide animation start.
+      },
+      onHidden: () => {
+        // calls on toast\`s hide animation end.
+      },
+    });
+    setTimeout(function () {
+      Toast.hide(toast);
+    }, 1500);
   }
 
-  if (!listing) {
-    return (
-      <SafeAreaView>
-        <View>
-          <Text>Loading...</Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
-  const onBuyNow = () => {
-    console.log("Buy Now");
-  };
+  const showErrorToast = () => {
+    let toast = Toast.show("Error in posting offer", {
+      duration: Toast.durations.SHORT,
+      position: Toast.positions.BOTTOM,
+      shadow: true,
+      animation: true,
+      hideOnPress: true,
+      delay: 0,
+      onShow: () => {
+        // calls on toast\`s appear animation start
+      },
+      onShown: () => {
+        // calls on toast\`s appear animation end.
+      },
+      onHide: () => {
+        // calls on toast\`s hide animation start.
+      },
+      onHidden: () => {
+        // calls on toast\`s hide animation end.
+      },
+    });
+    setTimeout(function () {
+      Toast.hide(toast);
+    }, 1500);
+  }
 
   const onSubmitOffer = async () => {
-    const isAvailable = await MailComposer.isAvailableAsync();
-
-    if (!isAvailable) {
-      console.log("Mail services are not available");
-      return;
+    if (user && seller && listingId) {
+      let success = await createOffer({listingId, buyerId: user?.id, sellerId: seller?.id, price: parseInt(price)})
+      if (success) {
+        showSuccessToast();
+      } else {
+        showErrorToast();
+      }
     }
-    if (!seller) {
-      console.log("User not loaded yet");
-      return;
-    }
-
-    await MailComposer.composeAsync({
-      recipients: [seller.email],
-      subject: "Offer for Your Listing",
-      body: `Hello ${seller.fullName},\n\nI would like to submit an offer of $${price} for the item listed.\n\nBest regards,\n ${selfUserInfo?.firstName}`,
-      isHtml: false, // Set to true if you want to use HTML content in the body
-    });
-
-    console.log("Offer submitted via email");
   };
 
+
+  const renderItem= useCallback(
+    ({ item }: { item: Listing }) => (
+      <ListingItem item={item} />
+    ), []
+);
+
+if (!listingId) {
+  return (
+    <SafeAreaView>
+      <View>
+        <Text>No item ID provided</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+if (!listing) {
+  return (
+    <SafeAreaView>
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const onBuyNow = () => {
+  console.log("Buy Now");
+};
   return (
     <ScrollView
       contentContainerStyle={{
@@ -212,11 +262,11 @@ export default function DetailItem() {
       <Text style={styles.defaultTextSize}>Similar Items</Text>
       <FlatList
         data={listings ? Object.values(listings) : []}
-        renderItem={({ item }: { item: Listing }) => (
-          <ListingItem item={item} />
-        )}
+        renderItem={renderItem}
         horizontal
         keyExtractor={(item) => item.listingId}
+        showsHorizontalScrollIndicator={false}
+        initialNumToRender={5}
       />
     </ScrollView>
   );

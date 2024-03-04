@@ -40,7 +40,10 @@ const iconStrings = {
     "edit": `<svg width="20" height="26" viewBox="0 0 20 26" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path d="M0 20.2414V25.3333H4.1661L16.4533 10.3156L12.2872 5.22372L0 20.2414ZM19.6751 6.37788C19.7781 6.25226 19.8598 6.10305 19.9156 5.93879C19.9713 5.77452 20 5.59844 20 5.4206C20 5.24277 19.9713 5.06668 19.9156 4.90242C19.8598 4.73816 19.7781 4.58894 19.6751 4.46332L17.0755 1.28598C16.9727 1.1601 16.8506 1.06024 16.7162 0.992097C16.5818 0.923958 16.4377 0.888885 16.2922 0.888885C16.1467 0.888885 16.0027 0.923958 15.8683 0.992097C15.7339 1.06024 15.6118 1.1601 15.509 1.28598L13.4759 3.77083L17.642 8.86273L19.6751 6.37788Z" fill="${FILL_REPLACEMENT}"/>
     </svg>
-    `
+    `,
+    "offer": `<svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <path stroke="${FILL_REPLACEMENT}" stroke-linecap="round" stroke-width="2" d="M8 7V6c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1h-1M3 18v-7c0-.6.4-1 1-1h11c.6 0 1 .4 1 1v7c0 .6-.4 1-1 1H4a1 1 0 0 1-1-1Zm8-3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"/>
+  </svg>`
 };
 
 export interface IconProps extends TextProps {
