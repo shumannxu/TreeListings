@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../context";
-import { Listing, User, UserContextType } from "../../../types";
+import { Listing, Offer, User, UserContextType } from "../../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../../components/icon";
 import { getSelfListings, setDocument } from "../../../firebase/db";
@@ -35,7 +35,7 @@ const preferencesData = CATEGORIES.map((category) => ({
 }));
 
 export default function Profile() {
-  const { user, setUser, selfListings, listings } =
+  const { user, setUser, selfListings, listings, outgoingOffers } =
     useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
@@ -109,6 +109,18 @@ export default function Profile() {
       return filter;
     }
   }, [sellerActiveListingsSelected, user]);
+
+  const buyerFilteredResults = useMemo(() => {
+    if (user && listings) {
+      return outgoingOffers
+        .filter(
+          (offer: Offer) =>
+            listings[offer.listingId].isListingActive === activeListingsSelected
+        )
+        .map((offer: Offer) => listings[offer.listingId]);
+    }
+  }, [activeListingsSelected, user, outgoingOffers]);
+
   return (
     <Tabs.Container
       minHeaderHeight={40}
@@ -206,7 +218,7 @@ export default function Profile() {
               </View>
             </View>
           )}
-          data={sellerFilteredResults}
+          data={buyerFilteredResults}
           renderItem={({ item, index }) => {
             return <SearchItem item={item} />;
           }}
