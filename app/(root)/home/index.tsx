@@ -22,11 +22,13 @@ export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
 
   const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    const newListings = await getAllListings();
-    setListings(newListings);
-    setRefreshing(false);
-  }, []);
+    if (user) {
+      setRefreshing(true);
+      const newListings = await getAllListings(user.id);
+      setListings(newListings);
+      setRefreshing(false);
+    }
+  }, [user]);
 
   const renderRecommend = useCallback(
     ({ item }: { item: Listing }) => <RecommendItem item={item} />,

@@ -31,7 +31,6 @@ export default function DetailItem() {
   const safeAreaInsets = useSafeAreaInsets();
   const [selfUserInfo, setSelfUserInfo] = useState<User | null>(null);
 
-  // TODO: CREATE GLOBAL STORE FOR LISTING
   const [listing, setListing] = useState<Listing | null>(null);
   const [seller, setSeller] = useState<User | null>(null);
   const [price, setPrice] = useState("");

@@ -11,6 +11,10 @@ function UniqueURLLayout() {
           name="index" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}
         />
+        <Stack.Screen
+          name="editProfile" // Note the change here
+          options={{ headerShown: false, gestureEnabled: true }}
+        />
       </Stack>
     </SafeAreaProvider>
   );
