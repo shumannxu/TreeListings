@@ -95,8 +95,8 @@ export default function Home() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#ff00ff"]} // Customize the color of the loading indicator
-            tintColor={"#ff00ff"} // Customize the tint color of the iOS loading indicator
+            colors={["#B0DCC5"]} // Customize the color of the loading indicator
+            tintColor={"#B0DCC5"} // Customize the tint color of the iOS loading indicator
           />
         }
       />

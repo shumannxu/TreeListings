@@ -66,3 +66,14 @@ export enum CategoryType {
   TOYS_GAMES = "TOY", // Toys & games
   SERVICE = "SERV",
 }
+
+export type Offer = {
+  offerId: string;
+  listingId: string;
+  buyerId: UserId;
+  sellerId: UserId;
+  price: number;
+  dateOffered: Date;
+  dateActionTaken?: Date;
+  accepted: boolean | null;
+};

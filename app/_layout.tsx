@@ -7,6 +7,7 @@ import { createPostListingListener, getAllListings } from "../firebase/db";
 import { RootSiblingParent } from "react-native-root-siblings";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
+import Toast from 'react-native-toast-message';
 
 export default function AppLayout() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -53,6 +54,7 @@ export default function AppLayout() {
       <UserContext.Provider value={{ user, setUser, setListings, listings }}>
         <Slot screenOptions={{ headerShown: false }} />
       </UserContext.Provider>
+      <Toast />
     </RootSiblingParent>
   );
 }

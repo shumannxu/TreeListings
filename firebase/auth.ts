@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
+  sendPasswordResetEmail
 } from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
@@ -84,7 +85,7 @@ const signIn = async (
         return null;
       }
       const userData = firestoreDocument.data();
-      userData.dateCreated = userData.dateCreated.toDate();
+      userData.dateCreated = new Date(userData.dateCreated);
       AsyncStorage.setItem("userInfo", JSON.stringify(userData));
       return userData as User;
     }
@@ -94,7 +95,20 @@ const signIn = async (
   }
 };
 
+const resetPassword = async (email: string): Promise<void> => {
+  return sendPasswordResetEmail(auth, email)
+    .then(() => {
+      // Password reset email sent!
+      alert("Password reset email sent. Check your inbox.");
+    })
+    .catch((error) => {
+      // An error occurred
+      console.error(error);
+      alert(error.message);
+    });
+};
+
 const signOutUser = (): Promise<void> => {
   return signOut(auth);
 };
-export { registerUserEmailPassword, signIn, signOutUser };
+export { registerUserEmailPassword, signIn, signOutUser, resetPassword };
