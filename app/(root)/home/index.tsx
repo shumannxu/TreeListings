@@ -44,7 +44,7 @@ export default function Home() {
   const trendingItemsComponent = useMemo(
     () => (
       <View>
-        <Text style={{ alignSelf: "center", fontSize: 30 }}>TreeListing</Text>
+        <Text style={{ alignSelf: "center", fontSize: 30 }}>TreeListings</Text>
         <Text style={styles.textStyle}>Trending</Text>
         <FlatList
           data={listings ? Object.values(listings) : []}
