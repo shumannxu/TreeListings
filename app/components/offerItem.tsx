@@ -110,17 +110,40 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.title}>{listing?.title}</Text>
-        <Image source={{ uri: listing?.imagePath }} style={styles.image} />
-      </View>
+      <Text style={styles.title}>{listing?.title}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+          <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+          }}
+        >
+       
+        <View>
 
+        <Image source={{ uri: listing?.imagePath }} style={styles.image} />
+
+        </View>
+
+      <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            flex: 1,
+          }}
+          >
       {type === "incoming" ? (
         <View
           style={{
             flexDirection: "column",
             alignItems: "center",
             marginLeft: 10,
+            
           }}
         >
           <Text style={styles.title}>{buyer?.fullName}</Text>
@@ -145,7 +168,7 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
           style={{
             flexDirection: "column",
             alignItems: "center",
-            marginLeft: 10,
+            flex: 1,
           }}
         >
           <Text style={styles.title}>{seller?.fullName}</Text>
@@ -156,11 +179,13 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
               Offer Accepted
             </Text>
           ) : item.accepted === null ? (
+            
             <Text
-              style={{ color: "#f9a825", fontSize: 20, fontWeight: "bold" }}
+              style={{ color: "#f9a825", fontSize: 20, fontWeight: "bold", textAlign: "center" }}
             >
               Offer is Pending
             </Text>
+
           ) : (
             <Text
               style={{ color: "#f44336", fontSize: 20, fontWeight: "bold" }}
@@ -170,7 +195,10 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
           )}
         </View>
       )}
-    </View>
+      </View> 
+      </View>
+      </View>
+      </View>
   );
 };
 
@@ -178,8 +206,7 @@ export default OfferItem;
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: "column",
     backgroundColor: "#FCFBF4",
     borderRadius: 10,
     padding: 10,
@@ -188,7 +215,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000", // for iOS shadow
     shadowOffset: { width: 0, height: 1 }, // for iOS shadow
     shadowOpacity: 0.22, // for iOS shadow
-    shadowRadius: 2.22, // for iOS shadow
+    shadowRadius: 2.22, // for iOS shadow,
   },
   image: {
     width: 140,
