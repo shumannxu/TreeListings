@@ -11,6 +11,12 @@ import {
   Keyboard,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { FontAwesome5 } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
+
 import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
 import { CategoryType, Listing, UserContextType } from "../../types";
@@ -24,6 +30,14 @@ export default function Search() {
   const [filteredResults, setFilteredResults] = useState<Listing[] | null>(
     listings ? Object.values(listings) : null
   );
+
+  // map 
+  const categoryIcons = {
+    electronics: "electronics-picture",
+    clothing: "clothing-picture",
+    food: "food-picture",
+  };
+  
 
   const safeAreaInsets = useSafeAreaInsets();
   const [sortByDropdownVisible, setSortByDropdownVisible] =
@@ -247,7 +261,24 @@ export default function Search() {
                     }}
                     onPress={() => toggleCategorySelection(item.value)}
                   >
-                    <MaterialIcons name="devices" size={24} color="black" />
+                    
+                    {item.value === CategoryType.ELECTRONICS && <MaterialIcons name="devices" size={24} color="black" />}
+                    {item.value === CategoryType.SERVICE && <MaterialIcons name="home-repair-service" size={24} color="black" />}
+                    {item.value === CategoryType.VEHICLES && <MaterialIcons name="bike-scooter" size={24} color="black" />}
+                    {item.value === CategoryType.PROPERTY_RENTALS && <FontAwesome5 name="house-user" size={24} color="black" />}
+                    {item.value === CategoryType.APPAREL && <FontAwesome5 name="tshirt" size={24} color="black" />}
+                    {item.value === CategoryType.ENTERTAINMENT && <FontAwesome5 name="tv" size={24} color="black" />}
+                    {item.value === CategoryType.FAMILY && <AntDesign name="heart" size={24} color="black" />}
+                    {item.value === CategoryType.FREE_STUFF && <MaterialIcons name="money-off" size={24} color="black" />}
+                    {item.value === CategoryType.GARDEN_OUTDOOR && <Entypo name="flower" size={24} color="black" />}
+                    {item.value === CategoryType.HOBBIES && <FontAwesome5 name="paint-brush" size={24} color="black" />}
+                    {item.value === CategoryType.HOME_GOODS && <FontAwesome5 name="couch" size={24} color="black" />}
+                    {item.value === CategoryType.MUSICAL_INSTRUMENTS && <MaterialCommunityIcons name="violin" size={24} color="black" />}
+                    {item.value === CategoryType.OFFICE_SUPPLIES && <MaterialCommunityIcons name="office-building" size={24} color="black" />}
+                    {item.value === CategoryType.PET_SUPPLIES && <MaterialIcons name="pets" size={24} color="black" />}
+                    {item.value === CategoryType.SPORTING_GOODS && <FontAwesome name="soccer-ball-o" size={24} color="black" />}
+                    {item.value === CategoryType.TOYS_GAMES && <Entypo name="game-controller" size={24} color="black" />}
+
                     <Text style={{ textAlign: "center" }}>{item.label}</Text>
                   </TouchableOpacity>
                 )}
@@ -272,9 +303,12 @@ export default function Search() {
                 borderRadius: 25,
                 backgroundColor: "#E6E6E6",
                 marginRight: 20,
+                alignItems: "center",
+                flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>Recent</Text>
+              <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
+              <MaterialIcons name="access-time" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={sortByPriceDescending}
@@ -283,11 +317,13 @@ export default function Search() {
                 borderRadius: 25,
                 backgroundColor: "#E6E6E6",
                 marginRight: 20,
+                alignItems: "center",
+                flexDirection: "row",
               }}
             >
               <Text style={{ textAlign: "center", fontSize: 17 }}>
-                Price Descending
-              </Text>
+                Price Descending </Text>
+              <MaterialCommunityIcons name="order-numeric-descending" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={sortByPriceAscending}
@@ -295,11 +331,13 @@ export default function Search() {
                 padding: 10,
                 borderRadius: 25,
                 backgroundColor: "#E6E6E6",
+                alignItems: "center",
+                flexDirection: "row",
               }}
             >
               <Text style={{ textAlign: "center", fontSize: 17 }}>
-                Price Ascending
-              </Text>
+                Price Ascending </Text>
+              <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="black" />
             </TouchableOpacity>
           </ScrollView>
           <View>
