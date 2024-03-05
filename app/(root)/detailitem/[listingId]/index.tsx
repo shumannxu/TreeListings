@@ -15,7 +15,11 @@ import {
   SafeAreaFrameContext,
   SafeAreaView,
 } from "react-native-safe-area-context";
-import { getAllListings, getDocument, createOffer } from "../../../../firebase/db";
+import {
+  getAllListings,
+  getDocument,
+  createOffer,
+} from "../../../../firebase/db";
 import { Listing, User, UserContextType } from "../../../../types";
 import getTimeAgo from "../../../components/getTimeAgo";
 import Icon from "../../../../components/icon";
@@ -47,7 +51,7 @@ export default function DetailItem() {
     };
 
     fetchListing();
-  }, []);
+  }, [listingId]);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -79,7 +83,6 @@ export default function DetailItem() {
     },
   });
 
-
   const showSuccessToast = () => {
     let toast = Toast.show("Offer succesfully made", {
       duration: Toast.durations.SHORT,
@@ -104,8 +107,7 @@ export default function DetailItem() {
     setTimeout(function () {
       Toast.hide(toast);
     }, 1500);
-  }
-
+  };
 
   const showErrorToast = () => {
     let toast = Toast.show("Error in posting offer", {
@@ -131,11 +133,16 @@ export default function DetailItem() {
     setTimeout(function () {
       Toast.hide(toast);
     }, 1500);
-  }
+  };
 
   const onSubmitOffer = async () => {
     if (user && seller && listingId) {
-      let success = await createOffer({listingId, buyerId: user?.id, sellerId: seller?.id, price: parseInt(price)})
+      let success = await createOffer({
+        listingId,
+        buyerId: user?.id,
+        sellerId: seller?.id,
+        price: parseInt(price),
+      });
       if (success) {
         showSuccessToast();
       } else {
@@ -144,36 +151,34 @@ export default function DetailItem() {
     }
   };
 
-
-  const renderItem= useCallback(
-    ({ item }: { item: Listing }) => (
-      <ListingItem item={item} />
-    ), []
-);
-
-if (!listingId) {
-  return (
-    <SafeAreaView>
-      <View>
-        <Text>No item ID provided</Text>
-      </View>
-    </SafeAreaView>
+  const renderItem = useCallback(
+    ({ item }: { item: Listing }) => <ListingItem item={item} />,
+    []
   );
-}
 
-if (!listing) {
-  return (
-    <SafeAreaView>
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    </SafeAreaView>
-  );
-}
+  if (!listingId) {
+    return (
+      <SafeAreaView>
+        <View>
+          <Text>No item ID provided</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
-const onBuyNow = () => {
-  console.log("Buy Now");
-};
+  if (!listing) {
+    return (
+      <SafeAreaView>
+        <View>
+          <Text>Loading...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const onBuyNow = () => {
+    console.log("Buy Now");
+  };
   return (
     <ScrollView
       contentContainerStyle={{

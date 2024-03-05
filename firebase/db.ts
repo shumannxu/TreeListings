@@ -14,7 +14,14 @@ import {
   collectionGroup,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
-import { Listing, ListingId, User, UserId, Offer } from "../types";
+import {
+  Listing,
+  ListingId,
+  User,
+  UserId,
+  Offer,
+  CategoryType,
+} from "../types";
 
 /**
  * Retrieves a document from Firestore.
@@ -286,6 +293,72 @@ const getAllIncomingOffersUser = async (
 };
 
 /**
+ * Uploads an offer to Firestore database.
+ * @param {string} listingId - The unique identifier for the listing.
+ * @param {string} sellerId - The unique identifier for the seller.
+ * @param {string} offerId - The unique identifier for the offer.
+ * @param {string} transactionType - The unique identifier for the offer.
+ */
+const offerTransaction = async ({
+  sellerId,
+  offerId,
+  listingId,
+  transactionType,
+}: {
+  sellerId: UserId;
+  listingId: ListingId;
+  offerId: string;
+  transactionType: "accept" | "decline";
+}) => {
+  try {
+    await runTransaction(firestore, async (transaction) => {
+      // Define the path to the specific seller's offer doc
+      const offerRef = doc(
+        firestore,
+        `offers/${sellerId}/sellerOffers/${offerId}`
+      );
+
+      // Retrieve the listing document reference
+      const listingRef = doc(firestore, `listings/${listingId}`);
+
+      // Get the offer document to update its status
+      const offerDoc = await transaction.get(offerRef);
+      if (!offerDoc.exists()) {
+        throw new Error("Document does not exist!");
+      }
+      const offerData = offerDoc.data();
+      offerData.accepted = transactionType === "accept";
+      offerData.dateActionTaken = new Date();
+
+      // Update the offer document within the transaction
+      transaction.update(offerRef, offerData);
+
+      // Update the listing document to mark it as inactive
+      transaction.update(listingRef, { isActiveListing: false });
+
+      // Retrieve and update category documents
+      const categories = offerData.categories; // Assuming categories are stored in the offer data
+      if (categories) {
+        categories.forEach((categoryId: CategoryType) => {
+          const categoryRef = doc(firestore, `categories/${categoryId}`);
+          transaction.get(categoryRef).then((categoryDoc) => {
+            if (categoryDoc.exists()) {
+              const newCount = categoryDoc.data().countActiveListings - 1;
+              transaction.update(categoryRef, {
+                countActiveListings: newCount,
+              });
+            }
+          });
+        });
+      }
+    });
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+};
+/**
  * Retrieves all offers made to a specific user from Firestore where the 'accepted' field is null.
  * @param {string} userId - The unique identifier for the user (seller).
  * @returns {Promise<{ [offerId: string]: Offer }>} - An object of all offer documents made to the user, keyed by offerId.
@@ -375,4 +448,5 @@ export {
   createOffer,
   getAllIncomingOffersUser,
   getAllOutgoingOffersUser,
+  offerTransaction,
 };

@@ -16,7 +16,6 @@ const SearchItem: React.FC<ItemProps> = ({ item }) => {
   const userId = item.sellerId;
   const [userProfile, setUserProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     const fetchUserProfile = async () => {
       setLoading(true);
@@ -25,7 +24,7 @@ const SearchItem: React.FC<ItemProps> = ({ item }) => {
       setLoading(false);
     };
     fetchUserProfile();
-  }, [userId]);
+  }, [userId, item]);
 
   const navigateToDetail = () => {
     router.push({

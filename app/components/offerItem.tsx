@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { Offer, User, UserContextType } from "../../types";
 import { useAuth } from "../../context";
 import { Listing } from "../../types";
-import { getDocument, setDocument } from "../../firebase/db";
+import { getDocument, offerTransaction, setDocument } from "../../firebase/db";
 import Toast from "react-native-root-toast";
 import * as MailComposer from "expo-mail-composer";
 
@@ -13,7 +13,7 @@ interface ItemProps {
 }
 
 const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
-  const { user, setUser, listings, setListings } = useAuth() as UserContextType;
+  const { user } = useAuth() as UserContextType;
   const [listing, setListing] = useState<Listing | null>(null);
   const [buyer, setBuyer] = useState<User | null>(null);
   const [seller, setSeller] = useState<User | null>(null);
@@ -65,13 +65,13 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
     if (!user) {
       return;
     }
-    const offerDocPath = `offers/${user.id}/sellerOffers/${item.offerId}`;
-    const updatedOffer = {
-      ...item,
-      dateActionTaken: new Date(),
-      accepted: true,
-    };
-    if (await setDocument(offerDocPath, updatedOffer)) {
+    const approved = await offerTransaction({
+      sellerId: user.id,
+      offerId: item.offerId,
+      listingId: item.listingId,
+      transactionType: "accept",
+    });
+    if (approved) {
       showToast("Succesfully Accepted Offer");
       const isAvailable = await MailComposer.isAvailableAsync();
 
@@ -95,13 +95,13 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
     if (!user) {
       return;
     }
-    const offerDocPath = `offers/${user.id}/sellerOffers/${item.offerId}`;
-    const updatedOffer = {
-      ...item,
-      dateActionTaken: new Date(),
-      accepted: false,
-    };
-    if (await setDocument(offerDocPath, updatedOffer)) {
+    const approved = await offerTransaction({
+      sellerId: user.id,
+      offerId: item.offerId,
+      listingId: item.listingId,
+      transactionType: "decline",
+    });
+    if (approved) {
       showToast("Succesfully Rejected Offer");
     } else {
       showToast("Error in accepting offer");
@@ -111,94 +111,101 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{listing?.title}</Text>
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-          <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-          }}
-        >
-       
-        <View>
-
-        <Image source={{ uri: listing?.imagePath }} style={styles.image} />
-
-        </View>
-
       <View
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+        }}
+      >
+        <View
           style={{
             flexDirection: "row",
             alignItems: "center",
-            flex: 1,
-          }}
-          >
-      {type === "incoming" ? (
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            marginLeft: 10,
-            
           }}
         >
-          <Text style={styles.title}>{buyer?.fullName}</Text>
-          <Text>Want&apos;s to offer {item.price}</Text>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#3ac981" }]}
-              onPress={acceptOffer}
-            >
-              <Text>Accept</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#f44336" }]}
-              onPress={declineOffer}
-            >
-              <Text>Decline</Text>
-            </TouchableOpacity>
+          <View>
+            <Image source={{ uri: listing?.imagePath }} style={styles.image} />
+          </View>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flex: 1,
+            }}
+          >
+            {type === "incoming" ? (
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  marginLeft: 10,
+                }}
+              >
+                <Text style={styles.title}>{buyer?.fullName}</Text>
+                <Text>Want&apos;s to offer {item.price}</Text>
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  <TouchableOpacity
+                    style={[styles.button, { backgroundColor: "#3ac981" }]}
+                    onPress={acceptOffer}
+                  >
+                    <Text>Accept</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.button, { backgroundColor: "#f44336" }]}
+                    onPress={declineOffer}
+                  >
+                    <Text>Decline</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View
+                style={{
+                  flexDirection: "column",
+                  alignItems: "center",
+                  flex: 1,
+                }}
+              >
+                <Text style={styles.title}>{seller?.fullName}</Text>
+                {item.accepted ? (
+                  <Text
+                    style={{
+                      color: "#3ac981",
+                      fontSize: 20,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Offer Accepted
+                  </Text>
+                ) : item.accepted === null ? (
+                  <Text
+                    style={{
+                      color: "#f9a825",
+                      fontSize: 20,
+                      fontWeight: "bold",
+                      textAlign: "center",
+                    }}
+                  >
+                    Offer is Pending
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      color: "#f44336",
+                      fontSize: 20,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Offer Rejected
+                  </Text>
+                )}
+              </View>
+            )}
           </View>
         </View>
-      ) : (
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            flex: 1,
-          }}
-        >
-          <Text style={styles.title}>{seller?.fullName}</Text>
-          {item.accepted ? (
-            <Text
-              style={{ color: "#3ac981", fontSize: 20, fontWeight: "bold" }}
-            >
-              Offer Accepted
-            </Text>
-          ) : item.accepted === null ? (
-            
-            <Text
-              style={{ color: "#f9a825", fontSize: 20, fontWeight: "bold", textAlign: "center" }}
-            >
-              Offer is Pending
-            </Text>
-
-          ) : (
-            <Text
-              style={{ color: "#f44336", fontSize: 20, fontWeight: "bold" }}
-            >
-              Offer Rejected
-            </Text>
-          )}
-        </View>
-      )}
-      </View> 
       </View>
-      </View>
-      </View>
+    </View>
   );
 };
 
