@@ -11,11 +11,11 @@ import {
   Keyboard,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FontAwesome5 } from '@expo/vector-icons';
-import { AntDesign } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 import { useAuth } from "../../context";
 import SearchItem from "../components/searchItem";
@@ -31,13 +31,12 @@ export default function Search() {
     listings ? Object.values(listings) : null
   );
 
-  // map 
+  // map
   const categoryIcons = {
     electronics: "electronics-picture",
     clothing: "clothing-picture",
     food: "food-picture",
   };
-  
 
   const safeAreaInsets = useSafeAreaInsets();
   const [sortByDropdownVisible, setSortByDropdownVisible] =
@@ -84,17 +83,24 @@ export default function Search() {
         if (selectedCategories.length > 0) {
           // if there is search query
           if (searchQuery) {
-            const filteredByCategoryAndSearch = results.filter(
+            // Edit: Search filters by (1) title, (2) keywords, and (3) user selected categories
+            const filteredByCategoryAndSearch = Object.values(listings).filter(
               (listing) =>
-                // Check if the listing title includes the search query
-                listing.title
+                // (1) search by title
+                (listing.title
                   .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) &&
-                // Check if the listing belongs to any of the selected categories
+                  .includes(searchQuery.toLowerCase()) ||
+                  // (2) search by keywords
+                  (listing.keywords !== null &&
+                    listing.keywords?.some((keyword) =>
+                      keyword.toLowerCase().includes(searchQuery.toLowerCase())
+                    ))) &&
+                // (3) filter by user's selected categories
                 selectedCategories.some((category) =>
                   listing.categories.includes(category)
                 )
             );
+            // set the filtered results
             setFilteredResults(filteredByCategoryAndSearch);
           } else {
             // no search query
@@ -225,6 +231,16 @@ export default function Search() {
               onFocus={() => setInputFocused(true)} // Set focus state to true
               onBlur={() => setInputFocused(false)} // Set focus state to false
             />
+            <TouchableOpacity
+              onPress={() => Keyboard.dismiss()}
+              style={{
+                position: "absolute", // Position the button absolutely
+                right: 10, // Adjust the right spacing as needed
+                zIndex: 1, // Ensure the button is above other content
+              }}
+            >
+              <MaterialIcons name="search" size={24} color="black" />
+            </TouchableOpacity>
           </View>
           {!isInputFocused && searchQuery.length == 0 && (
             <View
@@ -252,34 +268,100 @@ export default function Search() {
                       paddingVertical: 10,
                       margin: 5,
                       width: "22%", // Fixed width to ensure proper centering
+                      height: 75, // Fixed height
                       borderRadius: 10,
                       justifyContent: "center",
                       alignItems: "center",
+
                       backgroundColor: selectedCategories.includes(item.value)
                         ? "#E6E6E6"
                         : "transparent",
                     }}
                     onPress={() => toggleCategorySelection(item.value)}
                   >
-                    
-                    {item.value === CategoryType.ELECTRONICS && <MaterialIcons name="devices" size={24} color="black" />}
-                    {item.value === CategoryType.SERVICE && <MaterialIcons name="home-repair-service" size={24} color="black" />}
-                    {item.value === CategoryType.VEHICLES && <MaterialIcons name="bike-scooter" size={24} color="black" />}
-                    {item.value === CategoryType.PROPERTY_RENTALS && <FontAwesome5 name="house-user" size={24} color="black" />}
-                    {item.value === CategoryType.APPAREL && <FontAwesome5 name="tshirt" size={24} color="black" />}
-                    {item.value === CategoryType.ENTERTAINMENT && <FontAwesome5 name="tv" size={24} color="black" />}
-                    {item.value === CategoryType.FAMILY && <AntDesign name="heart" size={24} color="black" />}
-                    {item.value === CategoryType.FREE_STUFF && <MaterialIcons name="money-off" size={24} color="black" />}
-                    {item.value === CategoryType.GARDEN_OUTDOOR && <Entypo name="flower" size={24} color="black" />}
-                    {item.value === CategoryType.HOBBIES && <FontAwesome5 name="paint-brush" size={24} color="black" />}
-                    {item.value === CategoryType.HOME_GOODS && <FontAwesome5 name="couch" size={24} color="black" />}
-                    {item.value === CategoryType.MUSICAL_INSTRUMENTS && <MaterialCommunityIcons name="violin" size={24} color="black" />}
-                    {item.value === CategoryType.OFFICE_SUPPLIES && <MaterialCommunityIcons name="office-building" size={24} color="black" />}
-                    {item.value === CategoryType.PET_SUPPLIES && <MaterialIcons name="pets" size={24} color="black" />}
-                    {item.value === CategoryType.SPORTING_GOODS && <FontAwesome name="soccer-ball-o" size={24} color="black" />}
-                    {item.value === CategoryType.TOYS_GAMES && <Entypo name="game-controller" size={24} color="black" />}
+                    {item.value === CategoryType.ELECTRONICS && (
+                      <MaterialIcons name="devices" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.SERVICE && (
+                      <MaterialIcons
+                        name="home-repair-service"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.VEHICLES && (
+                      <MaterialIcons
+                        name="bike-scooter"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.PROPERTY_RENTALS && (
+                      <FontAwesome5 name="house-user" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.APPAREL && (
+                      <FontAwesome5 name="tshirt" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.ENTERTAINMENT && (
+                      <FontAwesome5 name="tv" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.FAMILY && (
+                      <AntDesign name="heart" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.FREE_STUFF && (
+                      <MaterialIcons name="money-off" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.GARDEN_OUTDOOR && (
+                      <Entypo name="flower" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.HOBBIES && (
+                      <FontAwesome5
+                        name="paint-brush"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.HOME_GOODS && (
+                      <FontAwesome5 name="couch" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.MUSICAL_INSTRUMENTS && (
+                      <MaterialCommunityIcons
+                        name="violin"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.OFFICE_SUPPLIES && (
+                      <MaterialCommunityIcons
+                        name="office-building"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.PET_SUPPLIES && (
+                      <MaterialIcons name="pets" size={24} color="black" />
+                    )}
+                    {item.value === CategoryType.SPORTING_GOODS && (
+                      <FontAwesome
+                        name="soccer-ball-o"
+                        size={24}
+                        color="black"
+                      />
+                    )}
+                    {item.value === CategoryType.TOYS_GAMES && (
+                      <Entypo name="game-controller" size={24} color="black" />
+                    )}
 
-                    <Text style={{ textAlign: "center" }}>{item.label}</Text>
+                    <Text
+                      style={{
+                        textAlign: "center",
+                        fontSize: 9.5, // set the fontsize
+                        fontWeight: "bold", // set it bold
+                        marginTop: 7.5,
+                      }}
+                    >
+                      {item.label}
+                    </Text>
                   </TouchableOpacity>
                 )}
               />
@@ -292,7 +374,7 @@ export default function Search() {
             contentContainerStyle={{
               paddingHorizontal: 5,
               flexGrow: 1,
-              marginTop: isInputFocused && searchQuery.length == 0 ? 25 : 0,
+              marginTop: !isInputFocused && !searchQuery.length ? 0 : 15, // edited the logic to resolve overlaps with search tab
             }}
             showsHorizontalScrollIndicator={false}
           >
@@ -302,12 +384,12 @@ export default function Search() {
                 padding: 10,
                 borderRadius: 25,
                 backgroundColor: "#E6E6E6",
-                marginRight: 20,
+                marginRight: 10,
                 alignItems: "center",
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
+              <Text style={{ textAlign: "center", fontSize: 14 }}>Recent </Text>
               <MaterialIcons name="access-time" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
@@ -316,14 +398,19 @@ export default function Search() {
                 padding: 10,
                 borderRadius: 25,
                 backgroundColor: "#E6E6E6",
-                marginRight: 20,
+                marginRight: 10,
                 alignItems: "center",
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>
-                Price Descending </Text>
-              <MaterialCommunityIcons name="order-numeric-descending" size={24} color="black" />
+              <Text style={{ textAlign: "center", fontSize: 14 }}>
+                Price Descending{" "}
+              </Text>
+              <MaterialCommunityIcons
+                name="order-numeric-descending"
+                size={24}
+                color="black"
+              />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={sortByPriceAscending}
@@ -335,9 +422,14 @@ export default function Search() {
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>
-                Price Ascending </Text>
-              <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="black" />
+              <Text style={{ textAlign: "center", fontSize: 14 }}>
+                Price Ascending{" "}
+              </Text>
+              <MaterialCommunityIcons
+                name="order-numeric-ascending"
+                size={24}
+                color="black"
+              />
             </TouchableOpacity>
           </ScrollView>
           <View>
