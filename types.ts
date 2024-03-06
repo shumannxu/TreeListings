@@ -44,6 +44,7 @@ export type Listing = {
   imagePath?: string;
   isListingActive: boolean;
   allInteractions?: string[];
+  isListingAppropriate?: boolean;
 };
 
 export type Category = {
