@@ -1,6 +1,7 @@
 import {
   View,
   Text,
+  Image,
   Button,
   FlatList,
   StyleSheet,
@@ -55,7 +56,9 @@ export default function Home() {
   const trendingItemsComponent = useMemo(
     () => (
       <View>
-        <Text style={{ alignSelf: "center", fontSize: 30 }}>TreeListings</Text>
+        <View>
+          <Image style={styles.imageStyle} source={require("../home/Logo.png")} />
+        </View>
         <Text style={styles.textStyle}>Trending</Text>
         <FlatList
           data={listings ? Object.values(listings) : []}
@@ -120,4 +123,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  imageStyle: {
+    flex: 1,
+    height: 75,
+    width: 358.5,
+    alignSelf: "center",
+    margin: 20,
+  }
 });
