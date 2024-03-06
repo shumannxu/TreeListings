@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Image,
   Text,
@@ -9,9 +9,11 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { signIn } from "../../firebase/auth";
+import { signIn, resetPassword } from "../../firebase/auth";
+import { useAuth } from "../../context";
 
 export default function Login() {
+  const { setUser } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -20,9 +22,20 @@ export default function Login() {
   };
 
   const onLoginPress = () => {
-    signIn(email, password).then((user) =>
-      router.replace({ pathname: "/preferenceSurvey", params: { user: user } })
-    );
+    signIn(email, password).then((user) => {
+      // setUser(user);
+      setUser(user);
+      if (user) router.replace({ pathname: "/preferenceSurvey" });
+    });
+  };
+  const sendVerificationEmail = () => {};
+
+  const forgotPassword = () => {
+    if (email.trim()) { // Check if the email field is not empty
+      resetPassword(email).catch(console.error);
+    } else {
+      alert("Please enter your email address.");
+    }
   };
 
   return (
@@ -54,6 +67,12 @@ export default function Login() {
         <TouchableOpacity style={styles.button} onPress={() => onLoginPress()}>
           <Text style={styles.buttonTitle}>Log in</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => sendVerificationEmail()}
+        >
+          <Text style={styles.buttonTitle}>Send Verification Email Again</Text>
+        </TouchableOpacity>
         <View style={styles.footerView}>
           <Text style={styles.footerText}>
             Don't have an account?{" "}
@@ -62,7 +81,13 @@ export default function Login() {
             </Text>
           </Text>
         </View>
-      </KeyboardAwareScrollView>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => forgotPassword()}
+        >
+          <Text style={styles.buttonTitle}>Forgot Password</Text>
+        </TouchableOpacity>
+          </KeyboardAwareScrollView>
     </View>
   );
 }

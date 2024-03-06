@@ -1,0 +1,23 @@
+- From the Listings page:
+    - For every post made, pass the image, title, and description to our backend function
+- Create Python backend function:
+    - Takes in image, title, and description from Firebase after a listing is added
+    - Format this information into a list as such: [Image, title, description]
+    - Insert this into the engineered prompt below and make an API call to an LLM to return a judgement
+    - From there, if the judgement returns "Clean" then we allow the normal posting process to conclude
+        - Return true 
+    - If the judgement indicates "Removed," then we abort the posting process, remove the listing from the Firebase, and add an automated 1 star to 
+    a user's rating as a consequence
+        - Return false
+        - Note: the bar for auto-removal is high to decrease the likelihood of false positives, but we will be proactive and harsh about false postings
+- Engineered prompt:
+    "You will now be the judge of online marketplace listings whether or not they are appropriate to stay up on a university
+    wide marketplace, similar to NSFW policies. You will receive a listing through its 3 parameters in the following array: 
+    [Image, title, description]
+    For example, [picture of dog, "Daschund Puppy for Sale", "6 month old daschund puppy for sale, has all vet work and vaccinations done. 
+    He is very playful but needs a new home. Still needs to be potty trained. $500 OBO."]
+    Your job is to return a judgement classifying posts as "clean" if it is appropriate and "removed" if it does not belong in an online anti-NSFW 
+    marketplace alongside justification for why you made the judgement. 
+    You will return this judgement as a list as such: [("Clean" or "Removed", justification)]
+    Here are some examples and their classifications to help guide your decision making:
+    [add examples here]

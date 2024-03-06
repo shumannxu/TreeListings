@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+./.venv/bin/pip freeze > requirements.txt
+gcloud functions deploy keyword_generation \
+  --gen2 \
+  --region us-central1 \
+  --trigger-location nam5 \
+  --runtime python312 \
+  --source . \
+  --entry-point classify_listings \
+  --memory 512Mi \
+  --set-secrets 'GOOGLE_API_KEY=GOOGLE_API_KEY:1' \
+  --trigger-event-filters=type=google.cloud.firestore.document.v1.created \
+  --trigger-event-filters=database='(default)' \
+  --trigger-event-filters-path-pattern=document='listings/{listing_id}' \
+  --run-service-account 'cloud-python-functions@treelistings.iam.gserviceaccount.com'

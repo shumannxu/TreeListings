@@ -1,0 +1,3 @@
+<BuyNowButton className="buy-now-button-instance" text="Submit Offer" />;
+
+<BuyNowButton className="buy-now-button-instance" text="Buy Now" />;
