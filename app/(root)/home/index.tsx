@@ -10,6 +10,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { MaterialIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+
+
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -59,7 +64,10 @@ export default function Home() {
         <View>
           <Image style={styles.imageStyle} source={require("../home/Logo.png")} />
         </View>
-        <Text style={styles.textStyle}>Trending</Text>
+          <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Trending</Text>
+            <Feather style={{ marginLeft: 5, color: "#38B39C" }} name="trending-up" size={24} color="black" />
+         </View>
         <FlatList
           data={listings ? Object.values(listings) : []}
           renderItem={renderItem}
@@ -69,7 +77,10 @@ export default function Home() {
           keyExtractor={(item) => item.listingId}
           scrollEnabled={true}
         />
-        <Text style={styles.textStyle}>Recommended For You</Text>
+        <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Recommended For You</Text>
+            <AntDesign style={{ marginLeft: 5, color: "#38B39C" }} name="heart" size={24} color="black" />
+         </View>
       </View>
     ),
     [listings]
@@ -77,7 +88,10 @@ export default function Home() {
   const recentlyBrowsedComponents = useMemo(
     () => (
       <>
-        <Text style={styles.textStyle}>Recently Browsed</Text>
+        <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Recently Browsed</Text>
+            <MaterialIcons style={{ marginLeft: 5, color: "#38B39C" }} name="access-time" size={24} color="black" />
+         </View>
         <FlatList
           data={listings ? Object.values(listings) : []}
           renderItem={renderItem}
