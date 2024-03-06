@@ -104,22 +104,42 @@ export default function Profile() {
     if (user) {
       const filter = Object.values(selfListings).filter(
         (listing: Listing) =>
-          listing && listing.isListingActive === sellerActiveListingsSelected
+      listing && listing.isListingActive === sellerActiveListingsSelected
       );
       return filter;
     }
   }, [sellerActiveListingsSelected, user]);
 
+  // const buyerFilteredResults = useMemo(() => {
+  //   if (user && listings) {
+  //     return outgoingOffers
+  //       .filter(
+  //         (offer: Offer) =>
+  //           listings[offer.listingId].isListingActive === activeListingsSelected
+  //       )
+  //       .map((offer: Offer) => listings[offer.listingId]);
+  //   }
+  // }, [activeListingsSelected, user, outgoingOffers]);
+
   const buyerFilteredResults = useMemo(() => {
     if (user && listings) {
       return outgoingOffers
-        .filter(
-          (offer: Offer) =>
-            listings[offer.listingId].isListingActive === activeListingsSelected
-        )
+        .filter((offer: Offer) => {
+          // Check if the listing for the offer exists and isListingActive matches the selected state
+          const listing = listings[offer.listingId];
+          if (listing) {
+            if (listing.isListingActive === undefined) {
+              console.log("undefined listing found: ", listing);
+              return false; 
+            }
+            return listing.isListingActive === activeListingsSelected;
+          }
+          return false; // Exclude offers where the listing doesn't exist
+        })
         .map((offer: Offer) => listings[offer.listingId]);
     }
-  }, [activeListingsSelected, user, outgoingOffers]);
+    return []; 
+  }, [activeListingsSelected, listings, outgoingOffers, user]);
 
   return (
     <Tabs.Container

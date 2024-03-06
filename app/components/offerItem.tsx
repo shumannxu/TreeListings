@@ -209,7 +209,7 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
   );
 };
 
-export default OfferItem;
+export default React.memo(OfferItem);
 
 const styles = StyleSheet.create({
   container: {
