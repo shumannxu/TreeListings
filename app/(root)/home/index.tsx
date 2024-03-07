@@ -1,6 +1,7 @@
 import {
   View,
   Text,
+  Image,
   Button,
   FlatList,
   StyleSheet,
@@ -8,6 +9,11 @@ import {
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { MaterialIcons } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+
 
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
@@ -55,8 +61,13 @@ export default function Home() {
   const trendingItemsComponent = useMemo(
     () => (
       <View>
-        <Text style={{ alignSelf: "center", fontSize: 30 }}>TreeListings</Text>
-        <Text style={styles.textStyle}>Trending</Text>
+        <View>
+          <Image style={styles.imageStyle} source={require("../home/Logo.png")} />
+        </View>
+          <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Trending</Text>
+            <Feather style={{ marginLeft: 5, color: "#38B39C" }} name="trending-up" size={24} color="black" />
+         </View>
         <FlatList
           data={listings ? Object.values(listings) : []}
           renderItem={renderItem}
@@ -66,7 +77,10 @@ export default function Home() {
           keyExtractor={(item) => item.listingId}
           scrollEnabled={true}
         />
-        <Text style={styles.textStyle}>Recommended For You</Text>
+        <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Recommended For You</Text>
+            <AntDesign style={{ marginLeft: 5, color: "#38B39C" }} name="heart" size={24} color="black" />
+         </View>
       </View>
     ),
     [listings]
@@ -74,7 +88,10 @@ export default function Home() {
   const recentlyBrowsedComponents = useMemo(
     () => (
       <>
-        <Text style={styles.textStyle}>Recently Browsed</Text>
+        <View style={{ flexDirection: "row", }}>
+            <Text style={styles.textStyle}>Recently Browsed</Text>
+            <MaterialIcons style={{ marginLeft: 5, color: "#38B39C" }} name="access-time" size={24} color="black" />
+         </View>
         <FlatList
           data={listings ? Object.values(listings) : []}
           renderItem={renderItem}
@@ -120,4 +137,11 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  imageStyle: {
+    flex: 1,
+    height: 75,
+    width: 358.5,
+    alignSelf: "center",
+    margin: 20,
+  }
 });
