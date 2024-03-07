@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   activeButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#38B39C",
   },
   userInformationContainer: {
     flexDirection: "row",

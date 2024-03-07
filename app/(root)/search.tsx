@@ -262,22 +262,22 @@ export default function Search() {
                     onPress={() => toggleCategorySelection(item.value)}
                   >
                     
-                    {item.value === CategoryType.ELECTRONICS && <MaterialIcons name="devices" size={24} color="black" />}
-                    {item.value === CategoryType.SERVICE && <MaterialIcons name="home-repair-service" size={24} color="black" />}
-                    {item.value === CategoryType.VEHICLES && <MaterialIcons name="bike-scooter" size={24} color="black" />}
-                    {item.value === CategoryType.PROPERTY_RENTALS && <FontAwesome5 name="house-user" size={24} color="black" />}
-                    {item.value === CategoryType.APPAREL && <FontAwesome5 name="tshirt" size={24} color="black" />}
-                    {item.value === CategoryType.ENTERTAINMENT && <FontAwesome5 name="tv" size={24} color="black" />}
-                    {item.value === CategoryType.FAMILY && <AntDesign name="heart" size={24} color="black" />}
-                    {item.value === CategoryType.FREE_STUFF && <MaterialIcons name="money-off" size={24} color="black" />}
-                    {item.value === CategoryType.GARDEN_OUTDOOR && <Entypo name="flower" size={24} color="black" />}
-                    {item.value === CategoryType.HOBBIES && <FontAwesome5 name="paint-brush" size={24} color="black" />}
-                    {item.value === CategoryType.HOME_GOODS && <FontAwesome5 name="couch" size={24} color="black" />}
-                    {item.value === CategoryType.MUSICAL_INSTRUMENTS && <MaterialCommunityIcons name="violin" size={24} color="black" />}
-                    {item.value === CategoryType.OFFICE_SUPPLIES && <MaterialCommunityIcons name="office-building" size={24} color="black" />}
-                    {item.value === CategoryType.PET_SUPPLIES && <MaterialIcons name="pets" size={24} color="black" />}
-                    {item.value === CategoryType.SPORTING_GOODS && <FontAwesome name="soccer-ball-o" size={24} color="black" />}
-                    {item.value === CategoryType.TOYS_GAMES && <Entypo name="game-controller" size={24} color="black" />}
+                    {item.value === CategoryType.ELECTRONICS && <MaterialIcons name="devices" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.SERVICE && <MaterialIcons name="home-repair-service" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.VEHICLES && <MaterialIcons name="bike-scooter" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.PROPERTY_RENTALS && <FontAwesome5 name="house-user" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.APPAREL && <FontAwesome5 name="tshirt" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.ENTERTAINMENT && <FontAwesome5 name="tv" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.FAMILY && <AntDesign name="heart" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.FREE_STUFF && <MaterialIcons name="money-off" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.GARDEN_OUTDOOR && <Entypo name="flower" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.HOBBIES && <FontAwesome5 name="paint-brush" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.HOME_GOODS && <FontAwesome5 name="couch" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.MUSICAL_INSTRUMENTS && <MaterialCommunityIcons name="violin" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.OFFICE_SUPPLIES && <MaterialCommunityIcons name="office-building" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.PET_SUPPLIES && <MaterialIcons name="pets" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.SPORTING_GOODS && <FontAwesome name="soccer-ball-o" size={24} color="#38B39C" />}
+                    {item.value === CategoryType.TOYS_GAMES && <Entypo name="game-controller" size={24} color="#38B39C" />}
 
                     <Text style={{ textAlign: "center" }}>{item.label}</Text>
                   </TouchableOpacity>
@@ -308,7 +308,7 @@ export default function Search() {
               }}
             >
               <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
-              <MaterialIcons name="access-time" size={24} color="black" />
+              <MaterialIcons name="access-time" size={24} color="#38B39C" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={sortByPriceDescending}
@@ -323,7 +323,7 @@ export default function Search() {
             >
               <Text style={{ textAlign: "center", fontSize: 17 }}>
                 Price Descending </Text>
-              <MaterialCommunityIcons name="order-numeric-descending" size={24} color="black" />
+              <MaterialCommunityIcons name="order-numeric-descending" size={24} color="#38B39C" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={sortByPriceAscending}
@@ -337,7 +337,7 @@ export default function Search() {
             >
               <Text style={{ textAlign: "center", fontSize: 17 }}>
                 Price Ascending </Text>
-              <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="black" />
+              <MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />
             </TouchableOpacity>
           </ScrollView>
           <View>
