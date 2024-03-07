@@ -12,6 +12,7 @@ import {
   query,
   where,
   collectionGroup,
+  updateDoc
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import {
@@ -240,30 +241,35 @@ const createOffer = async ({
   price: number;
 }) => {
   try {
-    await runTransaction(firestore, async (transaction) => {
-      // Define the path to the specific seller's offer collection
-      const sellerOffersPath = `offers/${sellerId}/sellerOffers`;
-      const sellerOffersCollectionRef = collection(firestore, sellerOffersPath);
+    const sellerOffersPath = `offers/${sellerId}/sellerOffers`;
+    const sellerOffersCollectionRef = collection(firestore, sellerOffersPath);
 
-      // Create a new document reference within the seller's offer collection
+    const querySnapshot = await getDocs(query(sellerOffersCollectionRef, where("listingId", "==", listingId), where("buyerId", "==", buyerId)));
+
+    if (!querySnapshot.empty) {
+      const existingOfferRef = querySnapshot.docs[0].ref;
+      await updateDoc(existingOfferRef, {
+        price,
+        dateOffered: new Date(), 
+        accepted: null, 
+      });
+    } else {
       const newOfferRef = doc(sellerOffersCollectionRef);
-
-      // Prepare the offer data, including the generated offer ID
-      const offerData = {
+      await setDoc(newOfferRef, {
         offerId: newOfferRef.id,
         listingId,
         buyerId,
         sellerId,
         price,
         dateOffered: new Date(),
-        accepted: null,
-      } as Offer;
+        accepted: null, 
+      });
+      console.log("New offer created successfully.");
+    }
 
-      // Set the new offer data in the transaction
-      transaction.set(newOfferRef, offerData);
-    });
     return true;
   } catch (e) {
+    console.error("Error creating or updating offer: ", e);
     return false;
   }
 };

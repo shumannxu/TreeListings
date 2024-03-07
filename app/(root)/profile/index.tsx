@@ -20,6 +20,8 @@ import { getSelfListings, setDocument } from "../../../firebase/db";
 import {
   FlatList,
   HeaderMeasurements,
+  MaterialTabBar,
+  TabBarProps,
   Tabs,
   useHeaderMeasurements,
 } from "react-native-collapsible-tab-view";
@@ -110,23 +112,40 @@ export default function Profile() {
     }
   }, [sellerActiveListingsSelected, user]);
 
+  // const buyerFilteredResults = useMemo(() => {
+  //   if (user && listings) {
+  //     return outgoingOffers
+  //       .filter(
+  //         (offer: Offer) =>
+  //           listings[offer.listingId].isListingActive === activeListingsSelected
+  //       )
+  //       .map((offer: Offer) => listings[offer.listingId]);
+  //   }
+  // }, [activeListingsSelected, user, outgoingOffers]);
+
   const buyerFilteredResults = useMemo(() => {
     if (user && listings) {
       return outgoingOffers
-        .filter(
-          (offer: Offer) =>
-            listings[offer.listingId].isListingActive === activeListingsSelected
-        )
+        .filter((offer: Offer) => {
+          // Check if the listing for the offer exists and isListingActive matches the selected state
+          const listing = listings[offer.listingId];
+          if (listing) {
+            if (listing.isListingActive === undefined) {
+              console.log("undefined listing found: ", listing);
+              return false;
+            }
+            return listing.isListingActive === activeListingsSelected;
+          }
+          return false; // Exclude offers where the listing doesn't exist
+        })
         .map((offer: Offer) => listings[offer.listingId]);
     }
-  }, [activeListingsSelected, user, outgoingOffers]);
+    return [];
+  }, [activeListingsSelected, listings, outgoingOffers, user]);
 
-  return (
-    <Tabs.Container
-      minHeaderHeight={40}
-      lazy
-      // revealHeaderOnScroll={true}
-      renderHeader={() => (
+  const renderHeader = useCallback(
+    (props: TabBarProps) => {
+      return (
         <Animated.View
           style={{
             flexDirection: "column",
@@ -185,7 +204,25 @@ export default function Profile() {
             </View>
           </View>
         </Animated.View>
-      )}
+      );
+    },
+    [user]
+  );
+
+  const renderTabBar = useCallback(
+    (props: TabBarProps) => (
+      <MaterialTabBar {...props} indicatorStyle={{ backgroundColor: "red" }} />
+    ),
+    []
+  );
+
+  return (
+    <Tabs.Container
+      minHeaderHeight={40}
+      lazy
+      // revealHeaderOnScroll={true}
+      renderTabBar={renderTabBar}
+      renderHeader={renderHeader}
     >
       {/* / */}
       <Tabs.Tab name="Buyer" label="Buying History">
