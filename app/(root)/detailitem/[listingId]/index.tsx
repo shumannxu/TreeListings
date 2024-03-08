@@ -28,6 +28,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as MailComposer from "expo-mail-composer";
 import { useAuth } from "../../../../context";
 import Toast from "react-native-root-toast";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DetailItem() {
   const { user, setUser, listings, setListings } = useAuth() as UserContextType;
@@ -47,6 +48,12 @@ export default function DetailItem() {
     const fetchListing = async () => {
       if (listingId && listings) {
         setListing(listings[listingId]);
+      }
+      const currentHistory = await AsyncStorage.getItem("history");
+      const historyArray = currentHistory ? JSON.parse(currentHistory) : [];
+      if (!historyArray.includes(listingId)) {
+        historyArray.push(listingId);
+        await AsyncStorage.setItem("history", JSON.stringify(historyArray));
       }
     };
 

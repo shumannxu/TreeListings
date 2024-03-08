@@ -14,73 +14,200 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
-
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Listing, ListingId, UserContextType } from "../../../types";
 import RecommendItem from "../../components/recommendItem";
 import { getAllListings } from "../../../firebase/db";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
   const { user, setUser, listings, setListings, setSelfListings } =
     useAuth() as UserContextType;
   const insets = useSafeAreaInsets();
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [trendingCounter, setTrendingCounter] = useState<number>(1);
+  const [recCounter, setRecCounter] = useState<number>(1);
+  const [histCounter, setHistCounter] = useState<number>(1);
+
+  const [recList, setRecList] = useState<
+    Array<Listing | { listingId: "VIEW_MORE" }>
+  >([]);
+  const [trendList, setTrendList] = useState<
+    Array<Listing | { listingId: "VIEW_MORE" }>
+  >([]);
+  const [histList, setHistList] = useState<
+    Array<Listing | { listingId: "VIEW_MORE" }>
+  >([]);
+
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const retrieveLists = useCallback(async () => {
+    if (listings && user) {
+      setLoading(true);
+      const rList = Object.values(listings).filter((listing: Listing) =>
+        user.interests
+          ? user.interests.some((interest) =>
+              listing.categories.includes(interest)
+            )
+          : true && listing.isListingAppropriate !== false
+      );
+      setRecList(rList);
+      const hList = await AsyncStorage.getItem("history");
+      const parsedhListId = hList ? JSON.parse(hList) : [];
+      const parsedHlist = parsedhListId.map(
+        (listingId: ListingId) => listings[listingId]
+      );
+      setHistList(parsedHlist);
+      setLoading(false);
+    }
+  }, [listings, user]);
+
+  useEffect(() => {
+    retrieveLists();
+  }, [listings, user]);
+
+  const incrementTrending = useCallback(
+    () => setTrendingCounter(trendingCounter + 1),
+    [trendingCounter]
+  );
+  const incrementRec = useCallback(
+    () => setRecCounter(recCounter + 1),
+    [recCounter]
+  );
+  const incrementHist = useCallback(
+    () => setHistCounter(histCounter + 1),
+    [histCounter]
+  );
+  const recommendedListData = useMemo(() => {
+    return recList
+      .slice(0, recCounter * 5)
+      .concat([{ listingId: "VIEW_MORE" }]);
+  }, [recCounter, recList]);
+
+  const histListData = useMemo(() => {
+    return histList
+      .slice(0, histCounter * 5)
+      .concat([{ listingId: "VIEW_MORE" }]);
+  }, [histCounter, histList]);
+
+  const trendListData = useMemo(() => {
+    return trendList
+      .slice(0, trendingCounter * 5)
+      .concat([{ listingId: "VIEW_MORE" }]);
+  }, [trendingCounter, histList]);
 
   const onRefresh = useCallback(async () => {
     if (user) {
       setRefreshing(true);
-      const listing = await getAllListings();
-      const filteredListings = {} as { [id: ListingId]: Listing };
-      const selfListing = {} as { [id: ListingId]: Listing };
-      Object.entries(listing).forEach(([id, listingItem]) => {
-        if (listingItem.sellerId !== user.id) {
-          filteredListings[id] = listingItem;
-        } else {
-          selfListing[id] = listingItem;
-        }
-      });
-      setListings(filteredListings);
-      setSelfListings(Object.values(selfListing));
+      retrieveLists();
+      // const listing = await getAllListings();
+      // const filteredListings = {} as { [id: ListingId]: Listing };
+      // const selfListing = {} as { [id: ListingId]: Listing };
+      // Object.entries(listing).forEach(([id, listingItem]) => {
+      //   if (listingItem.sellerId !== user.id) {
+      //     filteredListings[id] = listingItem;
+      //   } else {
+      //     selfListing[id] = listingItem;
+      //   }
+      // });
+      // setListings(filteredListings);
+      // setSelfListings(Object.values(selfListing));
       setRefreshing(false);
     }
-  }, [user]);
+  }, [user, listings]);
 
   const renderRecommend = useCallback(
-    ({ item }: { item: Listing }) => <RecommendItem item={item} />,
-    []
+    ({
+      item,
+      index,
+    }: {
+      item: Listing | { listingId: "VIEW_MORE" };
+      index: number;
+    }) => {
+      if (item.listingId === "VIEW_MORE") {
+        if (index == recList.length) return null;
+        return <Button title="View More" onPress={incrementRec} />;
+      } else {
+        return <RecommendItem item={item} />;
+      }
+    },
+    [incrementRec, recList]
   );
 
+  const renderHist = useCallback(
+    ({
+      item,
+      index,
+    }: {
+      item: Listing | { listingId: "VIEW_MORE" };
+      index: number;
+    }) => {
+      if (item.listingId === "VIEW_MORE") {
+        if (index == histList.length) return null;
+        return <Button title="View More" onPress={incrementHist} />;
+      } else {
+        return <ListingItem item={item} />;
+      }
+    },
+    [incrementHist, histList]
+  );
   // Render method for FlatList items
-  const renderItem = useCallback(
-    ({ item }: { item: Listing }) => <ListingItem item={item} />,
-    []
+  const renderTrend = useCallback(
+    ({
+      item,
+      index,
+    }: {
+      item: Listing | { listingId: "VIEW_MORE" };
+      index: number;
+    }) => {
+      if (item.listingId === "VIEW_MORE") {
+        if (index == trendList.length) return null;
+        return <Button title="View More" onPress={incrementTrending} />;
+      } else {
+        return <ListingItem item={item} />;
+      }
+    },
+    [incrementTrending]
   );
 
   const trendingItemsComponent = useMemo(
     () => (
       <View>
         <View>
-          <Image style={styles.imageStyle} source={require("../home/Logo.png")} />
+          <Image
+            style={styles.imageStyle}
+            source={require("../home/Logo.png")}
+          />
         </View>
-          <View style={{ flexDirection: "row", }}>
-            <Text style={styles.textStyle}>Trending</Text>
-            <Feather style={{ marginLeft: 5, color: "#38B39C" }} name="trending-up" size={24} color="black" />
-         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Trending</Text>
+          <Feather
+            style={{ marginLeft: 5, color: "#38B39C" }}
+            name="trending-up"
+            size={24}
+            color="black"
+          />
+        </View>
         <FlatList
           data={listings ? Object.values(listings) : []}
-          renderItem={renderItem}
+          renderItem={renderTrend}
           initialNumToRender={5}
           horizontal
           showsHorizontalScrollIndicator={false}
           keyExtractor={(item) => item.listingId}
           scrollEnabled={true}
         />
-        <View style={{ flexDirection: "row", }}>
-            <Text style={styles.textStyle}>Recommended For You</Text>
-            <AntDesign style={{ marginLeft: 5, color: "#38B39C" }} name="heart" size={24} color="black" />
-         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Recommended For You</Text>
+          <AntDesign
+            style={{ marginLeft: 5, color: "#38B39C" }}
+            name="heart"
+            size={24}
+            color="black"
+          />
+        </View>
       </View>
     ),
     [listings]
@@ -88,13 +215,18 @@ export default function Home() {
   const recentlyBrowsedComponents = useMemo(
     () => (
       <>
-        <View style={{ flexDirection: "row", }}>
-            <Text style={styles.textStyle}>Recently Browsed</Text>
-            <MaterialIcons style={{ marginLeft: 5, color: "#38B39C" }} name="access-time" size={24} color="black" />
-         </View>
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Recently Browsed</Text>
+          <MaterialIcons
+            style={{ marginLeft: 5, color: "#38B39C" }}
+            name="access-time"
+            size={24}
+            color="black"
+          />
+        </View>
         <FlatList
-          data={listings ? Object.values(listings) : []}
-          renderItem={renderItem}
+          data={histListData}
+          renderItem={renderHist}
           initialNumToRender={5}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -103,14 +235,14 @@ export default function Home() {
         />
       </>
     ),
-    [listings]
+    [histListData]
   );
 
   return (
     <View style={{ flex: 1, marginTop: insets.top }}>
       <FlatList
         ListHeaderComponent={trendingItemsComponent}
-        data={listings ? Object.values(listings) : []}
+        data={recommendedListData}
         renderItem={renderRecommend}
         initialNumToRender={5}
         keyExtractor={(item) => item.listingId}
@@ -143,5 +275,5 @@ const styles = StyleSheet.create({
     width: 358.5,
     alignSelf: "center",
     margin: 20,
-  }
+  },
 });
