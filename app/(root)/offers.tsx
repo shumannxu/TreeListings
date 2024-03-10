@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   RefreshControl,
+  Image,
 } from "react-native";
 
 import {
@@ -66,6 +67,7 @@ export default function Offers() {
   );
   return (
     <View style={{ flex: 1, marginTop: insets.top }}>
+      <Text style={styles.headingStyle}>Offer Status</Text>
       <FlatList
         ListHeaderComponent={
           <Text style={styles.textStyle}>Incoming Offers</Text>
@@ -87,9 +89,12 @@ export default function Offers() {
           />
         }
         ListEmptyComponent={
-          <Text style={{ alignSelf: "center", fontSize: 30, marginTop: 20 }}>
+          <View style={{ alignItems: "center" }} >
+          <Image style={styles.icon} source={require("./profile/sadtreeicon.png")} />
+          <Text style={{ alignSelf: "center", fontSize: 20 }}>
             No Incoming Offers yet{" "}
           </Text>
+          </View>
         }
       />
       <FlatList
@@ -113,9 +118,12 @@ export default function Offers() {
           />
         }
         ListEmptyComponent={
-          <Text style={{ alignSelf: "center", fontSize: 30, marginTop: 20 }}>
+          <View style={{ alignItems: "center" }} >
+          <Image style={styles.icon} source={require("./profile/sadtreeicon.png")} />
+          <Text style={{ alignSelf: "center", fontSize: 20 }}>
             No Outgoing Offers yet{" "}
           </Text>
+          </View>
         }
       />
     </View>
@@ -123,8 +131,23 @@ export default function Offers() {
 }
 
 const styles = StyleSheet.create({
+  headingStyle: {
+    fontSize: 35,
+    fontWeight: "bold",
+    margin: 20,
+    color: "#2F9C95"
+  },
   textStyle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: "600",
+    color: "#38B39C",
+    margin: 10
+  },
+  icon: {
+    flex: 1,
+    height: 120,
+    width: 90,
+    alignSelf: "center",
+    margin: 30,
   },
 });

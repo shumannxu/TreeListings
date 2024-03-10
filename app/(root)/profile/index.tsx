@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   TextInput,
   ViewProps,
+  Image,
 } from "react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
@@ -121,6 +122,17 @@ export default function Profile() {
     }
   }, [activeListingsSelected, user, outgoingOffers]);
 
+  const ListEmptyComponent = useMemo(() => {
+    return (
+      <View style={{ alignItems: "center" }} >
+        <Image style={styles.icon} source={require("../profile/sadtreeicon.png")} />
+        <Text style={{ alignSelf: "center", fontSize: 20 }}>
+            No History Yet
+        </Text>
+      </View>
+    )
+    }, []);
+
   return (
     <Tabs.Container
       minHeaderHeight={40}
@@ -191,6 +203,7 @@ export default function Profile() {
       <Tabs.Tab name="Buyer" label="Buying History">
         {/*  */}
         <Tabs.FlatList
+        ListEmptyComponent = {ListEmptyComponent}
           ListHeaderComponent={() => (
             <View style={{ width: "100%" }}>
               {/* Buyer Information content */}
@@ -227,7 +240,8 @@ export default function Profile() {
       </Tabs.Tab>
       <Tabs.Tab name="Seller" label="Selling History">
         <Tabs.FlatList
-          ListHeaderComponent={() => (
+        ListEmptyComponent={ListEmptyComponent}          
+        ListHeaderComponent={() => (
             <View style={{ width: "100%" }}>
               {/* Seller Information content */}
               <View style={styles.listingsToggleContainer}>
@@ -363,5 +377,12 @@ const styles = StyleSheet.create({
   },
   inactiveText: {
     color: "#888",
+  },
+  icon: {
+    flex: 1,
+    height: 120,
+    width: 90,
+    alignSelf: "center",
+    margin: 30,
   },
 });

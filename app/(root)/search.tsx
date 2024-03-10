@@ -345,7 +345,7 @@ export default function Search() {
               style={{
                 fontWeight: "bold",
                 fontSize: 25,
-                marginTop: 10,
+                marginTop: 20,
               }}
             >
               Search Results
