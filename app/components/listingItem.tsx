@@ -26,7 +26,9 @@ const ListingItem: React.FC<ItemProps> = ({ item }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.title} numberOfLines={1}>
+          {item.title}
+        </Text>
         <Text style={styles.price}>{`$${item.price}`}</Text>
       </View>
     </TouchableOpacity>
@@ -57,12 +59,12 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   title: {
-    fontSize: 17,
+    fontSize: 14,
     marginBottom: 5,
     color: "#666",
   },
   price: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: "bold",
     color: "#CFB284",
   },

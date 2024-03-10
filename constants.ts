@@ -12,7 +12,7 @@ export const CATEGORIES: readonly { label: string; value: CategoryType }[] = [
   { label: "Garden & Outdoor", value: CategoryType.GARDEN_OUTDOOR },
   { label: "Hobbies", value: CategoryType.HOBBIES },
   { label: "Home Goods", value: CategoryType.HOME_GOODS },
-  { label: "Musical Instruments", value: CategoryType.MUSICAL_INSTRUMENTS },
+  { label: "Music", value: CategoryType.MUSICAL_INSTRUMENTS },
   { label: "Office Supplies", value: CategoryType.OFFICE_SUPPLIES },
   { label: "Pet Supplies", value: CategoryType.PET_SUPPLIES },
   { label: "Sporting Goods", value: CategoryType.SPORTING_GOODS },

@@ -8,6 +8,7 @@ import {
   useWindowDimensions,
   TextInput,
   ViewProps,
+  Image,
 } from "react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
@@ -41,13 +42,10 @@ export default function Profile() {
     useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
-  const [userInfo, setUserInfo] = useState<User | null>(null);
-  const [change, setChange] = useState(false);
-  const [preferences, setPreferences] = useState(user?.interests || []);
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
-  const scrollY = useSharedValue<Number>(0);
+
   const toggleActiveListings = () => {
     setActiveListingsSelected(true);
   };
@@ -63,45 +61,11 @@ export default function Profile() {
   const toggleSellerPastListings = () => {
     setSellerActiveListingsSelected(false);
   };
-  useEffect(() => {
-    setUserInfo(user);
-  }, [user]);
 
-  const handleLogout = async () => {
-    signOutUser().then(async () => {
-      await AsyncStorage.removeItem("userInfo");
-      setUser(null);
-    });
-  };
-
-  const saveChanges = () => {
-    if (userInfo) {
-      const newUserinfo = { ...userInfo, interests: preferences };
-      setDocument(`users/${userInfo?.id}`, newUserinfo, true);
-      setChange(false);
-      setUser(newUserinfo);
-      AsyncStorage.setItem("userInfo", JSON.stringify(newUserinfo));
-    } // need to implement storing user preferences into firebase
-  };
   const navigateToEditProfile = useCallback(() => {
     router.push("/profile/editProfile");
   }, []);
 
-  const togglePreference = (preferenceId: string) => {
-    const updatedPreferences = preferences.includes(preferenceId)
-      ? preferences.filter((id) => id !== preferenceId)
-      : [...preferences, preferenceId];
-    setPreferences(updatedPreferences);
-    if (userInfo) {
-      const newUserinfo = { ...userInfo, interests: updatedPreferences };
-      setDocument(`users/${userInfo?.id}`, newUserinfo, true);
-      setChange(false);
-      setUser(newUserinfo);
-      AsyncStorage.setItem("userInfo", JSON.stringify(newUserinfo));
-    } // need
-    // Update user's preferences in Firebase
-    // updateUserPreferences(updatedPreferences); not implemented yet
-  };
   const sellerFilteredResults = useMemo(() => {
     if (user) {
       const filter = Object.values(selfListings).filter(
@@ -111,17 +75,6 @@ export default function Profile() {
       return filter;
     }
   }, [sellerActiveListingsSelected, user]);
-
-  // const buyerFilteredResults = useMemo(() => {
-  //   if (user && listings) {
-  //     return outgoingOffers
-  //       .filter(
-  //         (offer: Offer) =>
-  //           listings[offer.listingId].isListingActive === activeListingsSelected
-  //       )
-  //       .map((offer: Offer) => listings[offer.listingId]);
-  //   }
-  // }, [activeListingsSelected, user, outgoingOffers]);
 
   const buyerFilteredResults = useMemo(() => {
     if (user && listings) {
@@ -210,11 +163,23 @@ export default function Profile() {
   );
 
   const renderTabBar = useCallback(
-    (props: TabBarProps) => (
-      <MaterialTabBar {...props} indicatorStyle={{ backgroundColor: "red" }} />
-    ),
+    (props: TabBarProps) => <MaterialTabBar {...props} indicatorStyle={{}} />,
     []
   );
+
+  const ListEmptyComponent = useMemo(() => {
+    return (
+      <View style={{ alignItems: "center" }}>
+        <Image
+          style={styles.icon}
+          source={require("../../../assets/sadtreeicon.png")}
+        />
+        <Text style={{ alignSelf: "center", fontSize: 20 }}>
+          No History Yet
+        </Text>
+      </View>
+    );
+  }, []);
 
   return (
     <Tabs.Container
@@ -228,6 +193,7 @@ export default function Profile() {
       <Tabs.Tab name="Buyer" label="Buying History">
         {/*  */}
         <Tabs.FlatList
+          ListEmptyComponent={ListEmptyComponent}
           ListHeaderComponent={() => (
             <View style={{ width: "100%" }}>
               {/* Buyer Information content */}
@@ -264,6 +230,7 @@ export default function Profile() {
       </Tabs.Tab>
       <Tabs.Tab name="Seller" label="Selling History">
         <Tabs.FlatList
+          ListEmptyComponent={ListEmptyComponent}
           ListHeaderComponent={() => (
             <View style={{ width: "100%" }}>
               {/* Seller Information content */}
@@ -325,7 +292,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   activeButton: {
-    backgroundColor: "#007bff",
+    backgroundColor: "#38B39C",
   },
   userInformationContainer: {
     flexDirection: "row",
@@ -400,5 +367,12 @@ const styles = StyleSheet.create({
   },
   inactiveText: {
     color: "#888",
+  },
+  icon: {
+    flex: 1,
+    height: 120,
+    width: 90,
+    alignSelf: "center",
+    margin: 30,
   },
 });

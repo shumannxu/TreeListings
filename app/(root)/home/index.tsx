@@ -81,22 +81,25 @@ export default function Home() {
     [histCounter]
   );
   const recommendedListData = useMemo(() => {
-    return recList
-      .slice(0, recCounter * 5)
-      .concat([{ listingId: "VIEW_MORE" }]);
+    const slicedRecList = recList.slice(0, recCounter * 5);
+    return slicedRecList.length > 0
+      ? slicedRecList.concat([{ listingId: "VIEW_MORE" }])
+      : slicedRecList;
   }, [recCounter, recList]);
 
   const histListData = useMemo(() => {
-    return histList
-      .slice(0, histCounter * 5)
-      .concat([{ listingId: "VIEW_MORE" }]);
+    const slicedHistList = histList.slice(0, histCounter * 5);
+    return slicedHistList.length > 0
+      ? slicedHistList.concat([{ listingId: "VIEW_MORE" }])
+      : slicedHistList;
   }, [histCounter, histList]);
 
   const trendListData = useMemo(() => {
-    return trendList
-      .slice(0, trendingCounter * 5)
-      .concat([{ listingId: "VIEW_MORE" }]);
-  }, [trendingCounter, histList]);
+    const slicedTrendList = trendList.slice(0, trendingCounter * 5);
+    return slicedTrendList.length > 0
+      ? slicedTrendList.concat([{ listingId: "VIEW_MORE" }])
+      : slicedTrendList;
+  }, [trendingCounter, trendList]);
 
   const onRefresh = useCallback(async () => {
     if (user) {
@@ -178,7 +181,7 @@ export default function Home() {
         <View>
           <Image
             style={styles.imageStyle}
-            source={require("../home/Logo.png")}
+            source={require("../../../assets/Logo.png")}
           />
         </View>
         <View style={{ flexDirection: "row" }}>
@@ -212,10 +215,25 @@ export default function Home() {
     ),
     [listings]
   );
+
+  const ListEmptyComponent = useMemo(() => {
+    return (
+      <View style={{ alignItems: "center", marginBottom: 10 }}>
+        <Image
+          style={styles.icon}
+          source={require("../../../assets/sadtreeicon.png")}
+        />
+        <Text style={{ alignSelf: "center", fontSize: 20 }}>
+          No Browse History!
+        </Text>
+      </View>
+    );
+  }, []);
+
   const recentlyBrowsedComponents = useMemo(
     () => (
       <>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ flexDirection: "row", marginTop: 10 }}>
           <Text style={styles.textStyle}>Recently Browsed</Text>
           <MaterialIcons
             style={{ marginLeft: 5, color: "#38B39C" }}
@@ -224,15 +242,22 @@ export default function Home() {
             color="black"
           />
         </View>
-        <FlatList
-          data={histListData}
-          renderItem={renderHist}
-          initialNumToRender={5}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          keyExtractor={(item) => item.listingId}
-          scrollEnabled={true}
-        />
+        <View
+          style={{
+            alignItems: histListData.length === 0 ? "center" : undefined,
+          }}
+        >
+          <FlatList
+            data={histListData}
+            renderItem={renderHist}
+            initialNumToRender={5}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            keyExtractor={(item) => item.listingId}
+            scrollEnabled={true}
+            ListEmptyComponent={ListEmptyComponent}
+          />
+        </View>
       </>
     ),
     [histListData]
@@ -255,8 +280,8 @@ export default function Home() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={["#B0DCC5"]} // Customize the color of the loading indicator
-            tintColor={"#B0DCC5"} // Customize the tint color of the iOS loading indicator
+            colors={["#B0DCC5"]}
+            tintColor={"#B0DCC5"}
           />
         }
       />
@@ -275,5 +300,12 @@ const styles = StyleSheet.create({
     width: 358.5,
     alignSelf: "center",
     margin: 20,
+  },
+  icon: {
+    flex: 1,
+    height: 120,
+    width: 90,
+    alignSelf: "center",
+    margin: 30,
   },
 });
