@@ -6,7 +6,7 @@ export const CATEGORIES: readonly { label: string; value: CategoryType }[] = [
   { label: "Vehicles", value: CategoryType.VEHICLES },
   { label: "Property Rentals", value: CategoryType.PROPERTY_RENTALS },
   { label: "Apparel", value: CategoryType.APPAREL },
-  { label: "Entertainment", value: CategoryType.ENTERTAINMENT },
+  { label: "Leisure", value: CategoryType.ENTERTAINMENT }, // Edited from Entertainment -> Leisure
   { label: "Family", value: CategoryType.FAMILY },
   { label: "Free Stuff", value: CategoryType.FREE_STUFF },
   { label: "Garden & Outdoor", value: CategoryType.GARDEN_OUTDOOR },

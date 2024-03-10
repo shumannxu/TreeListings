@@ -7,6 +7,7 @@ import { Listing, User, UserId } from "../../types";
 import getTimeAgo from "./getTimeAgo";
 import { getUserProfile } from "../../firebase/db";
 import { router } from "expo-router";
+import { AntDesign } from "@expo/vector-icons";
 
 interface ItemProps {
   item: Listing;
@@ -44,7 +45,11 @@ const SearchItem: React.FC<ItemProps> = ({ item }) => {
           <Text style={styles.username}>
             {userProfile?.fullName ?? "Name 1"}
           </Text>
-          <Text style={styles.rating}> {userProfile?.sellerRating ?? 5.0}</Text>
+          <Text>{"•"} </Text>
+          <Text style={styles.rating}>
+            {(userProfile?.sellerRating ?? 5.0).toFixed(1)}
+          </Text>
+          <AntDesign name="star" size={14} color="#66BB6A" />
         </View>
       </View>
       <View style={styles.rightContainer}>
@@ -60,8 +65,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 10,
-    marginHorizontal: 20,
-    borderBottomWidth: 1, // Add border bottom
+    marginHorizontal: 10,
+    borderBottomWidth: 1,
     borderColor: "#DCDCDC", // Border color
     paddingBottom: 10, // Padding at the bottom to separate items
   },
