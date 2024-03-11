@@ -12,7 +12,7 @@ import {
   query,
   where,
   collectionGroup,
-  updateDoc
+  updateDoc,
 } from "firebase/firestore";
 import { uploadImageAsync } from "./storage";
 import {
@@ -169,7 +169,6 @@ const getAllListings = async (): Promise<{ [id: ListingId]: Listing }> => {
     {}
   ) as { [id: string]: Listing };
 };
-
 const getSelfListings = async (
   id: UserId
 ): Promise<{ [id: ListingId]: Listing }> => {
@@ -244,14 +243,20 @@ const createOffer = async ({
     const sellerOffersPath = `offers/${sellerId}/sellerOffers`;
     const sellerOffersCollectionRef = collection(firestore, sellerOffersPath);
 
-    const querySnapshot = await getDocs(query(sellerOffersCollectionRef, where("listingId", "==", listingId), where("buyerId", "==", buyerId)));
+    const querySnapshot = await getDocs(
+      query(
+        sellerOffersCollectionRef,
+        where("listingId", "==", listingId),
+        where("buyerId", "==", buyerId)
+      )
+    );
 
     if (!querySnapshot.empty) {
       const existingOfferRef = querySnapshot.docs[0].ref;
       await updateDoc(existingOfferRef, {
         price,
-        dateOffered: new Date(), 
-        accepted: null, 
+        dateOffered: new Date(),
+        accepted: null,
       });
     } else {
       const newOfferRef = doc(sellerOffersCollectionRef);
@@ -262,7 +267,7 @@ const createOffer = async ({
         sellerId,
         price,
         dateOffered: new Date(),
-        accepted: null, 
+        accepted: null,
       });
       console.log("New offer created successfully.");
     }

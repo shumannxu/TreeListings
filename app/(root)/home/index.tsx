@@ -19,7 +19,6 @@ import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Listing, ListingId, UserContextType } from "../../../types";
 import RecommendItem from "../../components/recommendItem";
-import { getAllListings } from "../../../firebase/db";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
@@ -51,7 +50,7 @@ export default function Home() {
           ? user.interests.some((interest) =>
               listing.categories.includes(interest)
             )
-          : true && listing.isListingAppropriate !== false
+          : true
       );
       setRecList(rList);
       const hList = await AsyncStorage.getItem("history");

@@ -51,10 +51,12 @@ export default function AppLayout() {
       const filteredListings = {} as { [id: ListingId]: Listing };
       const selfListing = {} as { [id: ListingId]: Listing };
       Object.entries(listing).forEach(([id, listingItem]) => {
-        if (listingItem.sellerId !== authenticatedUser.id) {
-          filteredListings[id] = listingItem;
-        } else {
-          selfListing[id] = listingItem;
+        if (listingItem.isListingAppropriate !== false) {
+          if (listingItem.sellerId !== authenticatedUser.id) {
+            filteredListings[id] = listingItem;
+          } else {
+            selfListing[id] = listingItem;
+          }
         }
       });
       setListings(filteredListings);
