@@ -41,7 +41,7 @@ export default function RegistrationScreen() {
         style={{ flex: 1, width: "100%" }}
         keyboardShouldPersistTaps="always"
       >
-        <Image style={styles.logo} source={require("../../assets/icon.png")} />
+        <Image style={styles.logo} source={require("../../assets/treelisting.png")} />
         <TextInput
           style={styles.input}
           placeholder="Full Name"

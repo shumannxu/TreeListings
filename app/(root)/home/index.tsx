@@ -55,9 +55,9 @@ export default function Home() {
       setRecList(rList);
       const hList = await AsyncStorage.getItem("history");
       const parsedhListId = hList ? JSON.parse(hList) : [];
-      const parsedHlist = parsedhListId.map(
-        (listingId: ListingId) => listings[listingId]
-      );
+      const parsedHlist = parsedhListId
+      .map((listingId: ListingId) => listings[listingId])
+      .filter((listingId: ListingId) => listingId !== undefined);;
       setHistList(parsedHlist);
       setLoading(false);
     }
