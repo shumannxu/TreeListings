@@ -52,7 +52,6 @@ export default function Home() {
             )
           : true
       );
-      console.log("HIHI", rList)
       setRecList(rList);
       const hList = await AsyncStorage.getItem("history");
       const parsedhListId = hList ? JSON.parse(hList) : [];
@@ -63,7 +62,6 @@ export default function Home() {
       setLoading(false);
     }
   }, [listings, user]);
-  console.log(recList)
   useEffect(() => {
     retrieveLists();
   }, [listings, user]);
