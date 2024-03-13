@@ -10,6 +10,7 @@ import {
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { router } from "expo-router";
 import { registerUserEmailPassword } from "../../firebase/auth";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function RegistrationScreen() {
   const [fullName, setFullName] = useState("");
@@ -17,6 +18,7 @@ export default function RegistrationScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const safeAreaInsets = useSafeAreaInsets();
   const onFooterLinkPress = () => {
     router.push("/login");
   };
@@ -36,12 +38,15 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: safeAreaInsets.top }]}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: "100%" }}
         keyboardShouldPersistTaps="always"
       >
-        <Image style={styles.logo} source={require("../../assets/treelisting.png")} />
+        <Image
+          style={styles.logo}
+          source={require("../../assets/treelisting.png")}
+        />
         <TextInput
           style={styles.input}
           placeholder="Full Name"

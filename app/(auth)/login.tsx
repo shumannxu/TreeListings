@@ -11,9 +11,12 @@ import { router } from "expo-router";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { signIn, resetPassword } from "../../firebase/auth";
 import { useAuth } from "../../context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Login() {
   const { setUser } = useAuth();
+  const safeAreaInsets = useSafeAreaInsets();
+
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
@@ -31,7 +34,8 @@ export default function Login() {
   const sendVerificationEmail = () => {};
 
   const forgotPassword = () => {
-    if (email.trim()) { // Check if the email field is not empty
+    if (email.trim()) {
+      // Check if the email field is not empty
       resetPassword(email).catch(console.error);
     } else {
       alert("Please enter your email address.");
@@ -39,12 +43,15 @@ export default function Login() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: safeAreaInsets.top }]}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: "100%" }}
         keyboardShouldPersistTaps="always"
       >
-        <Image style={styles.logo} source={require("../../assets/treelisting.png")} />
+        <Image
+          style={styles.logo}
+          source={require("../../assets/treelisting.png")}
+        />
         <TextInput
           style={styles.input}
           placeholder="E-mail"
@@ -87,7 +94,7 @@ export default function Login() {
         >
           <Text style={styles.buttonTitle}>Forgot Password</Text>
         </TouchableOpacity>
-          </KeyboardAwareScrollView>
+      </KeyboardAwareScrollView>
     </View>
   );
 }
