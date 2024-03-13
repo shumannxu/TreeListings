@@ -152,8 +152,10 @@ export default function DetailItem() {
       });
       if (success) {
         showSuccessToast();
+        setPrice("");
       } else {
         showErrorToast();
+        setPrice("");
       }
     }
   };
@@ -183,8 +185,22 @@ export default function DetailItem() {
     );
   }
 
-  const onBuyNow = () => {
-    console.log("Buy Now");
+  const onBuyNow = async () => {
+    if (user && seller && listingId) {
+      let success = await createOffer({
+        listingId,
+        buyerId: user?.id,
+        sellerId: seller?.id,
+        price: listing.price,
+      });
+      if (success) {
+        showSuccessToast();
+        setPrice("");
+      } else {
+        showErrorToast();
+        setPrice("");
+      }
+    }
   };
   return (
     <ScrollView
