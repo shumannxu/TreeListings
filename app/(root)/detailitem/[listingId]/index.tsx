@@ -30,6 +30,8 @@ import { useAuth } from "../../../../context";
 import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+import { Ionicons } from '@expo/vector-icons';
+
 export default function DetailItem() {
   const { user, setUser, listings, setListings } = useAuth() as UserContextType;
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
@@ -77,6 +79,7 @@ export default function DetailItem() {
       width: width * 0.85,
       height: width * 0.85,
       borderRadius: 10,
+      marginVertical: 10
     },
     button: {
       backgroundColor: "#38B39C",
@@ -218,11 +221,11 @@ export default function DetailItem() {
         }}
         onPress={() => router.back()}
       >
-        <Text style={{ fontSize: 18 }}>Go Back</Text>
+        <Ionicons name="chevron-back-outline" size={40} color="#38B39C" />
       </TouchableOpacity>
 
       <View style={{ alignItems: "center" }}>
-        <Text style={{ fontSize: 30, fontWeight: "bold", letterSpacing: 1 }}>
+        <Text style={{ fontSize: 30, fontWeight: "bold", letterSpacing: 1, marginTop: 10, marginBottom: 7, color: "#4B6F6E" }}>
           {listing.title}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -242,7 +245,7 @@ export default function DetailItem() {
         </View>
 
         <Image source={{ uri: listing.imagePath }} style={styles.image} />
-        <Text style={styles.defaultTextSize}>{listing.description}</Text>
+        <Text style={{fontSize: 18, fontWeight: "400", letterSpacing: 1, marginHorizontal: 10, marginVertical: 10 }}>{listing.description}</Text>
         <View
           style={{
             flexDirection: "row",
@@ -266,10 +269,10 @@ export default function DetailItem() {
             marginVertical: 10,
           }}
         >
-          <Text style={styles.defaultTextSize}>Best Offer$</Text>
+          <Text style={styles.defaultTextSize}>Best Offer: $</Text>
           <TextInput
-            style={{ marginHorizontal: 10 }}
-            placeholder="Amount"
+            style={{ marginHorizontal: 10, borderWidth: 1, borderColor: 'black', height: 30}}
+            placeholder=" Amount "
             keyboardType="numeric"
             value={price}
             onChangeText={setPrice}
@@ -286,8 +289,10 @@ export default function DetailItem() {
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{ width: "100%", height: 1, backgroundColor: "black" }} />
-      <Text style={styles.defaultTextSize}>Similar Items</Text>
+      <View style={{ width: "100%", height: 2, backgroundColor: "black", margin: 10 }} />
+      <Text style={{fontSize: 20,
+      fontWeight: "500",
+      letterSpacing: 1, marginVertical: 10, color: "#4B6F6E" }}>Similar Items</Text>
       <FlatList
         data={listings ? Object.values(listings) : []}
         renderItem={renderItem}
