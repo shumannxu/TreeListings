@@ -46,12 +46,13 @@ export default function Home() {
     if (listings && user) {
       setLoading(true);
       const rList = Object.values(listings).filter((listing: Listing) =>
-        user.interests
+        user.interests && user.interests.length !== 0
           ? user.interests.some((interest) =>
               listing.categories.includes(interest)
             )
           : true
       );
+      console.log("HIHI", rList)
       setRecList(rList);
       const hList = await AsyncStorage.getItem("history");
       const parsedhListId = hList ? JSON.parse(hList) : [];
@@ -62,7 +63,7 @@ export default function Home() {
       setLoading(false);
     }
   }, [listings, user]);
-
+  console.log(recList)
   useEffect(() => {
     retrieveLists();
   }, [listings, user]);
