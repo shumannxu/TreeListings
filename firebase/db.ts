@@ -207,10 +207,12 @@ const createPostListingListener = ({
     const filteredListings = {} as { [id: ListingId]: Listing };
     const selfListing = {} as { [id: ListingId]: Listing };
     Object.entries(newListings).forEach(([id, listingItem]) => {
-      if (listingItem.sellerId !== userId) {
-        filteredListings[id] = listingItem;
-      } else {
-        selfListing[id] = listingItem;
+      if (listingItem.isListingAppropriate !== false) {
+        if (listingItem.sellerId !== userId) {
+          filteredListings[id] = listingItem;
+        } else {
+          selfListing[id] = listingItem;
+        }
       }
     });
     setListings(filteredListings);

@@ -53,7 +53,7 @@ def classify_listings(
         affected_doc = client.collection(collection_path).document(document_path)
 
         title = firestore_payload.value.fields["title"].string_value.strip()
-        image_links = firestore_payload.value.fields["imagePath"].string_value.strip()
+        image_links = [firestore_payload.value.fields["imagePath"].string_value.strip()]
         description = firestore_payload.value.fields["description"].string_value.strip()
         listing_classifier = Listings(image_links, title, description)
 
