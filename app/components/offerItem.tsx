@@ -6,7 +6,7 @@ import { Listing } from "../../types";
 import { getDocument, offerTransaction, setDocument } from "../../firebase/db";
 import Toast from "react-native-root-toast";
 import * as MailComposer from "expo-mail-composer";
-
+import { router } from "expo-router";
 interface ItemProps {
   item: Offer;
   type: "incoming" | "outgoing";
@@ -34,6 +34,13 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
 
     getInfo();
   }, []);
+
+  const navigateToDetail = () => {
+    router.push({
+      pathname: "/detailitem/[listingId]",
+      params: { listingId: item.listingId },
+    });
+  };
 
   const showToast = async (message: string) => {
     let toast = Toast.show(message, {
@@ -109,7 +116,7 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container} onPress={navigateToDetail}>
       <Text style={styles.title}>{listing?.title}</Text>
       <View
         style={{
@@ -205,7 +212,7 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
           </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
