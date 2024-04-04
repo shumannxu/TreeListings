@@ -50,7 +50,6 @@ export default function DetailItem() {
   useEffect(() => {
     const fetchListing = async () => {
       if (listingId && listings) {
-        console.log(listings[listingId]);
         if (listings[listingId] == null) {
           setListing(
             selfListings.filter((listing) => listing.listingId == listingId)[0]
