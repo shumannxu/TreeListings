@@ -3,7 +3,7 @@ import { CategoryType } from "./types";
 export const CATEGORIES: readonly { label: string; value: CategoryType }[] = [
   { label: "Electronics", value: CategoryType.ELECTRONICS },
   { label: "Services", value: CategoryType.SERVICE },
-  { label: "Vehicles", value: CategoryType.VEHICLES },
+  { label: "Bikes", value: CategoryType.BIKES },
   { label: "Property Rentals", value: CategoryType.PROPERTY_RENTALS },
   { label: "Apparel", value: CategoryType.APPAREL },
   { label: "Leisure", value: CategoryType.ENTERTAINMENT }, // Edited from Entertainment -> Leisure
