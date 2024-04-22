@@ -72,6 +72,7 @@ export enum CategoryType {
   SPORTING_GOODS = "SPORT", // Sporting goods
   TOYS_GAMES = "TOY", // Toys & games
   SERVICE = "SERV",
+  BIKES = "BIKE",
 }
 
 export type Offer = {

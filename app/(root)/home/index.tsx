@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -30,6 +31,8 @@ export default function Home() {
   const [recCounter, setRecCounter] = useState<number>(1);
   const [histCounter, setHistCounter] = useState<number>(1);
 
+  const [bikeFilter, setBikeFilter] = useState<boolean>(false);
+
   const [recList, setRecList] = useState<
     Array<Listing | { listingId: "VIEW_MORE" }>
   >([]);
@@ -41,6 +44,11 @@ export default function Home() {
   >([]);
 
   const [loading, setLoading] = useState<boolean>(false);
+
+  const toggleBikeFilter = useCallback(
+    () => setBikeFilter(!bikeFilter),
+    [bikeFilter]
+  );
 
   const retrieveLists = useCallback(async () => {
     if (listings && user) {
@@ -56,8 +64,8 @@ export default function Home() {
       const hList = await AsyncStorage.getItem("history");
       const parsedhListId = hList ? JSON.parse(hList) : [];
       const parsedHlist = parsedhListId
-      .map((listingId: ListingId) => listings[listingId])
-      .filter((listingId: ListingId) => listingId !== undefined);;
+        .map((listingId: ListingId) => listings[listingId])
+        .filter((listingId: ListingId) => listingId !== undefined);
       setHistList(parsedHlist);
       setLoading(false);
     }
@@ -182,6 +190,23 @@ export default function Home() {
             source={require("../../../assets/Logo.png")}
           />
         </View>
+
+        <TouchableOpacity
+          style={{ alignSelf: "flex-start" }}
+          onPress={toggleBikeFilter}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 10,
+              borderRadius: 999,
+              backgroundColor: "gray",
+            }}
+          >
+            <Text style={{ fontSize: 14 }}>Bikes</Text>
+          </View>
+        </TouchableOpacity>
+
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.textStyle}>Trending</Text>
           <Feather
