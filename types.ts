@@ -84,3 +84,35 @@ export type Offer = {
   dateActionTaken?: Date;
   accepted: boolean | null;
 };
+
+// Bike categories
+export enum BikeCategoryType {
+  ROAD = "ROAD",
+  SPORT = "SPRT",
+  COMMUTER_URBAN = "COMU",
+  COMFORT = "COMF",
+  FITNESS = "FITN",
+  HYBRID = "HYBR",
+  ELECTRIC = "ELEC",
+}
+
+// Bike Brands
+export enum BikeBrandType {
+  KHS = "KHS",
+  FUJI = "FUJI",
+  VELOTRIC = "VELO",
+  JAMIS = "JAMI",
+  NORCO = "NOR",
+  BIRIA = "BIRI",
+  EVO = "EVO",
+  SERFAS = "SER",
+  OTHERS = "OTHER",
+}
+
+// Gender
+export enum BikeGender {
+  UNISEX = "UNI",
+  MENS = "MEN",
+  WOMENS = "WOM",
+  NOT_DESIGNATED = "ND",
+}
