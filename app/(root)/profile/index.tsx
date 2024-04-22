@@ -1,4 +1,5 @@
 import {
+  FlatList,
   View,
   Text,
   Button,
@@ -14,12 +15,17 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../context";
-import { Listing, Offer, User, UserContextType } from "../../../types";
+import {
+  Listing,
+  ListingId,
+  Offer,
+  User,
+  UserContextType,
+} from "../../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../../components/icon";
 import { getSelfListings, setDocument } from "../../../firebase/db";
 import {
-  FlatList,
   HeaderMeasurements,
   MaterialTabBar,
   TabBarProps,
@@ -36,25 +42,10 @@ export default function Profile() {
     useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
+  const [recentSearches, setRecentSearches] = useState([]);
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
-
-  const toggleActiveListings = () => {
-    setActiveListingsSelected(true);
-  };
-
-  const togglePastListings = () => {
-    setActiveListingsSelected(false);
-  };
-
-  const toggleSellerActiveListings = () => {
-    setSellerActiveListingsSelected(true);
-  };
-
-  const toggleSellerPastListings = () => {
-    setSellerActiveListingsSelected(false);
-  };
 
   const navigateToEditProfile = useCallback(() => {
     router.push("/profile/editProfile");
@@ -105,6 +96,22 @@ export default function Profile() {
     }
     return [];
   }, [activeListingsSelected, listings, outgoingOffers, user]);
+
+  const renderItem = useCallback(({ item }: { item: String }) => {
+    return (
+      <TouchableOpacity style={[styles.recentSearchTag, styles.itemSpacing]}>
+        <Text>{item}</Text>
+      </TouchableOpacity>
+    );
+  }, []);
+
+  const ListEmptyComponent = useMemo(() => {
+    return (
+      <View style={[styles.itemSpacing]}>
+        <Text style={styles.headerText}>No Recent Searches</Text>
+      </View>
+    );
+  }, []);
 
   const renderHeader = useCallback(
     (props: TabBarProps) => {
@@ -172,24 +179,28 @@ export default function Profile() {
     [user]
   );
 
-  const ListEmptyComponent = useMemo(() => {
-    return (
-      <View style={{ alignItems: "center" }}>
-        <Image
-          style={styles.icon}
-          source={require("../../../assets/sadtreeicon.png")}
-        />
-        <Text style={{ alignSelf: "center", fontSize: 20 }}>
-          No History Yet
-        </Text>
-      </View>
-    );
-  }, []);
+  const retrieveRecent = useCallback(async () => {
+    if (listings && user) {
+      const hList = await AsyncStorage.getItem("history");
+      const parsedhListId = hList ? JSON.parse(hList) : [];
+      const parsedHlist = parsedhListId
+        .map((listingId: ListingId) => listings[listingId])
+        .filter((listingId: Listing) => listingId !== undefined)
+        .flatMap((listing: Listing) =>
+          Array.isArray(listing.keywords) ? listing.keywords : []
+        );
+      setRecentSearches(parsedHlist);
+    }
+  }, [listings, user]);
+
+  useEffect(() => {
+    retrieveRecent();
+  }, [listings, user]);
 
   return (
     <ScrollView style={[styles.container]}>
       <View style={{ height: safeAreaInsets.top }} />
-      <View style={[styles.profileContainer]}>
+      <View style={[styles.profileContainer, styles.itemSpacing]}>
         <View style={[styles.align, styles.horizontal]}>
           <Icon color={"#664147"} height={30}>
             profile
@@ -209,6 +220,13 @@ export default function Profile() {
         <Text style={[styles.headerText, styles.itemSpacing]}>
           Recently Visited
         </Text>
+        <FlatList
+          ListEmptyComponent={ListEmptyComponent}
+          showsHorizontalScrollIndicator={false}
+          data={recentSearches}
+          horizontal
+          renderItem={renderItem}
+        />
       </View>
       <View style={[styles.itemLinkContainer]}>
         <Text style={[styles.headerText, styles.itemSpacing]}>
@@ -279,6 +297,12 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     paddingHorizontal: 15,
   },
+  recentSearchTag: {
+    borderRadius: 999,
+    marginRight: 8,
+    padding: 6,
+    backgroundColor: "gray",
+  },
   align: {
     alignItems: "center",
   },
@@ -301,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: "gray",
   },
   itemSpacing: {
-    paddingBottom: 20,
+    marginBottom: 20,
   },
   profileContainer: {
     flexDirection: "row",
