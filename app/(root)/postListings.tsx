@@ -19,7 +19,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CategoryType, Listing, UserContextType } from "../../types";
 import { uploadListing } from "../../firebase/db";
 import { useAuth } from "../../context";
-import { CATEGORIES, BIKE_CATEGORIES, BIKE_BRANDS, BIKE_GENDER } from "../../constants";
+import {
+  CATEGORIES,
+  BIKE_CATEGORIES,
+  BIKE_BRANDS,
+  BIKE_GENDER,
+} from "../../constants";
 import { router } from "expo-router";
 
 export default function PostListings() {
@@ -37,6 +42,13 @@ export default function PostListings() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [bikeCategoryValue, setBikeCategoryValue] = useState([]);
+  const [bikeBrandValue, setBikeBrandValue] = useState([]);
+  const [bikeGenderValue, setBikeGenderValue] = useState([]);
+
+  const [bikeCategoryItems, setBikeCategoryItems] = useState(BIKE_CATEGORIES);
+  const [bikeBrandItems, setBikeBrandItems] = useState(BIKE_BRANDS);
+  const [bikeGenderItems, setBikeGenderItems] = useState(BIKE_GENDER);
 
   useEffect(() => {
     (async () => {
@@ -94,24 +106,19 @@ export default function PostListings() {
   };
 
   const handleDropdownToggle = (dropdown) => {
-    switch (dropdown) {
-      case 'main':
-        setOpenMainDropdown((prevState) => !prevState);
-        break;
-      case 'bikeCategory':
-        setOpenBikeCategory((prevState) => !prevState);
-        break;
-      case 'bikeBrand':
-        setOpenBikeBrand((prevState) => !prevState);
-        break;
-      case 'bikeGender':
-        setOpenBikeGender((prevState) => !prevState);
-        break;
-      default:
-        break;
-    }
+    setOpenMainDropdown(
+      dropdown === "main" ? (prevState) => !prevState : false
+    );
+    setOpenBikeCategory(
+      dropdown === "bikeCategory" ? (prevState) => !prevState : false
+    );
+    setOpenBikeBrand(
+      dropdown === "bikeBrand" ? (prevState) => !prevState : false
+    );
+    setOpenBikeGender(
+      dropdown === "bikeGender" ? (prevState) => !prevState : false
+    );
   };
-  
 
   const uploadListingToFirestore = useCallback(async () => {
     if (user) {
@@ -238,23 +245,25 @@ export default function PostListings() {
             onChangeText={setDescription}
           />
         </KeyboardAvoidingView>
-        <DropDownPicker
-          style={styles.dropdown}
-          listMode="SCROLLVIEW"
-          mode="BADGE"
-          badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
-          multiple={true}
-          min={1}
-          max={4}
-          // searchable={true}
-          open={openMainDropdown}
-          value={categories}
-          items={items}
-          setOpen={() => handleDropdownToggle('main')}
-          setValue={setCategories}
-          setItems={setItems}
-          placeholder={"Category"}
-        />
+        <View style={{ zIndex: openMainDropdown ? 2 : 1 }}>
+          <DropDownPicker
+            style={styles.dropdown}
+            listMode="SCROLLVIEW"
+            mode="BADGE"
+            badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+            multiple={true}
+            min={1}
+            max={8}
+            // searchable={true}
+            open={openMainDropdown}
+            value={categories}
+            items={items}
+            setOpen={() => handleDropdownToggle("main")}
+            setValue={setCategories}
+            setItems={setItems}
+            placeholder={"Category"}
+          />
+        </View>
         {categories.includes("BIKE") && (
           <View style={{ zIndex: openBikeCategory ? 2 : 1 }}>
             <DropDownPicker
@@ -264,13 +273,13 @@ export default function PostListings() {
               badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
               multiple={true}
               min={1}
-              max={4}
+              max={8}
               open={openBikeCategory}
-              value={categories}
-              items={BIKE_CATEGORIES}
-              setOpen={() => handleDropdownToggle('bikeCategory')}
-              setValue={setCategories}
-              setItems={setItems}
+              value={bikeCategoryValue}
+              items={bikeCategoryItems}
+              setOpen={() => handleDropdownToggle("bikeCategory")}
+              setValue={setBikeCategoryValue}
+              setItems={setBikeCategoryItems}
               placeholder={"Bike Category"}
             />
           </View>
@@ -284,13 +293,13 @@ export default function PostListings() {
               badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
               multiple={true}
               min={1}
-              max={4}
+              max={8}
               open={openBikeBrand}
-              value={categories}
-              items={BIKE_BRANDS}
-              setOpen={() => handleDropdownToggle('bikeBrand')}
-              setValue={setCategories}
-              setItems={setItems}
+              value={bikeBrandValue}
+              items={bikeBrandItems}
+              setOpen={() => handleDropdownToggle("bikeBrand")}
+              setValue={setBikeBrandValue}
+              setItems={setBikeBrandItems}
               placeholder={"Bike Brand"}
             />
           </View>
@@ -304,13 +313,13 @@ export default function PostListings() {
               badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
               multiple={true}
               min={1}
-              max={4}
+              max={8}
               open={openBikeGender}
-              value={categories}
-              items={BIKE_GENDER}
-              setOpen={() => handleDropdownToggle('bikeGender')}
-              setValue={setCategories}
-              setItems={setItems}
+              value={bikeGenderValue}
+              items={bikeGenderItems}
+              setOpen={() => handleDropdownToggle("bikeGender")}
+              setValue={setBikeGenderValue}
+              setItems={setBikeGenderItems}
               placeholder={"Bike Gender"}
             />
           </View>
