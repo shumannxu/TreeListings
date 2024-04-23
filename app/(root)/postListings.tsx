@@ -19,7 +19,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CategoryType, Listing, UserContextType } from "../../types";
 import { uploadListing } from "../../firebase/db";
 import { useAuth } from "../../context";
-import { CATEGORIES } from "../../constants";
+import {
+  CATEGORIES,
+  BIKE_CATEGORIES,
+  BIKE_BRANDS,
+  BIKE_GENDER,
+} from "../../constants";
 import { router } from "expo-router";
 
 export default function PostListings() {
@@ -29,10 +34,21 @@ export default function PostListings() {
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState(CATEGORIES);
   const [open, setOpen] = useState(false);
+  const [openMainDropdown, setOpenMainDropdown] = useState(false);
+  const [openBikeCategory, setOpenBikeCategory] = useState(false);
+  const [openBikeBrand, setOpenBikeBrand] = useState(false);
+  const [openBikeGender, setOpenBikeGender] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [bikeCategoryValue, setBikeCategoryValue] = useState([]);
+  const [bikeBrandValue, setBikeBrandValue] = useState([]);
+  const [bikeGenderValue, setBikeGenderValue] = useState([]);
+
+  const [bikeCategoryItems, setBikeCategoryItems] = useState(BIKE_CATEGORIES);
+  const [bikeBrandItems, setBikeBrandItems] = useState(BIKE_BRANDS);
+  const [bikeGenderItems, setBikeGenderItems] = useState(BIKE_GENDER);
 
   useEffect(() => {
     (async () => {
@@ -87,6 +103,21 @@ export default function PostListings() {
       alert("Upload failed, sorry :(");
     } finally {
     }
+  };
+
+  const handleDropdownToggle = (dropdown) => {
+    setOpenMainDropdown(
+      dropdown === "main" ? (prevState) => !prevState : false
+    );
+    setOpenBikeCategory(
+      dropdown === "bikeCategory" ? (prevState) => !prevState : false
+    );
+    setOpenBikeBrand(
+      dropdown === "bikeBrand" ? (prevState) => !prevState : false
+    );
+    setOpenBikeGender(
+      dropdown === "bikeGender" ? (prevState) => !prevState : false
+    );
   };
 
   const uploadListingToFirestore = useCallback(async () => {
@@ -214,23 +245,85 @@ export default function PostListings() {
             onChangeText={setDescription}
           />
         </KeyboardAvoidingView>
-        <DropDownPicker
-          style={styles.dropdown}
-          listMode="SCROLLVIEW"
-          mode="BADGE"
-          badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
-          multiple={true}
-          min={1}
-          max={4}
-          // searchable={true}
-          open={open}
-          value={categories}
-          items={items}
-          setOpen={setOpen}
-          setValue={setCategories}
-          setItems={setItems}
-          placeholder={"Category"}
-        />
+        <View style={{ zIndex: openMainDropdown ? 2 : 1 }}>
+          <DropDownPicker
+            style={styles.dropdown}
+            listMode="SCROLLVIEW"
+            mode="BADGE"
+            badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+            multiple={true}
+            min={1}
+            max={8}
+            // searchable={true}
+            open={openMainDropdown}
+            value={categories}
+            items={items}
+            setOpen={() => handleDropdownToggle("main")}
+            setValue={setCategories}
+            setItems={setItems}
+            placeholder={"Category"}
+          />
+        </View>
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeCategory ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={8}
+              open={openBikeCategory}
+              value={bikeCategoryValue}
+              items={bikeCategoryItems}
+              setOpen={() => handleDropdownToggle("bikeCategory")}
+              setValue={setBikeCategoryValue}
+              setItems={setBikeCategoryItems}
+              placeholder={"Bike Category"}
+            />
+          </View>
+        )}
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeBrand ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={8}
+              open={openBikeBrand}
+              value={bikeBrandValue}
+              items={bikeBrandItems}
+              setOpen={() => handleDropdownToggle("bikeBrand")}
+              setValue={setBikeBrandValue}
+              setItems={setBikeBrandItems}
+              placeholder={"Bike Brand"}
+            />
+          </View>
+        )}
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeGender ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={8}
+              open={openBikeGender}
+              value={bikeGenderValue}
+              items={bikeGenderItems}
+              setOpen={() => handleDropdownToggle("bikeGender")}
+              setValue={setBikeGenderValue}
+              setItems={setBikeGenderItems}
+              placeholder={"Bike Gender"}
+            />
+          </View>
+        )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.cancelButton}>
             <Text style={styles.buttonText}>Cancel</Text>
@@ -281,6 +374,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
+  },
+  additionalDropdown: {
+    marginTop: 10, // Add some space between dropdowns
   },
   pickerContainer: {
     borderColor: "gray",
