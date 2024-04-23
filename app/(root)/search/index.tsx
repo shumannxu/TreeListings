@@ -17,11 +17,12 @@ import { Entypo } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 
-import { useAuth } from "../../context";
-import SearchItem from "../components/searchItem";
-import { CategoryType, Listing, UserContextType } from "../../types";
+import { useAuth } from "../../../context";
+import SearchItem from "../../components/searchItem";
+import { CategoryType, Listing, UserContextType } from "../../../types";
+import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { CATEGORIES } from "../../constants";
+import { CATEGORIES } from "../../../constants";
 
 /* Search Result Screen */
 export default function Search() {
@@ -64,56 +65,134 @@ export default function Search() {
     [selectedCategories]
   );
 
+  // function to navigate
+  const navigateToBikeSearch = useCallback(() => {
+    router.push("/search/bikeSearch");
+  }, []);
+
   // Function to toggle all categories selection
   const toggleAllCategories = useCallback(() => {
     if (selectedCategories.length === CATEGORIES.length) {
+      // If all categories are currently selected, deselect all
       setSelectedCategories([]);
     } else {
+      // If not all categories are selected, select all
       setSelectedCategories(CATEGORIES.map((category) => category.value));
     }
-  }, []);
+  }, [selectedCategories]);
+
+  // Stemmer function
+  function stemWord(word) {
+    // Step 1a
+    if (word.endsWith("sses")) {
+      word = word.slice(0, -2);
+    } else if (word.endsWith("ies") || word.endsWith("ss")) {
+      // do nothing
+    } else if (word.endsWith("s")) {
+      word = word.slice(0, -1);
+    }
+
+    // Step 1b
+    if (word.endsWith("eed")) {
+      if (word.length - 4 >= 1) {
+        word = word.slice(0, -1);
+      }
+    } else if (word.endsWith("ed") && word.search(/[aeiou]/) != -1) {
+      word = word.slice(0, -2);
+      if (word.endsWith("at") || word.endsWith("bl") || word.endsWith("iz")) {
+        word += "e";
+      } else if (
+        word.length >= 2 &&
+        word.endsWith(word[word.length - 1]) &&
+        !word.endsWith("l") &&
+        !word.endsWith("s") &&
+        !word.endsWith("z")
+      ) {
+        word = word.slice(0, -1);
+      } else if (
+        word.length >= 3 &&
+        word.search(/[^aeiou][aeiou][^aeiouwxy]$/) != -1
+      ) {
+        word += "e";
+      }
+    } else if (word.endsWith("ing") && word.search(/[aeiou]/) != -1) {
+      word = word.slice(0, -3);
+      if (word.endsWith("at") || word.endsWith("bl") || word.endsWith("iz")) {
+        word += "e";
+      } else if (
+        word.length >= 2 &&
+        word.endsWith(word[word.length - 1]) &&
+        !word.endsWith("l") &&
+        !word.endsWith("s") &&
+        !word.endsWith("z")
+      ) {
+        word = word.slice(0, -1);
+      } else if (
+        word.length >= 3 &&
+        word.search(/[^aeiou][aeiou][^aeiouwxy]$/) != -1
+      ) {
+        word += "e";
+      }
+    }
+
+    // Step 1c
+    if (word.endsWith("y") && word.search(/[aeiou]/) != -1) {
+      word = word.slice(0, -1) + "i";
+    }
+
+    // Return the stemmed word
+    return word;
+  }
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (searchQuery && listings) {
-        const results = Object.values(listings).filter((listing) =>
-          listing.title.toLowerCase().includes(searchQuery.toLowerCase())
+        // Tokenize the search query into individual words
+        const queryWords = searchQuery
+          .toLowerCase()
+          .split(" ")
+          .filter((word) => word.length >= 3) // filtering by word length 3 to prevent queries like 'Apple o' to display all results that include 'o' in the title
+          .map((word) => stemWord(word)); // Apply the stemWord function to each word
+
+        const directMatches = Object.values(listings).filter(
+          (listing) =>
+            // Check for direct character or word matches in title or keywords
+            listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            (listing.keywords !== null &&
+              listing.keywords?.some((keyword) =>
+                keyword.toLowerCase().includes(searchQuery.toLowerCase())
+              ))
         );
+
+        // Check for matches of any word in the query matching title or keywords
+        const wordMatches = Object.values(listings).filter((listing) =>
+          queryWords.some(
+            (word) =>
+              listing.title.toLowerCase().includes(word.toLowerCase()) ||
+              (listing.keywords !== null &&
+                listing.keywords?.some((keyword) =>
+                  keyword.toLowerCase().includes(word.toLowerCase())
+                ))
+          )
+        );
+
+        // Combine direct matches and word matches
+        const results = [...new Set([...directMatches, ...wordMatches])];
+
         // Filter by selected categories if any categories are selected
         if (selectedCategories.length > 0) {
           // if there is search query
-          if (searchQuery) {
-            // Edit: Search filters by (1) title, (2) keywords, and (3) user selected categories
-            const filteredByCategoryAndSearch = Object.values(listings).filter(
-              (listing) =>
-                // (1) search by title
-                (listing.title
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                  // (2) search by keywords
-                  (listing.keywords !== null &&
-                    listing.keywords?.some((keyword) =>
-                      keyword.toLowerCase().includes(searchQuery.toLowerCase())
-                    ))) &&
-                // (3) filter by user's selected categories
-                selectedCategories.some((category) =>
-                  listing.categories.includes(category)
-                )
-            );
-            // set the filtered results
-            setFilteredResults(filteredByCategoryAndSearch);
-          } else {
-            // no search query
-            const filteredByCategory = results.filter((listing) =>
-              selectedCategories.some((category) =>
-                listing.categories.includes(category)
-              )
-            );
-            setFilteredResults(filteredByCategory);
-          }
+          // Filter by user's selected categories
+          const filteredByCategory = results.filter((listing) =>
+            selectedCategories.some((category) =>
+              listing.categories.includes(category)
+            )
+          );
+          // set the filtered results
+          setFilteredResults(filteredByCategory);
         } else {
-          // display nothing when user de-selected all categories
-          setFilteredResults([]);
+          // display all results if no categories are selected
+          setFilteredResults(results);
         }
       } else {
         // If there's no search query, apply category filter if any categories are selected
@@ -196,11 +275,11 @@ export default function Search() {
         <View
           style={{
             flex: 1,
-            marginTop: safeAreaInsets.top,
+            marginTop: safeAreaInsets.top + 10,
             paddingHorizontal: 20,
           }}
         >
-          <Text style={{ fontWeight: "bold", fontSize: 25 }}>Browse</Text>
+          <Text style={{ fontWeight: "bold", fontSize: 30 }}>Browse</Text>
 
           <View
             style={{
@@ -242,13 +321,74 @@ export default function Search() {
               <MaterialIcons name="search" size={24} color="black" />
             </TouchableOpacity>
           </View>
+
+          <TouchableOpacity
+            onPress={navigateToBikeSearch}
+            style={{
+              padding: 10,
+              backgroundColor: "#38B39C",
+              borderRadius: 5,
+              marginBottom: 5,
+              marginTop: 15,
+              height: 85,
+              alignItems: "center", // Center the content horizontally
+            }}
+          >
+            {/* Remove the extra parentheses */}
+            <MaterialIcons name="bike-scooter" size={40} color="#fff" />
+            <Text
+              style={{
+                color: "white",
+                fontWeight: "bold",
+                fontSize: 20,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              Tap Here to Explore Bikes
+            </Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              paddingHorizontal: 0,
+              marginBottom: 5,
+              marginTop: 5,
+            }}
+          >
+            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+              General Categories
+            </Text>
+            <TouchableOpacity
+              style={{
+                marginBottom: 5,
+                marginTop: 5,
+              }}
+              onPress={toggleAllCategories}
+            >
+              <Text
+                style={{
+                  fontWeight: "bold",
+                  fontSize: 16,
+                  marginRight: 10,
+                }}
+              >
+                {selectedCategories.length === CATEGORIES.length
+                  ? "Deselect All"
+                  : "Select All"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
           {!isInputFocused && searchQuery.length == 0 && (
             <View
               style={{
                 justifyContent: "center",
                 alignItems: "center",
                 padding: 5,
-                paddingVertical: 10,
+                paddingVertical: 0,
               }}
             >
               <FlatList

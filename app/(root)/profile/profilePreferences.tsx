@@ -76,111 +76,14 @@ export default function Profile() {
   };
 
   return (
-    <ScrollView
+    <View
       style={{
         width: "100%",
         paddingHorizontal: width * 0.1,
         marginTop: safeAreaInsets.top,
       }}
     >
-      {/* User Information content */}
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>First name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Input your first name"
-          value={userInfo?.firstName}
-          onChangeText={(text) => {
-            setUserInfo({ ...userInfo, firstName: text });
-            setChange(true);
-          }}
-        />
-        <TouchableOpacity onPress={saveChanges}>
-          <Icon color={"black"} height={20}>
-            edit
-          </Icon>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Last name:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Input your last name"
-          value={userInfo?.lastName}
-          onChangeText={(text) => {
-            setUserInfo({ ...userInfo, lastName: text });
-            setChange(true);
-          }}
-        />
-        <TouchableOpacity onPress={saveChanges}>
-          <Icon color={"black"} height={20}>
-            edit
-          </Icon>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Username:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Input your username"
-          value={userInfo?.username}
-          onChangeText={(text) => {
-            setUserInfo({ ...userInfo, username: text });
-            setChange(true);
-          }}
-        />
-        <TouchableOpacity onPress={saveChanges}>
-          <Icon color={"black"} height={20}>
-            edit
-          </Icon>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Phone:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Input your phone number"
-          value={userInfo?.phone}
-          inputMode="numeric"
-          onChangeText={(text) => {
-            setUserInfo({ ...userInfo, phone: text });
-            setChange(true);
-          }}
-        />
-        <TouchableOpacity onPress={saveChanges}>
-          <Icon color={"black"} height={20}>
-            edit
-          </Icon>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Email:</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Input your email"
-          value={userInfo?.email}
-          onChangeText={(text) => {
-            setUserInfo({ ...userInfo, email: text });
-            setChange(true);
-          }}
-        />
-        <TouchableOpacity onPress={saveChanges}>
-          <Icon color={"black"} height={20}>
-            edit
-          </Icon>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Buyer Rating:</Text>
-        <Text style={styles.textSecond}> {userInfo?.buyerRating}</Text>
-      </View>
-      <View style={styles.userInformationContainer}>
-        <Text style={styles.textFirst}>Seller Rating:</Text>
-        <Text style={styles.textSecond}> {userInfo?.sellerRating}</Text>
-      </View>
-      {/* User Preferences */}
-      {/* <Text style={styles.textFirst}>My Preferences:</Text>
+      <Text style={styles.textFirst}>My Preferences:</Text>
       <View style={styles.userPreferencesContainer}>
         {preferencesData.map((preference) => (
           <TouchableOpacity
@@ -194,14 +97,8 @@ export default function Profile() {
             <Text style={styles.preferenceText}>{preference.label}</Text>
           </TouchableOpacity>
         ))}
-      </View> */}
-
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={[styles.toggleButtonText, { color: "black" }]}>
-          Log Out
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+      </View>
+    </View>
   );
 }
 

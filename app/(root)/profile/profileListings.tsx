@@ -1,5 +1,4 @@
 import {
-  FlatList,
   View,
   Text,
   Button,
@@ -15,56 +14,56 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../../../context";
-import {
-  Listing,
-  ListingId,
-  Offer,
-  User,
-  UserContextType,
-} from "../../../types";
+import { Listing, Offer, User, UserContextType } from "../../../types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Icon from "../../../components/icon";
 import { getSelfListings, setDocument } from "../../../firebase/db";
 import {
+  FlatList,
   HeaderMeasurements,
   MaterialTabBar,
   TabBarProps,
   Tabs,
   useHeaderMeasurements,
 } from "react-native-collapsible-tab-view";
+import { CATEGORIES } from "../../../constants";
 import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchItem from "../../components/searchItem";
 
-export default function Profile() {
+const preferencesData = CATEGORIES.map((category) => ({
+  id: category.value,
+  label: category.label,
+}));
+
+export default function ProfileListings() {
   const { user, setUser, selfListings, listings, outgoingOffers } =
     useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const { height, width } = useWindowDimensions();
-  const [recentSearches, setRecentSearches] = useState([]);
   const [activeListingsSelected, setActiveListingsSelected] = useState(true); // For buyer and seller active/past toggle
   const [sellerActiveListingsSelected, setSellerActiveListingsSelected] =
     useState(true); // For seller active/past toggle
 
+  const toggleActiveListings = () => {
+    setActiveListingsSelected(true);
+  };
+
+  const togglePastListings = () => {
+    setActiveListingsSelected(false);
+  };
+
+  const toggleSellerActiveListings = () => {
+    setSellerActiveListingsSelected(true);
+  };
+
+  const toggleSellerPastListings = () => {
+    setSellerActiveListingsSelected(false);
+  };
+
   const navigateToEditProfile = useCallback(() => {
     router.push("/profile/editProfile");
-  }, []);
-
-  const navigateToProfileListings = useCallback(() => {
-    router.push("/profile/profileListings");
-  }, []);
-
-  const navigateToProfilePurchases = useCallback(() => {
-    router.push("/profile/profileListings");
-  }, []);
-
-  const navigateToProfilePreferences = useCallback(() => {
-    router.push("/profile/profilePreferences");
-  }, []);
-
-  const navigateToOffers = useCallback(() => {
-    router.push("/profile/profileOffers");
   }, []);
 
   const sellerFilteredResults = useMemo(() => {
@@ -96,22 +95,6 @@ export default function Profile() {
     }
     return [];
   }, [activeListingsSelected, listings, outgoingOffers, user]);
-
-  const renderItem = useCallback(({ item }: { item: String }) => {
-    return (
-      <TouchableOpacity style={[styles.recentSearchTag, styles.itemSpacing]}>
-        <Text>{item}</Text>
-      </TouchableOpacity>
-    );
-  }, []);
-
-  const ListEmptyComponent = useMemo(() => {
-    return (
-      <View style={[styles.itemSpacing]}>
-        <Text style={styles.headerText}>No Recent Searches</Text>
-      </View>
-    );
-  }, []);
 
   const renderHeader = useCallback(
     (props: TabBarProps) => {
@@ -179,163 +162,118 @@ export default function Profile() {
     [user]
   );
 
-  const retrieveRecent = useCallback(async () => {
-    if (listings && user) {
-      const hList = await AsyncStorage.getItem("history");
-      const parsedhListId = hList ? JSON.parse(hList) : [];
-      const parsedHlist = parsedhListId
-        .map((listingId: ListingId) => listings[listingId])
-        .filter((listingId: Listing) => listingId !== undefined)
-        .flatMap((listing: Listing) =>
-          Array.isArray(listing.keywords) ? listing.keywords : []
-        );
-      setRecentSearches(parsedHlist);
-    }
-  }, [listings, user]);
+  const renderTabBar = useCallback(
+    (props: TabBarProps) => <MaterialTabBar {...props} indicatorStyle={{}} />,
+    []
+  );
 
-  useEffect(() => {
-    retrieveRecent();
-  }, [listings, user]);
+  const ListEmptyComponent = useMemo(() => {
+    return (
+      <View style={{ alignItems: "center" }}>
+        <Image
+          style={styles.icon}
+          source={require("../../../assets/sadtreeicon.png")}
+        />
+        <Text style={{ alignSelf: "center", fontSize: 20 }}>
+          No History Yet
+        </Text>
+      </View>
+    );
+  }, []);
 
   return (
-    <ScrollView style={[styles.container]}>
-      <View style={{ height: safeAreaInsets.top }} />
-      <View style={[styles.profileContainer, styles.itemSpacing]}>
-        <View style={[styles.align, styles.horizontal]}>
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={styles.itemLinkText}>{user?.fullName}</Text>
-        </View>
-        <View style={[styles.align, styles.horizontal]}>
-          <TouchableOpacity
-            style={styles.viewProfile}
-            onPress={navigateToEditProfile}
-          >
-            <Text>View Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View>
-        <Text style={[styles.headerText, styles.itemSpacing]}>
-          Recently Visited
-        </Text>
-        <FlatList
+    <Tabs.Container
+      minHeaderHeight={40}
+      lazy
+      // revealHeaderOnScroll={true}
+      renderTabBar={renderTabBar}
+      renderHeader={renderHeader}
+    >
+      {/* / */}
+      <Tabs.Tab name="Buyer" label="Buying History">
+        {/*  */}
+        <Tabs.FlatList
           ListEmptyComponent={ListEmptyComponent}
-          showsHorizontalScrollIndicator={false}
-          data={recentSearches}
-          horizontal
-          renderItem={renderItem}
+          ListHeaderComponent={() => (
+            <View style={{ width: "100%" }}>
+              {/* Buyer Information content */}
+              <View style={styles.listingsToggleContainer}>
+                <TouchableOpacity onPress={toggleActiveListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      activeListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Active</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={togglePastListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      !activeListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Past</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          data={buyerFilteredResults}
+          renderItem={({ item, index }) => {
+            return <SearchItem item={item} />;
+          }}
+          keyExtractor={(item) => item.listingId}
         />
-      </View>
-      <View style={[styles.itemLinkContainer]}>
-        <Text style={[styles.headerText, styles.itemSpacing]}>
-          Buying & Selling
-        </Text>
-        <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Favorites</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={navigateToProfileListings}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Listings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Purchases</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={navigateToOffers}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Offers</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={navigateToProfilePreferences}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Preferences</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.itemLinkContainer]}>
-        <Text style={[styles.headerText, styles.itemSpacing]}>Business</Text>
-        <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
-        >
-          <Icon color={"#664147"} height={30}>
-            profile
-          </Icon>
-          <Text style={[styles.itemLinkText]}>Manage Business Profile</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </Tabs.Tab>
+      <Tabs.Tab name="Seller" label="Selling History">
+        <Tabs.FlatList
+          ListEmptyComponent={ListEmptyComponent}
+          ListHeaderComponent={() => (
+            <View style={{ width: "100%" }}>
+              {/* Seller Information content */}
+              <View style={styles.listingsToggleContainer}>
+                <TouchableOpacity onPress={toggleSellerActiveListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      sellerActiveListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Active</Text>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={toggleSellerPastListings}>
+                  <View
+                    style={[
+                      styles.listingsToggleButton,
+                      !sellerActiveListingsSelected && styles.activeButton,
+                    ]}
+                  >
+                    <Text style={styles.buttonText}>Past</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+          data={sellerFilteredResults}
+          renderItem={({ item, index }) => {
+            return <SearchItem item={item} />;
+          }}
+          keyExtractor={(item) => item.listingId}
+        />
+      </Tabs.Tab>
+    </Tabs.Container>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "white",
-    paddingHorizontal: 15,
-  },
-  recentSearchTag: {
-    borderRadius: 999,
-    marginRight: 8,
-    padding: 6,
-    backgroundColor: "gray",
-  },
-  align: {
-    alignItems: "center",
-  },
-  horizontal: {
-    flexDirection: "row",
-  },
-  headerText: {
-    fontSize: 23,
-    fontWeight: "bold",
-    textAlign: "left",
-  },
-  itemLinkText: {
-    fontSize: 18,
-    textAlign: "left",
-    marginLeft: 10,
-  },
-  viewProfile: {
-    borderRadius: 6,
-    padding: 10,
-    backgroundColor: "gray",
-  },
-  itemSpacing: {
-    marginBottom: 20,
-  },
-  profileContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-  },
-  itemLinkContainer: {
-    flexDirection: "column",
-    width: "100%",
     justifyContent: "flex-start",
+    alignItems: "center",
   },
   buttonContainer: {
     flexDirection: "row",
