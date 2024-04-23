@@ -19,7 +19,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { CategoryType, Listing, UserContextType } from "../../types";
 import { uploadListing } from "../../firebase/db";
 import { useAuth } from "../../context";
-import { CATEGORIES } from "../../constants";
+import { CATEGORIES, BIKE_CATEGORIES, BIKE_BRANDS, BIKE_GENDER } from "../../constants";
 import { router } from "expo-router";
 
 export default function PostListings() {
@@ -29,6 +29,10 @@ export default function PostListings() {
   const [categories, setCategories] = useState([]);
   const [items, setItems] = useState(CATEGORIES);
   const [open, setOpen] = useState(false);
+  const [openMainDropdown, setOpenMainDropdown] = useState(false);
+  const [openBikeCategory, setOpenBikeCategory] = useState(false);
+  const [openBikeBrand, setOpenBikeBrand] = useState(false);
+  const [openBikeGender, setOpenBikeGender] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
@@ -88,6 +92,26 @@ export default function PostListings() {
     } finally {
     }
   };
+
+  const handleDropdownToggle = (dropdown) => {
+    switch (dropdown) {
+      case 'main':
+        setOpenMainDropdown((prevState) => !prevState);
+        break;
+      case 'bikeCategory':
+        setOpenBikeCategory((prevState) => !prevState);
+        break;
+      case 'bikeBrand':
+        setOpenBikeBrand((prevState) => !prevState);
+        break;
+      case 'bikeGender':
+        setOpenBikeGender((prevState) => !prevState);
+        break;
+      default:
+        break;
+    }
+  };
+  
 
   const uploadListingToFirestore = useCallback(async () => {
     if (user) {
@@ -223,14 +247,74 @@ export default function PostListings() {
           min={1}
           max={4}
           // searchable={true}
-          open={open}
+          open={openMainDropdown}
           value={categories}
           items={items}
-          setOpen={setOpen}
+          setOpen={() => handleDropdownToggle('main')}
           setValue={setCategories}
           setItems={setItems}
           placeholder={"Category"}
         />
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeCategory ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={4}
+              open={openBikeCategory}
+              value={categories}
+              items={BIKE_CATEGORIES}
+              setOpen={() => handleDropdownToggle('bikeCategory')}
+              setValue={setCategories}
+              setItems={setItems}
+              placeholder={"Bike Category"}
+            />
+          </View>
+        )}
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeBrand ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={4}
+              open={openBikeBrand}
+              value={categories}
+              items={BIKE_BRANDS}
+              setOpen={() => handleDropdownToggle('bikeBrand')}
+              setValue={setCategories}
+              setItems={setItems}
+              placeholder={"Bike Brand"}
+            />
+          </View>
+        )}
+        {categories.includes("BIKE") && (
+          <View style={{ zIndex: openBikeGender ? 2 : 1 }}>
+            <DropDownPicker
+              style={[styles.dropdown, styles.additionalDropdown]}
+              listMode="SCROLLVIEW"
+              mode="BADGE"
+              badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
+              multiple={true}
+              min={1}
+              max={4}
+              open={openBikeGender}
+              value={categories}
+              items={BIKE_GENDER}
+              setOpen={() => handleDropdownToggle('bikeGender')}
+              setValue={setCategories}
+              setItems={setItems}
+              placeholder={"Bike Gender"}
+            />
+          </View>
+        )}
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.cancelButton}>
             <Text style={styles.buttonText}>Cancel</Text>
@@ -281,6 +365,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 10,
     borderRadius: 5,
+  },
+  additionalDropdown: {
+    marginTop: 10, // Add some space between dropdowns
   },
   pickerContainer: {
     borderColor: "gray",
