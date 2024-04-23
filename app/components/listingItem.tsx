@@ -37,10 +37,10 @@ const ListingItem: React.FC<ItemProps> = ({ item }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 140, // Set a fixed width for the container
+    width: 140, 
     margin: 10,
     borderRadius: 10,
-    overflow: "hidden", // This will hide the overflow content and respect the border radius
+    overflow: "hidden", 
   },
   imageContainer: {
     position: "relative",

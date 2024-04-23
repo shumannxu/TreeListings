@@ -21,7 +21,7 @@ import {
   createOffer,
 } from "../../../../firebase/db";
 import { Listing, User, UserContextType } from "../../../../types";
-import getTimeAgo from "../../../components/getTimeAgo";
+import { getTimeAgo2 } from "../../../components/getTimeAgo";
 import Icon from "../../../../components/icon";
 import ListingItem from "../../../components/listingItem";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -36,7 +36,7 @@ export default function DetailItem() {
   const { user, setUser, listings, setListings, selfListings } =
     useAuth() as UserContextType;
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
-
+  
   const safeAreaInsets = useSafeAreaInsets();
   const [selfUserInfo, setSelfUserInfo] = useState<User | null>(null);
 
@@ -46,6 +46,19 @@ export default function DetailItem() {
   const { height, width } = useWindowDimensions();
   const [timeAgo, setTimeAgo] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+
+  const [isExpanded, setIsExpanded] = useState(false);  // State to manage expansion
+
+  const toggleExpanded = () => {
+    setIsExpanded(!isExpanded);  // Toggle the state on tap
+  };
+
+  useEffect(() => {
+    if (listing) {
+      setTimeAgo(getTimeAgo2(listing.datePosted));
+    }
+  }, [listing]);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -82,10 +95,10 @@ export default function DetailItem() {
 
   const styles = StyleSheet.create({
     image: {
-      width: width * 0.85,
+      width: width,
       height: width * 0.85,
-      borderRadius: 10,
-      marginVertical: 10,
+      // borderRadius: 10,
+      // marginVertical: 10,
     },
     button: {
       backgroundColor: "#38B39C",
@@ -96,6 +109,13 @@ export default function DetailItem() {
       fontSize: 20,
       fontWeight: "400",
       letterSpacing: 1,
+    },
+    textStyle: {
+      fontSize: 18,
+      fontWeight: "400",
+      letterSpacing: 1,
+      marginHorizontal: 10,
+      marginVertical: 10,
     },
   });
 
@@ -211,17 +231,18 @@ export default function DetailItem() {
       }
     }
   };
+
   return (
     <ScrollView
       contentContainerStyle={{
         alignItems: "center",
-        paddingVertical: safeAreaInsets.top,
+        // paddingVertical: safeAreaInsets.top,
       }}
     >
       <TouchableOpacity
         style={{
           position: "absolute",
-          top: safeAreaInsets.top + 10, // Adjust for safe area
+          top: safeAreaInsets.top + 10,
           left: 10,
           zIndex: 10, // Ensure it's above other elements
         }}
@@ -230,47 +251,62 @@ export default function DetailItem() {
         <Ionicons name="chevron-back-outline" size={40} color="#38B39C" />
       </TouchableOpacity>
 
-      <View style={{ alignItems: "center" }}>
-        <Text
-          style={{
-            fontSize: 30,
-            fontWeight: "bold",
-            letterSpacing: 1,
-            marginTop: 10,
-            marginBottom: 7,
-            color: "#4B6F6E",
-          }}
-        >
-          {listing.title}
-        </Text>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <Icon height={30} color="black">
-            profile
-          </Icon>
-          <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
-          {seller?.sellerRating && (
-            <>
-              <Text style={styles.defaultTextSize}>{seller?.sellerRating}</Text>
-              <Icon height={20} color="black">
-                star
-              </Icon>
-            </>
-          )}
-          <Text style={styles.defaultTextSize}>{timeAgo}</Text>
-        </View>
-
+      <View style={{ alignItems: "center", }}>
         <Image source={{ uri: listing.imagePath }} style={styles.image} />
-        <Text
-          style={{
-            fontSize: 18,
-            fontWeight: "400",
-            letterSpacing: 1,
-            marginHorizontal: 10,
-            marginVertical: 10,
-          }}
-        >
-          {listing.description}
-        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10}}>
+          <View style={{flexDirection: "row", }}>
+            <Icon height={30} color="black">
+              profile
+            </Icon>
+            <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
+          </View>
+          <View style={{flexDirection: "row",}}>
+            <Text style={styles.defaultTextSize}>{seller?.sellerRating? seller.sellerRating : 5}</Text>
+            <Icon height={20} color="black">
+              star
+            </Icon>
+          </View>
+        </View>
+        <View style={{width: width * 0.95, height: 1, backgroundColor: "grey"}}/>
+        <View style={{width: width, paddingLeft: 10}}>
+          <Text
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            style={{
+              width: width * 0.65,
+              fontSize: 30,
+              fontWeight: "bold",
+              letterSpacing: 1,
+              marginTop: 10,
+              marginBottom: 7,
+              color: "#4B6F6E",
+            }}
+          >
+            {listing.title}
+          </Text>
+          <Text style={[styles.defaultTextSize, {color: "black"}]}>{"posted " + timeAgo}</Text>
+        </View>
+        <View  style={{width: width,}}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "600",
+              letterSpacing: 1,
+              marginHorizontal: 10,
+              marginVertical: 10,
+            }}
+          >
+            {"Description:"}
+          </Text>
+          <TouchableOpacity onPress={toggleExpanded} activeOpacity={0.9}>
+          <Text
+            style={styles.textStyle}
+            numberOfLines={isExpanded ? undefined : 4}  // Limit to 4 lines unless expanded
+          >
+            {listing.description}
+          </Text>
+        </TouchableOpacity>
+        </View>
         <View
           style={{
             flexDirection: "row",
