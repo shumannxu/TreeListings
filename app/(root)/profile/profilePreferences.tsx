@@ -9,6 +9,7 @@ import {
   TextInput,
   ViewProps,
 } from "react-native";
+import { Slider } from "@react-native-community/slider";
 import React, { useCallback, useEffect, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -37,6 +38,10 @@ export default function Profile() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [change, setChange] = useState(false);
   const [preferences, setPreferences] = useState(user?.interests || []);
+  const [heightFeet, setHeightFeet] = useState(5);
+  const [heightInches, setHeightInches] = useState(8);
+  const [bikeGender, setBikeGender] = useState("Male");
+  const [bikeTypes, setBikeTypes] = useState<string[]>([]);
 
   useEffect(() => {
     setUserInfo(user);
@@ -75,6 +80,24 @@ export default function Profile() {
     // updateUserPreferences(updatedPreferences); not implemented yet
   };
 
+  const handleSliderChange = (value: number) => {
+    const feet = Math.floor(value);
+    const inches = Math.round((value - feet) * 12);
+    setHeightFeet(feet);
+    setHeightInches(inches);
+  };
+
+  const handleBikeGenderChange = (gender: string) => {
+    setBikeGender(gender);
+  };
+
+  const toggleBikeType = (type: string) => {
+    const updatedTypes = bikeTypes.includes(type)
+      ? bikeTypes.filter((t) => t !== type)
+      : [...bikeTypes, type];
+    setBikeTypes(updatedTypes);
+  };
+
   return (
     <View
       style={{
@@ -97,6 +120,53 @@ export default function Profile() {
             <Text style={styles.preferenceText}>{preference.label}</Text>
           </TouchableOpacity>
         ))}
+        <Text>Height: {heightFeet}' {heightInches}"</Text>
+{/*         <Slider
+          style={{ width: 200, height: 40 }}
+          minimumValue={3}
+          maximumValue={7}
+          step={0.1}
+          value={(heightFeet - 3) + heightInches / 12}
+          onValueChange={handleSliderChange}
+        /> */}
+        <Text style={styles.textFirst}>Bike Gender:</Text>
+        <View style={styles.userPreferencesContainer}>
+          <TouchableOpacity
+            style={[
+              styles.bikeGenderButton,
+              bikeGender === "Male" && styles.selectedGenderButton,
+            ]}
+            onPress={() => handleBikeGenderChange("Male")}
+          >
+            <Text style={styles.preferenceText}>Male</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.bikeGenderButton,
+              bikeGender === "Female" && styles.selectedGenderButton,
+            ]}
+            onPress={() => handleBikeGenderChange("Female")}
+          >
+            <Text style={styles.preferenceText}>Female</Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.textFirst}>Bike Types:</Text>
+        <View style={styles.userPreferencesContainer}>
+          {["Mountain", "Hybrid", "Road", "Electric", "Single Speed"].map(
+            (type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.bikeTypeButton,
+                  bikeTypes.includes(type) && styles.selectedTypeButton,
+                ]}
+                onPress={() => toggleBikeType(type)}
+              >
+                <Text style={styles.preferenceText}>{type}</Text>
+              </TouchableOpacity>
+            )
+          )}
+        </View>
       </View>
     </View>
   );
@@ -200,5 +270,23 @@ const styles = StyleSheet.create({
   },
   inactiveText: {
     color: "#888",
+  },
+  bikeGenderButton: {
+    backgroundColor: "#ddd",
+    padding: 10,
+    margin: 3,
+    borderRadius: 50,
+  },
+  selectedGenderButton: {
+    backgroundColor: "#2F9C95",
+  },
+  bikeTypeButton: {
+    backgroundColor: "#ddd",
+    padding: 10,
+    margin: 3,
+    borderRadius: 50,
+  },
+  selectedTypeButton: {
+    backgroundColor: "#2F9C95",
   },
 });
