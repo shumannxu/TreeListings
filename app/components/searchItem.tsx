@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 
 import { Listing, User, UserId } from "../../types";
-import getTimeAgo from "./getTimeAgo";
+import {getTimeAgo} from "./getTimeAgo";
 import { getUserProfile } from "../../firebase/db";
 import { router } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
