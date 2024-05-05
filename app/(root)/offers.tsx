@@ -23,6 +23,7 @@ import { Listing, ListingId, Offer, UserContextType } from "../../types";
 import { useAuth } from "../../context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferItem from "../components/offerItem";
+import { router } from "expo-router";
 
 export default function Offers() {
   const {
@@ -46,6 +47,9 @@ export default function Offers() {
     }
   }, [user]);
 
+  const navigateToPreference = useCallback(() => {
+    router.push("/preferenceSurvey");
+  }, []);
   useEffect(() => {
     if (user) {
       const unsubscribe = createOfferListener({
@@ -87,6 +91,7 @@ export default function Offers() {
   );
   return (
     <View style={{ flex: 1, marginTop: insets.top }}>
+      <Button onPress={navigateToPreference} title="Navigate" />
       <Text style={styles.headingStyle}>Offer Status</Text>
       <SectionList
         sections={[
