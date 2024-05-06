@@ -42,9 +42,9 @@ export default function PostListings() {
   const [description, setDescription] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [bikeCategoryValue, setBikeCategoryValue] = useState([]);
-  const [bikeBrandValue, setBikeBrandValue] = useState([]);
-  const [bikeGenderValue, setBikeGenderValue] = useState([]);
+  const [bikeCategoryValue, setBikeCategoryValue] = useState<string[]>([]);
+  const [bikeBrandValue, setBikeBrandValue] = useState<string>("");
+  const [bikeGenderValue, setBikeGenderValue] = useState<string>("");
 
   const [bikeCategoryItems, setBikeCategoryItems] = useState(BIKE_CATEGORIES);
   const [bikeBrandItems, setBikeBrandItems] = useState(BIKE_BRANDS);
@@ -141,6 +141,9 @@ export default function PostListings() {
           sellerId: user.id,
           datePosted: new Date(),
           isListingActive: true,
+          bikeGenderValue: bikeGenderValue,
+          bikeCategoryValue: bikeCategoryValue,
+          bikeBrandValue: bikeBrandValue,
         }).then(() => {
           setLoading(false);
           setTitle("");
@@ -149,6 +152,9 @@ export default function PostListings() {
           setDescription("");
           setImage(null);
           setError(null);
+          setBikeBrandValue("");
+          setBikeCategoryValue([]);
+          setBikeGenderValue("");
           router.replace("/home");
           let toast = Toast.show("Listing Successfully Posted", {
             duration: Toast.durations.SHORT,
@@ -176,7 +182,17 @@ export default function PostListings() {
         });
       }
     }
-  }, [user, title, price, description, categories, image]);
+  }, [
+    user,
+    title,
+    price,
+    description,
+    categories,
+    image,
+    bikeBrandValue,
+    bikeGenderValue,
+    bikeCategoryValue,
+  ]);
 
   return (
     <ScrollView style={styles.container}>
@@ -291,9 +307,7 @@ export default function PostListings() {
               listMode="SCROLLVIEW"
               mode="BADGE"
               badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
-              multiple={true}
-              min={1}
-              max={8}
+              multiple={false}
               open={openBikeBrand}
               value={bikeBrandValue}
               items={bikeBrandItems}
@@ -311,9 +325,7 @@ export default function PostListings() {
               listMode="SCROLLVIEW"
               mode="BADGE"
               badgeDotColors={["#e76f51", "#00b4d8", "#e9c46a"]}
-              multiple={true}
-              min={1}
-              max={8}
+              multiple={false}
               open={openBikeGender}
               value={bikeGenderValue}
               items={bikeGenderItems}

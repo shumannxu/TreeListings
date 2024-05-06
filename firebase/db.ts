@@ -85,6 +85,9 @@ const uploadListing = async ({
   description,
   categories,
   isListingActive,
+  bikeBrandValue,
+  bikeCategoryValue,
+  bikeGenderValue,
 }: {
   sellerId: UserId;
   title: string;
@@ -94,6 +97,9 @@ const uploadListing = async ({
   description: string;
   categories: string[];
   isListingActive: boolean;
+  bikeBrandValue: string | undefined;
+  bikeCategoryValue: string[] | undefined;
+  bikeGenderValue: string | undefined;
 }): Promise<void> => {
   await runTransaction(firestore, async (transaction) => {
     const collectionRef = collection(firestore, "listings");
@@ -122,6 +128,11 @@ const uploadListing = async ({
       description: description,
       categories: categories,
       isListingActive: isListingActive,
+      ...(categories.includes(CategoryType.BIKES) && {
+        bikeBrand: bikeBrandValue,
+        bikeCategory: bikeCategoryValue,
+        bikeGender: bikeGenderValue,
+      }),
       ...(uploadUrl && { imagePath: uploadUrl }),
     } as Listing;
 
