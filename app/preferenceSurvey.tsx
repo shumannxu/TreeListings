@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, Animated, Image } from "react-native";
 import { User } from "../types";
 import { router } from "expo-router";
+import { Feather } from "@expo/vector-icons";
+import { BIKE_CATEGORIES, BIKE_GENDER } from "../constants";
 
 const allInterestsList = [
-  ["Art", "Technology", "Music"],
-  ["Sports", "Fashion", "Literature"],
-  ["Movies", "Science", "Cooking"],
+  BIKE_GENDER.map((map) => map.label),
+  BIKE_CATEGORIES.map((map) => map.label),
 ];
 
 const PreferenceSurvey = ({ user }: { user: User }) => {
@@ -19,7 +20,7 @@ const PreferenceSurvey = ({ user }: { user: User }) => {
 
   useEffect(() => {
     Animated.sequence([
-      Animated.delay(1500),
+      Animated.delay(500),
       Animated.timing(shakeAnimation, {
         toValue: 1,
         duration: 1000,
@@ -46,8 +47,7 @@ const PreferenceSurvey = ({ user }: { user: User }) => {
       setCurrentRound(currentRound + 1);
     } else {
       // Navigate to next page or handle final submit
-      console.log("Final interests selected:", selectedInterests);
-      router.push("/nextPage"); // Assuming nextPage is the route to navigate after final submit
+      router.push("/(root)/home"); // Assuming nextPage is the route to navigate after final submit
     }
   };
 
@@ -75,76 +75,90 @@ const PreferenceSurvey = ({ user }: { user: User }) => {
         backgroundColor: "white",
       }}
     >
-      <Animated.View style={shakeStyle}>
-        <Image
-          source={require("../assets/treelisting.png")}
-          style={{ width: 300, height: 300 }}
-        />
-      </Animated.View>
-      <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }}>
-        Choose Your Interests (Round {currentRound + 1} of{" "}
-        {allInterestsList.length})
-      </Text>
-      {allInterestsList[currentRound].map((interest, index) => (
-        <TouchableOpacity
-          key={index}
-          style={{
-            backgroundColor: selectedInterests[currentRound].includes(interest)
-              ? "#f4511e"
-              : "#eee",
-            padding: 10,
-            margin: 5,
-            borderRadius: 20,
-          }}
-          onPress={() => handleSelectInterest(interest)}
-        >
-          <Text
+      {!animationFinished ? (
+        <Animated.View style={shakeStyle}>
+          <Image
+            source={require("../assets/treelisting.png")}
+            style={{ width: 300, height: 300 }}
+          />
+        </Animated.View>
+      ) : (
+        <>
+          <Text style={{ fontSize: 20, marginTop: 20, marginBottom: 20 }}>
+            Choose Your Interests (Round {currentRound + 1} of{" "}
+            {allInterestsList.length})
+          </Text>
+          {allInterestsList[currentRound].map((interest, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                backgroundColor: selectedInterests[currentRound].includes(
+                  interest
+                )
+                  ? "#f4511e"
+                  : "#eee",
+                padding: 10,
+                margin: 5,
+                borderRadius: 20,
+              }}
+              onPress={() => handleSelectInterest(interest)}
+            >
+              <Text
+                style={{
+                  color: selectedInterests[currentRound].includes(interest)
+                    ? "#fff"
+                    : "#000",
+                }}
+              >
+                {interest}
+              </Text>
+            </TouchableOpacity>
+          ))}
+          <View style={{ flexDirection: "row", marginTop: 10 }}>
+            {Array.from({ length: allInterestsList.length }).map((_, idx) => (
+              <Text
+                key={idx}
+                style={{
+                  fontSize: idx === currentRound ? 24 : 24,
+                  color: idx === currentRound ? "#f4511e" : "#ccc",
+                }}
+              >
+                •
+              </Text>
+            ))}
+          </View>
+          <View
             style={{
-              color: selectedInterests[currentRound].includes(interest)
-                ? "#fff"
-                : "#000",
+              flexDirection: "row",
+              marginTop: 20,
+              justifyContent: "space-around",
+              width: "100%",
             }}
           >
-            {interest}
-          </Text>
-        </TouchableOpacity>
-      ))}
-      <View style={{ flexDirection: "row", marginTop: 10 }}>
-        {Array.from({ length: allInterestsList.length }).map((_, idx) => (
-          <Text
-            key={idx}
-            style={{
-              fontSize: idx === currentRound ? 24 : 24,
-              color: idx === currentRound ? "#f4511e" : "#ccc",
-            }}
-          >
-            •
-          </Text>
-        ))}
-      </View>
-      <TouchableOpacity
-        style={{
-          backgroundColor: "#f4511e",
-          padding: 10,
-          marginTop: 20,
-          borderRadius: 20,
-        }}
-        onPress={handleSubmit}
-      >
-        <Text style={{ color: "#fff" }}>Next</Text>
-      </TouchableOpacity>
-      {currentRound > 0 && (
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#ccc",
-            padding: 10,
-            marginTop: 10,
-            borderRadius: 20,
-          }}
-          onPress={handlePrevious}
-        >
-          <Text style={{ color: "#fff" }}>Previous</Text>
-        </TouchableOpacity>
+            {currentRound > 0 && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#ccc",
+                  padding: 10,
+                  borderRadius: 999,
+                }}
+                onPress={handlePrevious}
+              >
+                <Feather name="arrow-left" size={20} color="black" />
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#f4511e",
+                padding: 10,
+                borderRadius: 999,
+              }}
+              onPress={handleSubmit}
+            >
+              <Feather name="arrow-right" size={20} color="black" />
+            </TouchableOpacity>
+          </View>
+        </>
       )}
     </View>
   );

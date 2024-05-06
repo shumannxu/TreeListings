@@ -9,7 +9,7 @@ export default function HomeLayout() {
     <SafeAreaProvider>
       <Tabs screenOptions={{ headerShown: false }}>
         <Tabs.Screen
-          name="home/index"
+          name="home"
           options={{
             href: "/home",
             tabBarLabel: "Home",
