@@ -18,10 +18,16 @@ import { AntDesign } from "@expo/vector-icons";
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Listing, ListingId, UserContextType } from "../../../types";
+import {
+  BikeCategoryType,
+  Listing,
+  ListingId,
+  UserContextType,
+} from "../../../types";
 import RecommendItem from "../../components/recommendItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { BIKE_CATEGORIES } from "../../../constants";
+import BikeCategoryItem from "../../components/bikeCategoryItem";
 
 export default function Home() {
   const { user, setUser, listings, setListings, setSelfListings } =
@@ -47,7 +53,7 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
 
   const toggleBikeFilter = useCallback(
-    () => router.push("/home/bikeIndex"),
+    () => setBikeFilter(!bikeFilter),
     [bikeFilter]
   );
 
@@ -182,6 +188,19 @@ export default function Home() {
     [incrementTrending]
   );
 
+  const renderCategories = useCallback(
+    ({
+      item,
+      index,
+    }: {
+      item: { label: string; value: BikeCategoryType };
+      index: number;
+    }) => {
+      return <BikeCategoryItem item={item} />;
+    },
+    []
+  );
+
   const trendingItemsComponent = useMemo(
     () => (
       <View>
@@ -204,9 +223,29 @@ export default function Home() {
               backgroundColor: "gray",
             }}
           >
-            <Text style={{ fontSize: 14 }}>Bikes</Text>
+            <Text style={{ fontSize: 14 }}>Marketplace</Text>
           </View>
         </TouchableOpacity>
+
+        <View style={{ flexDirection: "row" }}>
+          <Text style={styles.textStyle}>Shop Categories</Text>
+          <Feather
+            style={{ marginLeft: 5, color: "#38B39C" }}
+            name="trending-up"
+            size={24}
+            color="black"
+          />
+        </View>
+
+        <FlatList
+          data={BIKE_CATEGORIES}
+          renderItem={renderCategories}
+          initialNumToRender={5}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item.value}
+          scrollEnabled={true}
+        />
 
         <View style={{ flexDirection: "row" }}>
           <Text style={styles.textStyle}>Trending</Text>
