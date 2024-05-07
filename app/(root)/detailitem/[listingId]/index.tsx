@@ -283,23 +283,36 @@ export default function DetailItem() {
           uri: mainImage
            }} style={styles.image} />
         
-         <View style={{
-            alignItems: "center",
-            flexDirection: "row",
-            flexWrap: "wrap", // Allows the images to wrap in the view
-            justifyContent: "space-around",
-            backgroundColor: "#f0f0f0",
-            borderRadius: 5,
-          }}>
-            {listing.imagesPath?.map((img, index) => (
-              <TouchableOpacity key={index} style={styles.imageUploadButton}
-              onPress={()=> setMainImage(img)}
-               >
-                <Image source={{ uri: img }} style={styles.imagePreview} />
-              </TouchableOpacity>
-            ))}
-          </View>   
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10}}>
+        <ScrollView
+          horizontal={true}  // Enable horizontal scrolling
+          showsHorizontalScrollIndicator={false}  // Optionally hide the horizontal scrollbar
+          contentContainerStyle={{height: 5, alignContent: "center", justifyContent: "center", }}  // Apply layout properties here
+        >
+          {listing.imagesPath?.map((img, index) => (
+            <TouchableOpacity key={index} style={{
+              backgroundColor: "#e7e7e7",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 175,
+              width: 175,
+              borderRadius: 5,
+              marginVertical: 10, 
+              marginHorizontal: 5,
+            }} onPress={() => setMainImage(img)}>
+              <Image source={{ uri: img }} style={{
+                height: "100%",
+                width: "100%",
+                borderRadius: 5,
+                justifyContent: "center",
+                alignItems: "center",
+                borderColor: "gray",
+                borderWidth: 1,
+              }} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+ 
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10, marginTop: -20}}>
           <View style={{flexDirection: "row", }}>
             <Icon height={30} color="black">
               profile
