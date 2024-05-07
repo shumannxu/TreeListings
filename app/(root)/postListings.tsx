@@ -26,6 +26,7 @@ import {
   BIKE_GENDER,
 } from "../../constants";
 import { router } from "expo-router";
+import Icon from "../../components/icon";
 
 export default function PostListings() {
   const { user } = useAuth() as UserContextType;
@@ -40,7 +41,7 @@ export default function PostListings() {
   const [openBikeGender, setOpenBikeGender] = useState(false);
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState<string | null>(null);
+  const [images, setImages] = useState<string[] | null>([]);
   const [error, setError] = useState<string | null>(null);
   const [bikeCategoryValue, setBikeCategoryValue] = useState<string[]>([]);
   const [bikeBrandValue, setBikeBrandValue] = useState<string>("");
@@ -96,7 +97,10 @@ export default function PostListings() {
     try {
       if (!pickerResult.canceled) {
         // const uploadUrl = await uploadImageAsync(pickerResult.assets[0]?.uri);
-        setImage(pickerResult.assets[0]?.uri);
+        let newImage = pickerResult.assets[0]?.uri;
+        if(newImage){
+          setImages((prevImages)=>[...prevImages, pickerResult.assets[0]?.uri]);
+        }
       }
     } catch (e) {
       console.log(e);
@@ -122,7 +126,7 @@ export default function PostListings() {
 
   const uploadListingToFirestore = useCallback(async () => {
     if (user) {
-      if (!image) {
+      if (!images) {
         setError("Please include an image or photo");
       } else if (!title) {
         setError("Please include a title");
@@ -137,7 +141,7 @@ export default function PostListings() {
           description,
           price: parseFloat(price),
           categories,
-          image,
+          images,
           sellerId: user.id,
           datePosted: new Date(),
           isListingActive: true,
@@ -150,7 +154,7 @@ export default function PostListings() {
           setCategories([]);
           setPrice("");
           setDescription("");
-          setImage(null);
+          setImages(null);
           setError(null);
           setBikeBrandValue("");
           setBikeCategoryValue([]);
@@ -188,7 +192,7 @@ export default function PostListings() {
     price,
     description,
     categories,
-    image,
+    images,
     bikeBrandValue,
     bikeGenderValue,
     bikeCategoryValue,
@@ -209,21 +213,12 @@ export default function PostListings() {
             justifyContent: "space-around",
           }}
         >
-          {image ? (
-            <TouchableOpacity
-              style={styles.imageUploadButton}
-              onPress={pickImage}
-            >
-              <Image source={{ uri: image }} style={styles.imagePreview} />
-            </TouchableOpacity>
-          ) : (
             <TouchableOpacity
               style={styles.imageUploadButton}
               onPress={takePhoto}
             >
               <Entypo name="camera" size={48} color="black" />
             </TouchableOpacity>
-          )}
           <TouchableOpacity
             style={styles.imageUploadButton}
             onPress={pickImage}
@@ -231,6 +226,31 @@ export default function PostListings() {
             <Entypo name="folder-images" size={48} color="black" />
           </TouchableOpacity>
         </View>
+        <View style={{
+            alignItems: "center",
+            flexDirection: "row",
+            flexWrap: "wrap", // Allows the images to wrap in the view
+            justifyContent: "space-around",
+            backgroundColor: "#f0f0f0",
+            borderRadius: 5,
+          }}>
+            {images?.map((img, index) => (
+              <TouchableOpacity key={index} style={styles.imageUploadButton} onPress={pickImage}>
+                <Image source={{ uri: img }} style={styles.imagePreview} />
+                <TouchableOpacity
+                  style={{ position: "absolute", top: 10, right: 10, backgroundColor: "red", padding: 5, borderRadius: 99,}}
+                  onPress={() => {
+                    setImages((prevImages) => {
+                      let newImages = prevImages?.filter((image) => image !== img);
+                      return newImages;
+                    });
+                  }}
+                >
+                <Icon height={20}>minus</Icon>
+                </TouchableOpacity>
+              </TouchableOpacity>
+            ))}
+          </View>
         <View>
           <Text style={styles.header}>Title</Text>
           <TextInput

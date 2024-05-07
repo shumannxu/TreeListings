@@ -131,7 +131,9 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
           }}
         >
           <View>
-            <Image source={{ uri: listing?.imagePath }} style={styles.image} />
+            <Image source={{ 
+              uri: listing?.imagePath || (listing?.imagesPath && listing.imagesPath.length > 0 ? listing.imagesPath[0] : 'https://firebasestorage.googleapis.com/v0/b/treelistings.appspot.com/o/Screenshot%202024-05-06%20at%204.02.47%E2%80%AFPM.png?alt=media&token=6a0b9378-cce8-4b60-886a-9ba4ea391ea6')
+              }} style={styles.image} />
           </View>
 
           <View
