@@ -41,7 +41,8 @@ export type Listing = {
   description: string;
   categories: string[];
   keywords?: string[];
-  imagePath?: string;
+  imagePath?: string; // old keeping so the old posting could still be shown
+  imagesPath?: string[]; // new
   isListingActive: boolean;
   allInteractions?: string[];
   isListingAppropriate?: boolean;

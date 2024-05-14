@@ -19,7 +19,7 @@ async function uploadImageAsync(uri: string, listingID: ListingId) {
     xhr.send(null);
   });
 
-  const fileRef = ref(storage, `listingImages/${listingID}`);
+  const fileRef = ref(storage, `listingImages/${listingID}${uri}`);
   const result = await uploadBytes(fileRef, blob);
 
   // We're done with the blob, close and release it

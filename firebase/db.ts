@@ -80,7 +80,7 @@ const uploadListing = async ({
   sellerId,
   title,
   price,
-  image,
+  images,
   datePosted,
   description,
   categories,
@@ -93,7 +93,7 @@ const uploadListing = async ({
   title: string;
   price: number;
   datePosted: Date;
-  image: string | null;
+  images: string[] | null;
   description: string;
   categories: string[];
   isListingActive: boolean;
@@ -104,10 +104,12 @@ const uploadListing = async ({
   await runTransaction(firestore, async (transaction) => {
     const collectionRef = collection(firestore, "listings");
     const documentRef = doc(collectionRef);
-    let uploadUrl = null;
+    let uploadUrls:string[] = [];
 
-    if (image) {
-      uploadUrl = await uploadImageAsync(image, documentRef.id);
+    if (images) {
+      // Use map to create a list of promises and then wait for all of them
+      const uploadPromises = images.map(image => uploadImageAsync(image, documentRef.id));
+      uploadUrls = await Promise.all(uploadPromises);
     }
 
     // First, read all necessary documents
@@ -133,7 +135,7 @@ const uploadListing = async ({
         bikeCategory: bikeCategoryValue,
         bikeGender: bikeGenderValue,
       }),
-      ...(uploadUrl && { imagePath: uploadUrl }),
+      ...(uploadUrls && { imagesPath: uploadUrls }),
     } as Listing;
 
     transaction.set(documentRef, listingData);
