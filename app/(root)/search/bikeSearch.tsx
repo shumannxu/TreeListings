@@ -62,6 +62,11 @@ export default function Search() {
 
   const [isInputFocused, setInputFocused] = useState<boolean>(false);
 
+  // for general categories
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    CATEGORIES.map((category) => category.value)
+  );
+
   // for bike categories
   const [selectedBikeCategories, setSelectedBikeCategories] = useState<
     string[]
@@ -158,65 +163,99 @@ export default function Search() {
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
-      if (searchQuery && listings) {
-        const results = Object.values(listings).filter((listing) =>
-          listing.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        // Filter by selected categories if any categories are selected
-        if (selectedBikeCategories.length > 0) {
-          // if there is search query
-          if (searchQuery) {
-            // Edit: Search filters by (1) title, (2) keywords, and (3) user selected categories
-            const filteredByCategoryAndSearch = Object.values(listings).filter(
-              (listing) =>
-                // (1) search by title
-                (listing.title
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()) ||
-                  // (2) search by keywords
-                  (listing.keywords !== null &&
-                    listing.keywords?.some((keyword) =>
-                      keyword.toLowerCase().includes(searchQuery.toLowerCase())
-                    ))) &&
-                // (3) filter by user's selected categories
-                selectedBikeCategories.some((category) =>
-                  listing.categories.includes(category)
-                )
-            );
-            // set the filtered results
-            setFilteredResults(filteredByCategoryAndSearch);
-          } else {
-            // no search query
-            const filteredByCategory = results.filter((listing) =>
-              selectedBikeCategories.some((category) =>
-                listing.categories.includes(category)
-              )
-            );
-            setFilteredResults(filteredByCategory);
-          }
-        } else {
-          // display nothing when user de-selected all categories
-          setFilteredResults([]);
-        }
+      // (edge case) if there are no listings, there is nothing to show
+      if (!listings) {
+        setFilteredResults([]);
+        // if there are listings
       } else {
-        // If there's no search query, apply category filter if any categories are selected
-        if (selectedBikeCategories.length > 0 && listings) {
-          const filteredByCategory = Object.values(listings).filter((listing) =>
-            selectedBikeCategories.some((category) =>
-              listing.categories.includes(category)
-            )
-          );
-          setFilteredResults(filteredByCategory);
+        // filter out all non-bike listings
+        const results = Object.values(listings).filter((listing) =>
+          listing.categories.includes(CategoryType.BIKES)
+        );
+        // if there is NO search query (but yes listings)
+        if (!searchQuery) {
+          // (1) if any filters have "deselect all" OR No Listing
+          if (
+            selectedBikeCategories.length == 0 ||
+            selectedBrandCategories.length == 0 ||
+            selectedGenderCategories.length == 0
+          ) {
+            // set filter results to nothing
+            setFilteredResults([]);
+            // (2) if there all filters have some selection (and yes Listing but no search query )
+          } else {
+            // filter by each of the three categories
+            const filteredByAllBikeCategories = results.filter((listing) => {
+              // filter by bike category
+              const matchesBikeategory = selectedBikeCategories.some(
+                (category) => listing.bikeCategory?.includes(category)
+              );
+              // filter by bike brand
+              const matchesBrandCategory =
+                listing.bikeBrand &&
+                selectedBrandCategories.includes(listing.bikeBrand);
+              // filter by bike gender
+              const matchesGenderCategory =
+                listing.bikeGender &&
+                selectedGenderCategories.includes(listing.bikeGender);
+              // return true if all filter has matches
+              return (
+                matchesBikeategory &&
+                matchesBrandCategory &&
+                matchesGenderCategory
+              );
+            });
+            setFilteredResults(filteredByAllBikeCategories);
+          }
+          // there IS search query (and yes listings)
         } else {
-          // display nothing
-          setFilteredResults([]);
+          // (3) not all filter has selection (and yes search query) -> nothing
+          if (
+            selectedBikeCategories.length == 0 ||
+            selectedBrandCategories.length == 0 ||
+            selectedGenderCategories.length == 0
+          ) {
+            setFilteredResults([]);
+            // (4) there all filter has some selection (and yes search query) -> condition by all
+          } else {
+            const filteredByAllBikeCategories = results.filter((listing) => {
+              // filter by bike category
+              const matchesBikeategory = selectedBikeCategories.some(
+                (category) => listing.bikeCategory?.includes(category)
+              );
+              // filter by bike brand
+              const matchesBrandCategory =
+                listing.bikeBrand &&
+                selectedBrandCategories.includes(listing.bikeBrand);
+              // filter by bike gender
+              const matchesGenderCategory =
+                listing.bikeGender &&
+                selectedGenderCategories.includes(listing.bikeGender);
+
+              const matchesSearchQuery = listing.title
+                .toLowerCase()
+                .includes(searchQuery.toLowerCase());
+
+              // return true if all filter has matches
+              return (
+                matchesBikeategory &&
+                matchesBrandCategory &&
+                matchesGenderCategory &&
+                matchesSearchQuery
+              );
+            });
+          }
         }
       }
     }, 500); // 500 ms delay
-
     return () => clearTimeout(delayDebounce);
-    // }, [searchQuery, listings]);
-  }, [searchQuery, listings, selectedBikeCategories]);
+  }, [
+    searchQuery,
+    listings,
+    selectedBikeCategories,
+    selectedBrandCategories,
+    selectedGenderCategories,
+  ]);
 
   const renderItem = useCallback(
     ({ item }: { item: Listing }) => <SearchItem item={item} />,
