@@ -21,13 +21,13 @@ export default function HomeLayout() {
           }}
         />
         <Tabs.Screen
-          name="postListings"
+          name="coupons"
           options={{
-            href: "/postListings",
-            tabBarLabel: "Post",
+            href: "/coupons",
+            tabBarLabel: "Coupons",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
-                postlogo
+              <Icon color={"#B0DCC5"} height={40} width={20}>
+                coupon
               </Icon>
             ),
           }}

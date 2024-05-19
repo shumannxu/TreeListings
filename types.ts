@@ -41,7 +41,8 @@ export type Listing = {
   description: string;
   categories: string[];
   keywords?: string[];
-  imagePath?: string;
+  imagePath?: string; // old keeping so the old posting could still be shown
+  imagesPath?: string[]; // new
   isListingActive: boolean;
   allInteractions?: string[];
   isListingAppropriate?: boolean;
@@ -85,6 +86,16 @@ export type Offer = {
   dateActionTaken?: Date;
   accepted: boolean | null;
 };
+
+export type Vender = {
+  venderId: string;
+  venderName: string;
+  logo: string;
+  categories: string[];
+  coupons: Coupon[];
+};
+
+export type Coupon = {};
 
 // Bike categories
 export enum BikeCategoryType {

@@ -46,6 +46,7 @@ export default function DetailItem() {
   const { height, width } = useWindowDimensions();
   const [timeAgo, setTimeAgo] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [mainImage, setMainImage] = useState<string>("");
 
 
   const [isExpanded, setIsExpanded] = useState(false);  // State to manage expansion
@@ -93,6 +94,14 @@ export default function DetailItem() {
     fetchUser();
   }, [seller, listing]);
 
+  useEffect(() => {
+    const setImage = async() => {
+      if(listing)
+      setMainImage(listing.imagePath || (listing.imagesPath && listing.imagesPath.length > 0 ? listing.imagesPath[0] : 'https://firebasestorage.googleapis.com/v0/b/treelistings.appspot.com/o/Screenshot%202024-05-06%20at%204.02.47%E2%80%AFPM.png?alt=media&token=6a0b9378-cce8-4b60-886a-9ba4ea391ea6'))
+    };
+    setImage();
+  }, [listing]);
+
   const styles = StyleSheet.create({
     image: {
       width: width,
@@ -116,6 +125,24 @@ export default function DetailItem() {
       letterSpacing: 1,
       marginHorizontal: 10,
       marginVertical: 10,
+    },
+    imageUploadButton: {
+      backgroundColor: "#e7e7e7",
+      alignItems: "center",
+      justifyContent: "center",
+      height: 150,
+      width: 150,
+      borderRadius: 5,
+      marginVertical: 10,
+    },
+    imagePreview: {
+      height: "100%",
+      width: "100%",
+      borderRadius: 5,
+      justifyContent: "center",
+      alignItems: "center",
+      borderColor: "gray",
+      borderWidth: 1,
     },
   });
 
@@ -252,8 +279,40 @@ export default function DetailItem() {
       </TouchableOpacity>
 
       <View style={{ alignItems: "center", }}>
-        <Image source={{ uri: listing.imagePath }} style={styles.image} />
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10}}>
+        <Image source={{ 
+          uri: mainImage
+           }} style={styles.image} />
+        
+        <ScrollView
+          horizontal={true}  // Enable horizontal scrolling
+          showsHorizontalScrollIndicator={false}  // Optionally hide the horizontal scrollbar
+          contentContainerStyle={{height: 5, alignContent: "center", justifyContent: "center", }}  // Apply layout properties here
+        >
+          {listing.imagesPath?.map((img, index) => (
+            <TouchableOpacity key={index} style={{
+              backgroundColor: "#e7e7e7",
+              alignItems: "center",
+              justifyContent: "center",
+              height: 175,
+              width: 175,
+              borderRadius: 5,
+              marginVertical: 10, 
+              marginHorizontal: 5,
+            }} onPress={() => setMainImage(img)}>
+              <Image source={{ uri: img }} style={{
+                height: "100%",
+                width: "100%",
+                borderRadius: 5,
+                justifyContent: "center",
+                alignItems: "center",
+                borderColor: "gray",
+                borderWidth: 1,
+              }} />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+ 
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10, marginTop: -20}}>
           <View style={{flexDirection: "row", }}>
             <Icon height={30} color="black">
               profile

@@ -18,7 +18,9 @@ const ListingItem: React.FC<ItemProps> = ({ item }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToDetail}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: item.imagePath }} style={styles.image} />
+        <Image source={{
+           uri: item.imagePath || (item.imagesPath && item.imagesPath.length > 0 ? item.imagesPath[0] : 'https://firebasestorage.googleapis.com/v0/b/treelistings.appspot.com/o/Screenshot%202024-05-06%20at%204.02.47%E2%80%AFPM.png?alt=media&token=6a0b9378-cce8-4b60-886a-9ba4ea391ea6')
+          }} style={styles.image} />
         <TouchableOpacity style={styles.touchableHeart}>
           <View style={styles.heartContainer}>
             <Ionicons name="heart-outline" size={12} color="#fff" />
