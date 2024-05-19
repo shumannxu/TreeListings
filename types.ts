@@ -87,6 +87,16 @@ export type Offer = {
   accepted: boolean | null;
 };
 
+export type Vender = {
+  venderId: string;
+  venderName: string;
+  logo: string;
+  categories: string[];
+  coupons: Coupon[];
+};
+
+export type Coupon = {};
+
 // Bike categories
 export enum BikeCategoryType {
   ROAD = "ROAD",

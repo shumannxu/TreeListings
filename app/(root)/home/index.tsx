@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-
+import { Entypo } from "@expo/vector-icons";
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -22,6 +22,7 @@ import { Listing, ListingId, UserContextType } from "../../../types";
 import RecommendItem from "../../components/recommendItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import Icon from "../../../components/icon";
 
 export default function Home() {
   const { user, setUser, listings, setListings, setSelfListings } =
@@ -46,6 +47,17 @@ export default function Home() {
 
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [showPlusIcon, setShowPlusIcon] = useState<boolean>(true);
+  const handleScrollBegin = useCallback(() => {
+    setShowPlusIcon(false);
+  }, []);
+  const handleScrollEnd = useCallback(() => {
+    setShowPlusIcon(true);
+  }, []);
+  const goToPostListings = useCallback(
+    () => router.push("/home/postListings"),
+    []
+  );
   const toggleBikeFilter = useCallback(
     () => router.push("/home/bikeIndex"),
     [bikeFilter]
@@ -308,7 +320,16 @@ export default function Home() {
             tintColor={"#B0DCC5"}
           />
         }
+        onScrollBeginDrag={handleScrollBegin}
+        onScrollEndDrag={handleScrollEnd}
       />
+
+      <TouchableOpacity style={styles.plusIconStyle} onPress={goToPostListings}>
+        <Icon color={"white"} height={20} width={20}>
+          pluspost
+        </Icon>
+        {showPlusIcon && <Text style={styles.postTextStyle}>Post</Text>}
+      </TouchableOpacity>
     </View>
   );
 }
@@ -331,5 +352,30 @@ const styles = StyleSheet.create({
     width: 90,
     alignSelf: "center",
     margin: 30,
+  },
+  plusIconStyle: {
+    position: "absolute",
+    right: 22,
+    bottom: 25,
+    padding: 10,
+    borderRadius: 999,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#38B39C",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  postTextStyle: {
+    marginLeft: 10,
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });

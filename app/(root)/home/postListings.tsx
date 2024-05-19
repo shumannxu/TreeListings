@@ -16,17 +16,17 @@ import * as ImagePicker from "expo-image-picker";
 import { ImagePickerResult } from "expo-image-picker";
 import Toast from "react-native-root-toast";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { CategoryType, Listing, UserContextType } from "../../types";
-import { uploadListing } from "../../firebase/db";
-import { useAuth } from "../../context";
+import { CategoryType, Listing, UserContextType } from "../../../types";
+import { uploadListing } from "../../../firebase/db";
+import { useAuth } from "../../../context";
 import {
   CATEGORIES,
   BIKE_CATEGORIES,
   BIKE_BRANDS,
   BIKE_GENDER,
-} from "../../constants";
+} from "../../../constants";
 import { router } from "expo-router";
-import Icon from "../../components/icon";
+import Icon from "../../../components/icon";
 
 export default function PostListings() {
   const { user } = useAuth() as UserContextType;
@@ -98,8 +98,11 @@ export default function PostListings() {
       if (!pickerResult.canceled) {
         // const uploadUrl = await uploadImageAsync(pickerResult.assets[0]?.uri);
         let newImage = pickerResult.assets[0]?.uri;
-        if(newImage){
-          setImages((prevImages)=>[...prevImages, pickerResult.assets[0]?.uri]);
+        if (newImage) {
+          setImages((prevImages) => [
+            ...prevImages,
+            pickerResult.assets[0]?.uri,
+          ]);
         }
       }
     } catch (e) {
@@ -213,12 +216,12 @@ export default function PostListings() {
             justifyContent: "space-around",
           }}
         >
-            <TouchableOpacity
-              style={styles.imageUploadButton}
-              onPress={takePhoto}
-            >
-              <Entypo name="camera" size={48} color="black" />
-            </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.imageUploadButton}
+            onPress={takePhoto}
+          >
+            <Entypo name="camera" size={48} color="black" />
+          </TouchableOpacity>
           <TouchableOpacity
             style={styles.imageUploadButton}
             onPress={pickImage}
@@ -226,31 +229,46 @@ export default function PostListings() {
             <Entypo name="folder-images" size={48} color="black" />
           </TouchableOpacity>
         </View>
-        <View style={{
+        <View
+          style={{
             alignItems: "center",
             flexDirection: "row",
             flexWrap: "wrap", // Allows the images to wrap in the view
             justifyContent: "space-around",
             backgroundColor: "#f0f0f0",
             borderRadius: 5,
-          }}>
-            {images?.map((img, index) => (
-              <TouchableOpacity key={index} style={styles.imageUploadButton} onPress={pickImage}>
-                <Image source={{ uri: img }} style={styles.imagePreview} />
-                <TouchableOpacity
-                  style={{ position: "absolute", top: 10, right: 10, backgroundColor: "red", padding: 5, borderRadius: 99,}}
-                  onPress={() => {
-                    setImages((prevImages) => {
-                      let newImages = prevImages?.filter((image) => image !== img);
-                      return newImages;
-                    });
-                  }}
-                >
+          }}
+        >
+          {images?.map((img, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.imageUploadButton}
+              onPress={pickImage}
+            >
+              <Image source={{ uri: img }} style={styles.imagePreview} />
+              <TouchableOpacity
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  backgroundColor: "red",
+                  padding: 5,
+                  borderRadius: 99,
+                }}
+                onPress={() => {
+                  setImages((prevImages) => {
+                    let newImages = prevImages?.filter(
+                      (image) => image !== img
+                    );
+                    return newImages;
+                  });
+                }}
+              >
                 <Icon height={20}>minus</Icon>
-                </TouchableOpacity>
               </TouchableOpacity>
-            ))}
-          </View>
+            </TouchableOpacity>
+          ))}
+        </View>
         <View>
           <Text style={styles.header}>Title</Text>
           <TextInput

@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-function FeedLayout() {
+function CouponLayout() {
   return (
     <SafeAreaProvider>
       {/* ... other code */}
@@ -11,17 +11,9 @@ function FeedLayout() {
           name="index" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}
         />
-        <Stack.Screen
-          name="bikeIndex" // Note the change here
-          options={{ headerShown: false, gestureEnabled: true }}
-        />
-        <Stack.Screen
-          name="postListings" // Note the change here
-          options={{ headerShown: false, gestureEnabled: true }}
-        />
       </Stack>
     </SafeAreaProvider>
   );
 }
 
-export default FeedLayout;
+export default CouponLayout;
