@@ -13,41 +13,27 @@ import { useAuth } from "../../../context";
 import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getVenders } from "../../../firebase/db";
 
-/* Search Result Screen */
-export default function Search() {
+export default function Coupon() {
   const { listings } = useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
-  const venders = [
-    {
-      venderId: "1",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Poke House",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["light", "quick"],
-    },
-    {
-      venderId: "2",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Palmetto SuperFoods",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["dessert"],
-    },
-    {
-      venderId: "3",
-      logo: "https://via.placeholder.com/150",
-      venderName: "BoiChik Bagels",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["light", "quick"],
-    },
-    {
-      venderId: "4",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Penny Icecream",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["dessert"],
-    },
-  ] as Vender[];
+  const [venders, setVenders] = useState<Vender[]>([]);
+
+  useEffect(() => {
+    const extractVenderData = async () => {
+      const venders = await getVenders();
+      if (venders) setVenders(venders);
+    };
+    extractVenderData();
+  });
+
+  const navigateToVender = useCallback((item) => {
+    router.push({
+      pathname: "/coupons/[venderId]",
+      params: { venderId: item.venderId },
+    });
+  }, []);
 
   const navigateToPostCoupons = useCallback(() => {
     router.push("coupons/postCoupons");
@@ -55,18 +41,19 @@ export default function Search() {
 
   const renderCoupon = useCallback(
     ({ item }) => (
-      <View
+      <TouchableOpacity
         style={{
           padding: 10,
           marginVertical: 5,
-          backgroundColor: "#f9f9f9",
+          backgroundColor: "white",
           borderRadius: 5,
           width: "30%",
           alignItems: "center",
           justifyContent: "center",
         }}
+        onPress={() => navigateToVender(item)}
       >
-        <Text>{item.venderName}</Text>
+        {/* <Text>{item.venderName}</Text> */}
         <Image
           source={{ uri: item.logo }}
           style={{
@@ -76,7 +63,7 @@ export default function Search() {
             alignItems: "center",
           }}
         />
-        <Text style={{ fontSize: 13, fontWeight: "bold" }}>
+        <Text style={{ fontSize: 13, fontWeight: "bold", textAlign: "center" }}>
           {item.venderName}
         </Text>
         <View
@@ -93,85 +80,87 @@ export default function Search() {
             {item.coupons.length}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     ),
     []
   );
 
-  useEffect(() => {}, []);
-
   return (
-    <View style={{ flex: 1, marginTop: safeAreaInsets.top + 10 }}>
+    <View
+      style={{
+        flex: 1,
+        marginTop: safeAreaInsets.top + 10,
+      }}
+    >
       <View style={{ paddingHorizontal: 20 }}>
         <Text style={{ fontWeight: "bold", fontSize: 30 }}>Coupons</Text>
       </View>
-
-      <ScrollView
-        horizontal
-        scrollEnabled={true}
-        contentContainerStyle={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          paddingHorizontal: 0,
-          marginBottom: 5,
-          marginTop: 5,
-          flexGrow: 1,
-        }}
-        showsHorizontalScrollIndicator={false}
-      >
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            borderRadius: 25,
-            backgroundColor: "#E6E6E6",
-            marginRight: 10,
-            alignItems: "center",
+      <View style={{ marginHorizontal: 10 }}>
+        <ScrollView
+          horizontal
+          scrollEnabled={true}
+          contentContainerStyle={{
             flexDirection: "row",
-          }}
-        >
-          <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
-          <MaterialIcons name="access-time" size={24} color="#38B39C" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            borderRadius: 25,
-            backgroundColor: "#E6E6E6",
-            marginRight: 10,
+            justifyContent: "space-between",
             alignItems: "center",
-            flexDirection: "row",
+            paddingHorizontal: 0,
+            marginBottom: 5,
+            marginTop: 5,
           }}
+          showsHorizontalScrollIndicator={false}
         >
-          <Text style={{ textAlign: "center", fontSize: 17 }}>
-            Price Descending{" "}
-          </Text>
-          <MaterialCommunityIcons
-            name="order-numeric-descending"
-            size={24}
-            color="#38B39C"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={{
-            padding: 10,
-            borderRadius: 25,
-            backgroundColor: "#E6E6E6",
-            alignItems: "center",
-            flexDirection: "row",
-          }}
-        >
-          <Text style={{ textAlign: "center", fontSize: 17 }}>
-            Price Ascending{" "}
-          </Text>
-          <MaterialCommunityIcons
-            name="order-numeric-ascending"
-            size={24}
-            color="#38B39C"
-          />
-        </TouchableOpacity>
-      </ScrollView>
-
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              borderRadius: 25,
+              backgroundColor: "#E6E6E6",
+              marginRight: 10,
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
+            <MaterialIcons name="access-time" size={24} color="#38B39C" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              borderRadius: 25,
+              backgroundColor: "#E6E6E6",
+              marginRight: 10,
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 17 }}>
+              Price Descending{" "}
+            </Text>
+            <MaterialCommunityIcons
+              name="order-numeric-descending"
+              size={24}
+              color="#38B39C"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              borderRadius: 25,
+              backgroundColor: "#E6E6E6",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 17 }}>
+              Price Ascending{" "}
+            </Text>
+            <MaterialCommunityIcons
+              name="order-numeric-ascending"
+              size={24}
+              color="#38B39C"
+            />
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
       <View
         style={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}
       >
