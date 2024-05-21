@@ -75,13 +75,16 @@ export default function Search() {
           width: "30%",
         }}
       >
-        <View style={{ height: "75%" }}>
-          <Text>{item.venderName}</Text>
+        <View style={{ 
+          height: "75%",
+          paddingRight: 5,
+          }}>
+          <Text numberOfLines={2}>{item.venderName}</Text>
           <View
             style={{
               position: "absolute",
-              top: 0,
-              right: 0,
+              top: -10,
+              right: -10,
               backgroundColor: "#38B39C",
               borderRadius: 5,
               padding: 5,
@@ -196,29 +199,23 @@ export default function Search() {
         />
       </View>
 
-      <View style={{ padding: 20 }}>
+      <View style={{
+          position: 'absolute',
+          right: 20,
+          bottom: 20,
+        }}>
         <TouchableOpacity
           onPress={navigateToPostCoupons}
           style={{
-            padding: 15,
+            height: 60,
+            width: 60,
             backgroundColor: "#38B39C",
-            borderRadius: 5,
+            borderRadius: 30,
             alignItems: "center",
             justifyContent: "center",
-            flexDirection: "row",
           }}
         >
           <MaterialIcons name="add-circle" size={24} color="#fff" />
-          <Text
-            style={{
-              color: "white",
-              fontWeight: "bold",
-              fontSize: 18,
-              marginLeft: 10,
-            }}
-          >
-            Post Coupons
-          </Text>
         </TouchableOpacity>
       </View>
     </View>
