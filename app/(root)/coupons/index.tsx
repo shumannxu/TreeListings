@@ -59,6 +59,11 @@ export default function Search() {
     },
   ] as Vender[];
 
+  // function to navigate postCoupons
+  const navigateToPostCoupons = useCallback(() => {
+    router.push("coupons/postCoupons");
+  }, []);
+
   const renderCoupon = useCallback(
     ({ item }) => (
       <View
@@ -189,6 +194,32 @@ export default function Search() {
             justifyContent: "space-between",
           }}
         />
+      </View>
+
+      <View style={{ padding: 20 }}>
+        <TouchableOpacity
+          onPress={navigateToPostCoupons}
+          style={{
+            padding: 15,
+            backgroundColor: "#38B39C",
+            borderRadius: 5,
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+          }}
+        >
+          <MaterialIcons name="add-circle" size={24} color="#fff" />
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "bold",
+              fontSize: 18,
+              marginLeft: 10,
+            }}
+          >
+            Post Coupons
+          </Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
