@@ -104,11 +104,13 @@ const uploadListing = async ({
   await runTransaction(firestore, async (transaction) => {
     const collectionRef = collection(firestore, "listings");
     const documentRef = doc(collectionRef);
-    let uploadUrls:string[] = [];
+    let uploadUrls: string[] = [];
 
     if (images) {
       // Use map to create a list of promises and then wait for all of them
-      const uploadPromises = images.map(image => uploadImageAsync(image, documentRef.id));
+      const uploadPromises = images.map((image) =>
+        uploadImageAsync(image, documentRef.id)
+      );
       uploadUrls = await Promise.all(uploadPromises);
     }
 
@@ -149,6 +151,16 @@ const uploadListing = async ({
       }
     });
   });
+};
+
+// usage for uploading coupon
+export const uploadCoupon = async (coupon: {
+  couponName: string;
+  couponImage: string[];
+  numberOfCoupons: number;
+}) => {
+  const couponRef = doc(collection(firestore, "coupon"));
+  await setDoc(couponRef, coupon);
 };
 
 const getUserProfile = async (userId: UserId): Promise<User | null> => {
