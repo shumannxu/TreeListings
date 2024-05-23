@@ -22,6 +22,7 @@ import {
   UserId,
   Offer,
   CategoryType,
+  Vender,
 } from "../types";
 
 /**
@@ -161,6 +162,23 @@ export const uploadCoupon = async (coupon: {
 }) => {
   const couponRef = doc(collection(firestore, "coupon"));
   await setDoc(couponRef, coupon);
+};
+
+const getVenders = async (): Promise<Vender[] | null> => {
+  try {
+    const vendorRef = collection(firestore, "vender");
+    const venderDocs = await getDocs(vendorRef);
+    const venderArr = venderDocs.docs.map((doc) => {
+      return {
+        venderId: doc.ref.id,
+        ...doc.data(),
+      } as Vender;
+    });
+    return venderArr;
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
 };
 
 const getUserProfile = async (userId: UserId): Promise<User | null> => {
@@ -487,4 +505,5 @@ export {
   getAllIncomingOffersUser,
   getAllOutgoingOffersUser,
   offerTransaction,
+  getVenders,
 };

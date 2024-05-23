@@ -37,7 +37,8 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-toast-message": "^2.2.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "expo-linear-gradient": "~12.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
