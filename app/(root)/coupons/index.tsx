@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   ScrollView,
   Image,
+  StyleSheet,
 } from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
-
+import Icon from "../../../components/icon";
 import { useAuth } from "../../../context";
 import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
@@ -20,7 +21,7 @@ export default function Search() {
   const safeAreaInsets = useSafeAreaInsets();
   const venders = [
     {
-      venderId: "1",
+      venderId: "IFi4aMWKrCPICl6CFTww",
       logo: "https://via.placeholder.com/150",
       venderName: "Poke House",
       coupons: ["Coup1", "Coup2"],
@@ -49,6 +50,14 @@ export default function Search() {
     },
   ] as Vender[];
 
+  const navigateToCouponInfo = useCallback((venderId) => {
+    console.log("Navigating to coupon info for vendor:", venderId);
+    router.push({
+      pathname: "/coupons/couponInfo/",
+      params: { vendorId: venderId },
+    });
+  }, []);
+
   const navigateToPostCoupons = useCallback(() => {
     router.push("coupons/postCoupons");
   }, []);
@@ -65,6 +74,7 @@ export default function Search() {
           alignItems: "center",
           justifyContent: "center",
         }}
+        onTouchEnd={() => navigateToCouponInfo(item.venderId)}
       >
         <Text>{item.venderName}</Text>
         <Image
@@ -196,20 +206,64 @@ export default function Search() {
           bottom: 20,
         }}
       >
-        <TouchableOpacity
-          onPress={navigateToPostCoupons}
-          style={{
-            height: 60,
-            width: 60,
-            backgroundColor: "#38B39C",
-            borderRadius: 30,
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <MaterialIcons name="add-circle" size={24} color="#fff" />
-        </TouchableOpacity>
+        <View style={{ position: "absolute", right: -30, bottom: -20 }}>
+          <TouchableOpacity
+            style={styles.plusIconStyle}
+            onPress={navigateToPostCoupons}
+          >
+            <Icon color={"white"} height={20} width={20}>
+              pluspost
+            </Icon>
+            {<Text style={styles.postTextStyle}>Post Coupon</Text>}
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  textStyle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  imageStyle: {
+    flex: 1,
+    height: 75,
+    width: 358.5,
+    alignSelf: "center",
+    margin: 20,
+  },
+  icon: {
+    flex: 1,
+    height: 120,
+    width: 90,
+    alignSelf: "center",
+    margin: 30,
+  },
+  plusIconStyle: {
+    position: "absolute",
+    right: 22,
+    bottom: 25,
+    padding: 10,
+    borderRadius: 999,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#38B39C",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  postTextStyle: {
+    marginLeft: 10,
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+});

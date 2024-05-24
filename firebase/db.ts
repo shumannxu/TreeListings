@@ -41,6 +41,27 @@ const getDocument = async (path: string): Promise<any> => {
 };
 
 /**
+ * Retrieves all coupons associated with a specific vendor from Firestore.
+ * @param vendorId {string} - The ID of the vendor.
+ * @returns {Promise<any>} - An array of coupon data, empty if no coupons are found.
+ */
+const fetchCoupons = async (venderId: string): Promise<any> => {
+  const couponsQuery = query(
+    collection(firestore, 'coupon'),
+    where('venderID', '==', doc(firestore, `/vender/${venderId}`))
+  );
+
+  try {
+    const querySnapshot = await getDocs(couponsQuery);
+    const coupons = querySnapshot.docs.map(doc => doc.data());
+    return coupons;
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    return [];
+  }
+};
+
+/**
  * Sets or updates a document in Firestore.
  * @param {string} path - The path to the document in Firestore.
  * @param {Object} data - The data to set or update in the document.
@@ -487,4 +508,5 @@ export {
   getAllIncomingOffersUser,
   getAllOutgoingOffersUser,
   offerTransaction,
+  fetchCoupons
 };
