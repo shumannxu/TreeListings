@@ -41,23 +41,55 @@ const getDocument = async (path: string): Promise<any> => {
 };
 
 /**
- * Retrieves all coupons associated with a specific vendor from Firestore.
- * @param vendorId {string} - The ID of the vendor.
+ * Retrieves documents from Firestore based on dynamic filters.
+ * @param col {string} - Collection name.
+ * @param filters {Array<{field: string, operator: FirestoreWhereFilterOp, value: any}>} - Filters to apply.
+ * @returns {Promise<any>} - Promise that resolves to an array of document data.
+ */
+const getFilteredDocs = async (col: string, filters = []): Promise<any> => {
+  // Start by creating a query against a collection
+  let queryRef = query(collection(firestore, col));
+
+  // Apply each filter to the query reference
+  filters.forEach((filter) => {
+    queryRef = query(
+      queryRef,
+      where(filter.field, filter.operator, filter.value)
+    );
+  });
+
+  try {
+    // Execute the query
+    const snapshot = await getDocs(queryRef);
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return data;
+  } catch (error) {
+    console.error("Error fetching documents:", error);
+    return [];
+  }
+};
+
+/**
+ * Retrieves all coupons associated with a specific vender from Firestore.
+ * @param venderId {string} - The ID of the vender.
  * @returns {Promise<any>} - An array of coupon data, empty if no coupons are found.
  */
 const fetchCoupons = async (venderId: string): Promise<any> => {
   const couponsQuery = query(
-    collection(firestore, 'coupon'),
-    where('venderID', '==', doc(firestore, `/vender/${venderId}`))
+    collection(firestore, "coupon"),
+    where("venderID", "==", doc(firestore, `/vender/${venderId}`))
   );
 
   try {
     const querySnapshot = await getDocs(couponsQuery);
-    const coupons = querySnapshot.docs.map(doc => doc.data());
-    return coupons;
+    const coupons = querySnapshot.docs.map((doc) => doc.data());
+    return [coupons, coupons.length];
   } catch (error) {
     console.error("Error fetching coupons:", error);
-    return [];
+    return [[],0];
   }
 };
 
@@ -508,5 +540,6 @@ export {
   getAllIncomingOffersUser,
   getAllOutgoingOffersUser,
   offerTransaction,
-  fetchCoupons
+  fetchCoupons,
+  getFilteredDocs,
 };

@@ -14,47 +14,24 @@ import { useAuth } from "../../../context";
 import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getFilteredDocs } from "../../../firebase/db";
 
 /* Search Result Screen */
 export default function Search() {
-  const { listings } = useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
-  const venders = [
-    {
-      venderId: "IFi4aMWKrCPICl6CFTww",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Poke House",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["light", "quick"],
-    },
-    {
-      venderId: "2",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Palmetto SuperFoods",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["dessert"],
-    },
-    {
-      venderId: "3",
-      logo: "https://via.placeholder.com/150",
-      venderName: "BoiChik Bagels",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["light", "quick"],
-    },
-    {
-      venderId: "4",
-      logo: "https://via.placeholder.com/150",
-      venderName: "Penny Icecream",
-      coupons: ["Coup1", "Coup2"],
-      categories: ["dessert"],
-    },
-  ] as Vender[];
+  const [venders, setVenders] = useState([]);
+  getFilteredDocs("vender")
+    .then((venders) => {
+      setVenders(venders);
+    })
+    .catch((error) => {
+      console.error("Error fetching vender documents:", error);
+    });
 
   const navigateToCouponInfo = useCallback((venderId) => {
-    console.log("Navigating to coupon info for vendor:", venderId);
     router.push({
       pathname: "/coupons/couponInfo/",
-      params: { vendorId: venderId },
+      params: { id: venderId },
     });
   }, []);
 
@@ -74,7 +51,7 @@ export default function Search() {
           alignItems: "center",
           justifyContent: "center",
         }}
-        onTouchEnd={() => navigateToCouponInfo(item.venderId)}
+        onTouchEnd={() => navigateToCouponInfo(item.id)}
       >
         <Text>{item.venderName}</Text>
         <Image
@@ -100,7 +77,7 @@ export default function Search() {
           }}
         >
           <Text style={{ color: "#fff", fontSize: 12 }}>
-            {item.coupons.length}
+            {item.numUniqueCoupons}
           </Text>
         </View>
       </View>

@@ -12,51 +12,47 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../context";
 import { useLocalSearchParams } from "expo-router";
 import { fetchCoupons } from "../../../firebase/db";
-
 export default function CouponInfo() {
   const { user } = useAuth();
   const route = useLocalSearchParams();
   const [loading, setLoading] = useState(false);
   const [coupons, setCoupons] = useState([]);
 
-  // Assuming 'vendorId' is passed as a parameter to this route
-  const vendorId = route.vendorId;
+  // Assuming 'venderId' is passed as a parameter to this route
+  const venderId = route.id;
   useEffect(() => {
-    if (!vendorId) {
-      console.error("No vendor ID provided");
+    if (!venderId) {
+      console.error("No vender ID provided");
       return;
     }
 
     setLoading(true);
-    fetchCoupons(vendorId)
+    fetchCoupons(venderId)
       .then((coupons) => {
-        setCoupons(coupons);
+        setCoupons(coupons[0]);
         setLoading(false);
       })
       .catch((error) => {
         console.error("Failed to fetch coupons:", error);
         setLoading(false);
       });
-  }, [vendorId]);
+  }, [venderId]);
 
   const CouponGrid = () => (
-        <ScrollView contentContainerStyle={styles.grid}>
-            {coupons.map((coupon, index) => (
-                <TouchableOpacity 
-                    key={index} 
-                    style={styles.couponCard} 
-                    onPress={() => console.log('Coupon selected:', coupon.couponName)}>
-                    <Image
-                        source={{ uri: coupon.couponImage }}
-                        style={styles.couponImage}
-                        onError={(e) =>
-                        console.log(`Error loading image: ${e.nativeEvent.error}`)
-                        }
-                    />
-                    <Text style={styles.couponText}>{coupon.couponName}</Text>
-                </TouchableOpacity>
-            ))}
-        </ScrollView>
+    <ScrollView contentContainerStyle={styles.grid}>
+      {coupons.map((coupon, index) => (
+        <TouchableOpacity key={index} style={styles.couponCard}>
+          <Image
+            source={{ uri: coupon.couponImage }}
+            style={styles.couponImage}
+            onError={(e) =>
+              console.log(`Error loading image: ${e.nativeEvent.error}`)
+            }
+          />
+          <Text style={styles.couponText}>{coupon.couponName}</Text>
+        </TouchableOpacity>
+      ))}
+    </ScrollView>
   );
 
   if (loading) {
@@ -64,16 +60,9 @@ export default function CouponInfo() {
   }
 
   return (
-    console.log("coupons", coupons),
-    (
-      <SafeAreaView style={styles.container}>
-        {coupons.length > 0 ? (
-          <CouponGrid />
-        ) : (
-          <Text>No coupons available.</Text>
-        )}
-      </SafeAreaView>
-    )
+    <SafeAreaView style={styles.container}>
+      {coupons.length > 0 ? <CouponGrid /> : <Text>No coupons available.</Text>}
+    </SafeAreaView>
   );
 }
 
