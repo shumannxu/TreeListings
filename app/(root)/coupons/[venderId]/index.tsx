@@ -72,6 +72,7 @@ export default function VenderItem() {
         <Image
           source={{ uri: item.couponImage }}
           style={styles.couponImage}
+          resizeMode="contain" // Ensures the image is scaled to fit within the view without being cropped
           onError={(e) =>
             console.log(`Error loading image: ${e.nativeEvent.error}`)
           }
@@ -91,7 +92,7 @@ export default function VenderItem() {
       <FlatList
         data={currCoupons}
         renderItem={renderCoupon}
-        numColumns={2}
+        numColumns={2} // Ensures that the number of columns is set to 2
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
           justifyContent: "space-between",
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     margin: 5,
-    width: "45%",
+    width: 175,
     alignItems: "center",
   },
   couponImage: {
