@@ -23,6 +23,8 @@ import {
   Offer,
   CategoryType,
   Vender,
+  Coupon,
+  CouponId,
 } from "../types";
 
 /**
@@ -38,6 +40,40 @@ const getDocument = async (path: string): Promise<any> => {
   } else {
     console.log("No such document!");
     return null;
+  }
+};
+
+/**
+ * Retrieves all coupons associated with a specific vender from Firestore.
+ * @param venderId {string} - The ID of the vender.
+ * @returns {Promise<any>} - An array of coupon data, empty if no coupons are found.
+ */
+const fetchCoupons = async (
+  venderId: CouponId,
+  setCoupon: (coupons: { [id: CouponId]: Coupon }) => void
+): Promise<any> => {
+  const couponsQuery = query(
+    collection(firestore, "coupon"),
+    where("venderId", "==", venderId)
+  );
+
+  try {
+    const querySnapshot = await getDocs(couponsQuery);
+    const coupons = querySnapshot.docs.map((doc) => {
+      const coupon = {
+        couponId: doc.ref.id,
+        ...doc.data(),
+      };
+      setCoupon((prevCoupons: { [id: string]: Coupon }) => ({
+        ...prevCoupons,
+        [doc.ref.id]: coupon,
+      }));
+      return coupon as Coupon;
+    });
+    return coupons;
+  } catch (error) {
+    console.error("Error fetching coupons:", error);
+    return [[], 0];
   }
 };
 
@@ -506,4 +542,5 @@ export {
   getAllOutgoingOffersUser,
   offerTransaction,
   getVenders,
+  fetchCoupons,
 };
