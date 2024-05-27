@@ -13,10 +13,12 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../../context";
 import { useLocalSearchParams } from "expo-router";
-import { fetchCoupons, getVender } from "../../../../firebase/db";
+import { fetchCoupons, getVender, setDocument } from "../../../../firebase/db";
 import { Coupon, CouponId, UserContextType, Vender, VenderId } from "../../../../types";
 import { router } from "expo-router";
 import CustomAlert from "../../../components/alert";
+import { arrayUnion, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { firestore } from "../../../../firebaseConfig";
 
 
 export default function VenderItem() {
@@ -25,7 +27,7 @@ export default function VenderItem() {
   const [loading, setLoading] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
   const [currCoupons, setCurrCoupons] = useState<Coupon[]>([]);
-  const [currCouponNav, setCurrCouponNav] = useState<CouponId | null>(null);
+  const [currCouponNav, setCurrCouponNav] = useState<Coupon | null>(null);
   const [venderItem, setVenderItem] = useState<Vender|null>(null);
   const {width, height} = useWindowDimensions();
 
@@ -71,22 +73,33 @@ export default function VenderItem() {
       });
   }, [venderId]);
 
+
   const onConfirm = useCallback(() => {
-    if (currCouponNav) {
-      // add part to say that coupon was used by that person
-      navigateToCoupon(currCouponNav);
-      setAlert(false);
+    if (currCouponNav && user) {
+      const couponRef = doc(firestore, `coupon/${currCouponNav.couponId}`);
+      const updateData = {
+        usersClaimed: arrayUnion(user.id) 
+      };
+      updateDoc(couponRef, updateData)
+        .then(() => {
+          console.log("User added to usersClaimed array");
+          navigateToCoupon(currCouponNav.couponId);
+          setAlert(false);
+        })
+        .catch(error => {
+          console.error("Error updating document: ", error);
+        });
     }
-  }, [currCouponNav]);
+  }, [currCouponNav, navigateToCoupon, setAlert]);
 
   const renderCoupon = useCallback(
     ({ item }:{item: Coupon}) => (
       <TouchableOpacity
         key={item.couponId}
-        style={styles.couponCard}
+        style={[styles.couponCard, {backgroundColor: item.usersClaimed.includes(user?.id)? "grey":"white"}]}
         onPress={() => {
           setAlert(true);
-          setCurrCouponNav(item.couponId);
+          setCurrCouponNav(item);
         }}
       >
         <Image
