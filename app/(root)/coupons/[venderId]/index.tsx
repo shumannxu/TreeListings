@@ -8,14 +8,16 @@ import {
   Image,
   ActivityIndicator,
   FlatList,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../../context";
 import { useLocalSearchParams } from "expo-router";
-import { fetchCoupons } from "../../../../firebase/db";
-import { Coupon, CouponId, UserContextType, VenderId } from "../../../../types";
+import { fetchCoupons, getVender } from "../../../../firebase/db";
+import { Coupon, CouponId, UserContextType, Vender, VenderId } from "../../../../types";
 import { router } from "expo-router";
 import CustomAlert from "../../../components/alert";
+
 
 export default function VenderItem() {
   const { user, setCoupons, coupons } = useAuth() as UserContextType;
@@ -24,6 +26,23 @@ export default function VenderItem() {
   const [alert, setAlert] = useState<boolean>(false);
   const [currCoupons, setCurrCoupons] = useState<Coupon[]>([]);
   const [currCouponNav, setCurrCouponNav] = useState<CouponId | null>(null);
+  const [venderItem, setVenderItem] = useState<Vender|null>(null);
+  const {width, height} = useWindowDimensions();
+
+
+  useEffect(() => {
+    async function fetchVender() {
+      if (venderId) {
+        let venter = await getVender(venderId);
+        if (venter) {
+          setVenderItem(venter);
+        }
+      }
+    }
+  
+    fetchVender();
+  }, [venderId]);
+
   const navigateToCoupon = useCallback(
     (couponId: CouponId) => {
       router.push({
@@ -54,13 +73,14 @@ export default function VenderItem() {
 
   const onConfirm = useCallback(() => {
     if (currCouponNav) {
+      // add part to say that coupon was used by that person
       navigateToCoupon(currCouponNav);
       setAlert(false);
     }
   }, [currCouponNav]);
 
   const renderCoupon = useCallback(
-    ({ item }) => (
+    ({ item }:{item: Coupon}) => (
       <TouchableOpacity
         key={item.couponId}
         style={styles.couponCard}
@@ -89,6 +109,24 @@ export default function VenderItem() {
 
   return (
     <SafeAreaView style={styles.container}>
+
+      {venderItem && (
+        <View
+        style={{ alignItems: "center", padding: 10, flexDirection: "row"}}
+        >
+        <Image
+          style={{ width: width*0.3, height:  width*0.3 }}
+          source={{ uri: venderItem.logo }}
+        />
+        <View style={{alignItems: "flex-start", padding: 10}}>
+          <Text
+          style={{ fontSize: 20, fontWeight: "bold" }}
+          >{venderItem.venderName}</Text>
+          <Text>"Click the coupon you want to use"</Text>
+        </View>
+        </View>
+      )}
+      <View style={{width: width, height: 2, backgroundColor: "black"}}/>
       <FlatList
         data={currCoupons}
         renderItem={renderCoupon}

@@ -25,6 +25,7 @@ import {
   Vender,
   Coupon,
   CouponId,
+  VenderId,
 } from "../types";
 
 /**
@@ -191,15 +192,47 @@ const uploadListing = async ({
 };
 
 // usage for uploading coupon
+// Function to upload a coupon and return the unique coupon ID
 export const uploadCoupon = async (coupon: {
+  couponDescription: string;
+  couponImage: string;
   couponName: string;
-  couponImage: string[];
+  datePosted: Date;
+  discount: number;
+  expDate: Date;
+  isBOGO: boolean;
+  isDollar: boolean;
+  isPercent: boolean;
   numberOfCoupons: number;
-}) => {
+  usersClaimed: string[]; 
+  venderId: string; 
+}): Promise<string> => {
   const couponRef = doc(collection(firestore, "coupon"));
-  await setDoc(couponRef, coupon);
+  let imagePath = await uploadImageAsync(coupon.couponImage, couponRef.id)
+  await setDoc(couponRef, {
+    ...coupon,
+    couponId: couponRef.id,
+    couponImage: imagePath 
+  });
+  return couponRef.id;
 };
 
+
+const getVender = async (venderId: VenderId): Promise<Vender | null> => {
+  try {
+    const venderRef = doc(firestore, "vender", venderId);
+    const venderSnap = await getDoc(venderRef);
+    if (venderSnap.exists()) {
+      return venderSnap.data() as Vender;
+    } else {
+      console.log("No such vender!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching vender:", error);
+    return null;
+  }
+};
 const getVenders = async (): Promise<Vender[] | null> => {
   try {
     const vendorRef = collection(firestore, "vender");
@@ -542,5 +575,6 @@ export {
   getAllOutgoingOffersUser,
   offerTransaction,
   getVenders,
+  getVender,
   fetchCoupons,
 };

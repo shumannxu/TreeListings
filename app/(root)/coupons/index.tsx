@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   StyleSheet,
+  RefreshControl,
 } from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Icon from "../../../components/icon";
@@ -15,17 +16,26 @@ import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getVenders } from "../../../firebase/db";
+import { ref } from "firebase/storage";
 
 export default function Coupon() {
   const { listings } = useAuth() as UserContextType;
   const safeAreaInsets = useSafeAreaInsets();
   const [venders, setVenders] = useState<Vender[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const extractVenderData = async () => {
+    const venders = await getVenders();
+    if (venders) setVenders(venders);
+  };
+
+  const onRefresh = useCallback(async () => {
+      setRefreshing(true);
+      await extractVenderData();
+      setRefreshing(false);
+  }, []);
+  
   useEffect(() => {
-    const extractVenderData = async () => {
-      const venders = await getVenders();
-      if (venders) setVenders(venders);
-    };
     extractVenderData();
   }, []);
 
@@ -41,7 +51,7 @@ export default function Coupon() {
   }, []);
 
   const renderCoupon = useCallback(
-    ({ item }) => (
+    ({ item }:{item:Vender}) => (
       <TouchableOpacity
         style={{
           padding: 10,
@@ -159,6 +169,24 @@ export default function Coupon() {
               color="#38B39C"
             />
           </TouchableOpacity>
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              borderRadius: 25,
+              backgroundColor: "#E6E6E6",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Text style={{ textAlign: "center", fontSize: 17 }}>
+              Distance{" "}
+            </Text>
+            <MaterialCommunityIcons
+              name="order-numeric-ascending"
+              size={24}
+              color="#38B39C"
+            />
+          </TouchableOpacity>
         </ScrollView>
       </View>
       <View
@@ -175,6 +203,14 @@ export default function Coupon() {
           columnWrapperStyle={{
             justifyContent: "space-between",
           }}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#B0DCC5"]}
+              tintColor={"#B0DCC5"}
+            />
+          }
         />
       </View>
 

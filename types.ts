@@ -100,10 +100,19 @@ export type Vender = {
 };
 
 export type Coupon = {
-  couponId: CouponId;
+  couponDescription: string;
   couponImage: string;
   couponName: string;
-  couponDescription: string;
+  datePosted: Date;
+  couponId: CouponId;
+  discount: number;
+  expDate: Date;
+  isBOGO: boolean;
+  isDollar: boolean;
+  isPercent: boolean;
+  numberOfCoupons: number;
+  usersClaimed: UserId[];
+  venderId: VenderId;
 };
 
 // Bike categories
