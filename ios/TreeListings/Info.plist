@@ -31,6 +31,12 @@
           <string>com.TreeListings</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>exp+treelistings</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
@@ -44,30 +50,20 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to open the camera. Photos can help users visualize the product/service you are looking to sell</string>
-    <key>NSContactsUsageDescription</key>
-    <string>$(PRODUCT_NAME) requests access to your contacts to show you which of your contacts are on the app. These contacts will be suggested as friends to add and will never be stored as data.</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>$(PRODUCT_NAME) uses location to provide insights into your videos and optionally display location on listings.</string>
-    <key>NSLocationAlwaysUsageDescription</key>
-    <string>$(PRODUCT_NAME) uses location to provide insights into your videos and optionally display location on listings. </string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-    <string>$(PRODUCT_NAME) uses location to provide insights into your videos and optionally display location on listings.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to record. Recordings can help users visualize the product/service you are looking to sell.</string>
-    <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>Give $(PRODUCT_NAME) permission to save photos</string>
+    <string>Allow $(PRODUCT_NAME) to open the camera</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>$(PRODUCT_NAME) requests access to your photos to enable you to select photos from your camera roll. This helps other users identify the product/service you are looking to sell.</string>
+    <string>custom photos permission</string>
     <key>NSUserActivityTypes</key>
     <array>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
+      <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
       <string>$(PRODUCT_BUNDLE_IDENTIFIER).expo.index_route</string>
     </array>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
-      <string>armv7</string>
+      <string>arm64</string>
     </array>
     <key>UIRequiresFullScreen</key>
     <false/>

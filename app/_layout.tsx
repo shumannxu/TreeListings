@@ -1,7 +1,7 @@
 import { Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import { UserContext, useProtectedRoute } from "../context";
-import { Listing, ListingId, Offer, User } from "../types";
+import { Coupon, CouponId, Listing, ListingId, Offer, User } from "../types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createPostListingListener,
@@ -21,6 +21,8 @@ export default function AppLayout() {
   const [listings, setListings] = useState<{ [id: ListingId]: Listing } | null>(
     null
   );
+  const [coupons, setCoupons] = useState<{ [id: CouponId]: Coupon }>({});
+
   const [selfListings, setSelfListings] = useState<Listing[]>([]);
 
   const [outgoingOffers, setOutgoingOffers] = useState<Offer[]>([]);
@@ -86,6 +88,8 @@ export default function AppLayout() {
           setOutgoingOffers,
           incomingOffers,
           setIncomingOffers,
+          coupons,
+          setCoupons,
         }}
       >
         <Slot screenOptions={{ headerShown: false }} />

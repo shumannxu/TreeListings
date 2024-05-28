@@ -36,7 +36,7 @@ export default function DetailItem() {
   const { user, setUser, listings, setListings, selfListings } =
     useAuth() as UserContextType;
   const { listingId } = useLocalSearchParams<{ listingId: string }>();
-  
+
   const safeAreaInsets = useSafeAreaInsets();
   const [selfUserInfo, setSelfUserInfo] = useState<User | null>(null);
 
@@ -48,11 +48,10 @@ export default function DetailItem() {
   const [loading, setLoading] = useState<boolean>(false);
   const [mainImage, setMainImage] = useState<string>("");
 
-
-  const [isExpanded, setIsExpanded] = useState(false);  // State to manage expansion
+  const [isExpanded, setIsExpanded] = useState(false); // State to manage expansion
 
   const toggleExpanded = () => {
-    setIsExpanded(!isExpanded);  // Toggle the state on tap
+    setIsExpanded(!isExpanded); // Toggle the state on tap
   };
 
   useEffect(() => {
@@ -81,7 +80,6 @@ export default function DetailItem() {
     fetchListing();
   }, [listingId]);
 
-  console.log(listing);
   useEffect(() => {
     const fetchUser = async () => {
       if (listing) {
@@ -95,9 +93,14 @@ export default function DetailItem() {
   }, [seller, listing]);
 
   useEffect(() => {
-    const setImage = async() => {
-      if(listing)
-      setMainImage(listing.imagePath || (listing.imagesPath && listing.imagesPath.length > 0 ? listing.imagesPath[0] : 'https://firebasestorage.googleapis.com/v0/b/treelistings.appspot.com/o/Screenshot%202024-05-06%20at%204.02.47%E2%80%AFPM.png?alt=media&token=6a0b9378-cce8-4b60-886a-9ba4ea391ea6'))
+    const setImage = async () => {
+      if (listing)
+        setMainImage(
+          listing.imagePath ||
+            (listing.imagesPath && listing.imagesPath.length > 0
+              ? listing.imagesPath[0]
+              : "https://firebasestorage.googleapis.com/v0/b/treelistings.appspot.com/o/Screenshot%202024-05-06%20at%204.02.47%E2%80%AFPM.png?alt=media&token=6a0b9378-cce8-4b60-886a-9ba4ea391ea6")
+        );
     };
     setImage();
   }, [listing]);
@@ -278,56 +281,84 @@ export default function DetailItem() {
         <Ionicons name="chevron-back-outline" size={40} color="#38B39C" />
       </TouchableOpacity>
 
-      <View style={{ alignItems: "center", }}>
-        <Image source={{ 
-          uri: mainImage
-           }} style={styles.image} />
-        
+      <View style={{ alignItems: "center" }}>
+        <Image
+          source={{
+            uri: mainImage,
+          }}
+          style={styles.image}
+        />
+
         <ScrollView
-          horizontal={true}  // Enable horizontal scrolling
-          showsHorizontalScrollIndicator={false}  // Optionally hide the horizontal scrollbar
-          contentContainerStyle={{height: 5, alignContent: "center", justifyContent: "center", }}  // Apply layout properties here
+          horizontal={true} // Enable horizontal scrolling
+          showsHorizontalScrollIndicator={false} // Optionally hide the horizontal scrollbar
+          contentContainerStyle={{
+            height: 5,
+            alignContent: "center",
+            justifyContent: "center",
+          }} // Apply layout properties here
         >
           {listing.imagesPath?.map((img, index) => (
-            <TouchableOpacity key={index} style={{
-              backgroundColor: "#e7e7e7",
-              alignItems: "center",
-              justifyContent: "center",
-              height: 175,
-              width: 175,
-              borderRadius: 5,
-              marginVertical: 10, 
-              marginHorizontal: 5,
-            }} onPress={() => setMainImage(img)}>
-              <Image source={{ uri: img }} style={{
-                height: "100%",
-                width: "100%",
-                borderRadius: 5,
-                justifyContent: "center",
+            <TouchableOpacity
+              key={index}
+              style={{
+                backgroundColor: "#e7e7e7",
                 alignItems: "center",
-                borderColor: "gray",
-                borderWidth: 1,
-              }} />
+                justifyContent: "center",
+                height: 175,
+                width: 175,
+                borderRadius: 5,
+                marginVertical: 10,
+                marginHorizontal: 5,
+              }}
+              onPress={() => setMainImage(img)}
+            >
+              <Image
+                source={{ uri: img }}
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  borderRadius: 5,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderColor: "gray",
+                  borderWidth: 1,
+                }}
+              />
             </TouchableOpacity>
           ))}
         </ScrollView>
- 
-        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", width: width, paddingVertical: 5, paddingHorizontal: 10, marginTop: -20}}>
-          <View style={{flexDirection: "row", }}>
+
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: width,
+            paddingVertical: 5,
+            paddingHorizontal: 10,
+            marginTop: -20,
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
             <Icon height={30} color="black">
               profile
             </Icon>
             <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
           </View>
-          <View style={{flexDirection: "row",}}>
-            <Text style={styles.defaultTextSize}>{seller?.sellerRating? seller.sellerRating : 5}</Text>
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.defaultTextSize}>
+              {seller?.sellerRating ? seller.sellerRating : 5}
+            </Text>
             <Icon height={20} color="black">
               star
             </Icon>
           </View>
         </View>
-        <View style={{width: width * 0.95, height: 1, backgroundColor: "grey"}}/>
-        <View style={{width: width, paddingLeft: 10}}>
+        <View
+          style={{ width: width * 0.95, height: 1, backgroundColor: "grey" }}
+        />
+        <View style={{ width: width, paddingLeft: 10 }}>
           <Text
             numberOfLines={1}
             adjustsFontSizeToFit
@@ -343,9 +374,11 @@ export default function DetailItem() {
           >
             {listing.title}
           </Text>
-          <Text style={[styles.defaultTextSize, {color: "black"}]}>{"posted " + timeAgo}</Text>
+          <Text style={[styles.defaultTextSize, { color: "black" }]}>
+            {"posted " + timeAgo}
+          </Text>
         </View>
-        <View  style={{width: width,}}>
+        <View style={{ width: width }}>
           <Text
             style={{
               fontSize: 18,
@@ -358,13 +391,13 @@ export default function DetailItem() {
             {"Description:"}
           </Text>
           <TouchableOpacity onPress={toggleExpanded} activeOpacity={0.9}>
-          <Text
-            style={styles.textStyle}
-            numberOfLines={isExpanded ? undefined : 4}  // Limit to 4 lines unless expanded
-          >
-            {listing.description}
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={styles.textStyle}
+              numberOfLines={isExpanded ? undefined : 4} // Limit to 4 lines unless expanded
+            >
+              {listing.description}
+            </Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{

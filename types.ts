@@ -2,6 +2,8 @@ import { Float } from "react-native/Libraries/Types/CodegenTypes";
 
 export type UserId = string;
 export type ListingId = string;
+export type VenderId = string;
+export type CouponId = string;
 
 export type User = {
   email: string;
@@ -20,6 +22,8 @@ export type User = {
 export interface UserContextType {
   listings: { [id: ListingId]: Listing } | null;
   setListings: (listing: { [id: ListingId]: Listing } | null) => void;
+  coupons: { [id: CouponId]: Coupon };
+  setCoupons: (coupons: { [id: CouponId]: Coupon }) => void;
   user: User | null;
   setUser: (user: User | null) => void;
   selfListings: Listing[];
@@ -88,14 +92,19 @@ export type Offer = {
 };
 
 export type Vender = {
-  venderId: string;
+  venderId: VenderId;
   venderName: string;
   logo: string;
   categories: string[];
-  coupons: Coupon[];
+  coupons: CouponId[];
 };
 
-export type Coupon = {};
+export type Coupon = {
+  couponId: CouponId;
+  couponImage: string;
+  couponName: string;
+  couponDescription: string;
+};
 
 // Bike categories
 export enum BikeCategoryType {

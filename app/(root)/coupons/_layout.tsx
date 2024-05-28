@@ -11,6 +11,14 @@ function CouponLayout() {
           name="index" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}
         />
+        <Stack.Screen
+          name="[venderId]/index" // Note the change here
+          options={{ headerShown: false, gestureEnabled: true }}
+        />
+        <Stack.Screen
+          name="[venderId]/[couponId]/index" // Note the change here
+          options={{ headerShown: false, gestureEnabled: true }}
+        />
       </Stack>
     </SafeAreaProvider>
   );

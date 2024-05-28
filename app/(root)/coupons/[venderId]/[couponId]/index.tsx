@@ -20,7 +20,7 @@ import {
   getDocument,
   createOffer,
 } from "../../../../../firebase/db";
-import { Listing, User, UserContextType } from "../../../../../types";
+import { Coupon, Listing, User, UserContextType } from "../../../../../types";
 import { getTimeAgo2 } from "../../../../components/getTimeAgo";
 import Icon from "../../../../../components/icon";
 import ListingItem from "../../../../components/listingItem";
@@ -33,7 +33,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function CouponItem() {
-  const { user, setUser, listings, setListings, selfListings } =
-    useAuth() as UserContextType;
+  const { user, coupons } = useAuth() as UserContextType;
   const { couponId } = useLocalSearchParams<{ couponId: string }>();
+  const coupon = couponId
+    ? coupons[couponId]
+    : (undefined as Coupon | undefined);
+
+  return (
+    <View>
+      <Text>{coupon?.couponName}</Text>
+    </View>
+  );
 }
