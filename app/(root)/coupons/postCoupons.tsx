@@ -106,7 +106,7 @@ export default function PostCoupons() {
           isDollar: false,
           isPercent: false,
           numberOfCoupons: parseFloat(numberOfCoupons),
-          usersClaimed: [],
+          usersClaimed: {},
           venderId: user.id,
         }).then(() => {
           setLoading(false);

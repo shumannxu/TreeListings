@@ -99,6 +99,15 @@ export type Vender = {
   coupons: CouponId[];
 };
 
+interface FirestoreTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+export type UserClaims = {
+  [userId: UserId]: FirestoreTimestamp;
+};
+
 export type Coupon = {
   couponDescription: string;
   couponImage: string;
@@ -111,7 +120,7 @@ export type Coupon = {
   isDollar: boolean;
   isPercent: boolean;
   numberOfCoupons: number;
-  usersClaimed: UserId[];
+  usersClaimed: UserClaims;
   venderId: VenderId;
 };
 

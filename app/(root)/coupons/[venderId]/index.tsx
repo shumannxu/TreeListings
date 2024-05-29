@@ -13,11 +13,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../../context";
 import { useLocalSearchParams } from "expo-router";
-import { fetchCoupons, getVender, setDocument } from "../../../../firebase/db";
+import { createCouponsListener, getVender, setDocument } from "../../../../firebase/db";
 import { Coupon, CouponId, UserContextType, Vender, VenderId } from "../../../../types";
 import { router } from "expo-router";
 import CustomAlert from "../../../components/alert";
-import { arrayUnion, collection, doc, onSnapshot, updateDoc } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../../firebaseConfig";
 
 
@@ -26,10 +26,12 @@ export default function VenderItem() {
   const { venderId } = useLocalSearchParams<{ venderId: VenderId }>();
   const [loading, setLoading] = useState<boolean>(false);
   const [alert, setAlert] = useState<boolean>(false);
+  const [couponClaimed, setcouponClaimed] = useState<boolean>(false);
   const [currCoupons, setCurrCoupons] = useState<Coupon[]>([]);
   const [currCouponNav, setCurrCouponNav] = useState<Coupon | null>(null);
   const [venderItem, setVenderItem] = useState<Vender|null>(null);
   const {width, height} = useWindowDimensions();
+
 
 
   useEffect(() => {
@@ -54,54 +56,81 @@ export default function VenderItem() {
     },
     [venderId]
   );
-  // Assuming 'venderId' is passed as a parameter to this route
+
   useEffect(() => {
     if (!venderId) {
       console.error("No vender ID provided");
       return;
     }
-
+  
     setLoading(true);
-    fetchCoupons(venderId, setCoupons)
-      .then((retrievedCoupons) => {
-        setCurrCoupons(retrievedCoupons);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch coupons:", error);
-        setLoading(false);
-      });
-  }, [venderId]);
+    const unsubscribe = createCouponsListener(venderId, (coupons) => {
+      // Assuming 'coupons' is a dictionary, but your state expects an array
+      // We need to convert the dictionary values to an array
+      setCoupons(coupons);
+      const couponsArray = Object.values(coupons);
+      setCurrCoupons(couponsArray);
+      setLoading(false);
+    });
+  
+    // Cleanup function to unsubscribe when the component unmounts
+    return () => unsubscribe();
+  }, [venderId, setCurrCoupons, setLoading]);
 
-
+  // user hasn't used the coupon yet or has used but can still access it  
   const onConfirm = useCallback(() => {
     if (currCouponNav && user) {
       const couponRef = doc(firestore, `coupon/${currCouponNav.couponId}`);
-      const updateData = {
-        usersClaimed: arrayUnion(user.id) 
-      };
-      updateDoc(couponRef, updateData)
-        .then(() => {
-          console.log("User added to usersClaimed array");
-          navigateToCoupon(currCouponNav.couponId);
-          setAlert(false);
-        })
-        .catch(error => {
-          console.error("Error updating document: ", error);
-        });
+      getDoc(couponRef).then((docSnap) => {
+        // Build the field path for the specific user's claim date
+        const userClaimField = `usersClaimed.${user.id}`;
+
+        const now = new Date();               
+        const tenMinutesLater = new Date(now);
+        tenMinutesLater.setMinutes(now.getMinutes() + 10); 
+        const updateData = {
+          [userClaimField]: tenMinutesLater
+        };
+    
+        // Update the document with the specific user's claim date
+        updateDoc(couponRef, updateData)
+          .then(() => {
+            // console.log("User added to usersClaimed dictionary");
+            setAlert(false);
+            navigateToCoupon(currCouponNav.couponId);
+          })
+          .catch(error => {
+            console.error("Error updating document: ", error);
+          });
+      });
     }
-  }, [currCouponNav, navigateToCoupon, setAlert]);
+  }, [currCouponNav, user, navigateToCoupon, setAlert]);
+  
+
+  const onCouponPress = useCallback(({ item }:{item: Coupon}) => {
+    if (item.usersClaimed && user && user?.id in item.usersClaimed) {
+      const deadline = item.usersClaimed[user.id];
+      const claimedDate = new Date(deadline.seconds * 1000 + deadline.nanoseconds / 1000000);
+      const currentTime = new Date();
+      if (currentTime > claimedDate) {
+        setcouponClaimed(true);
+        return ;
+      } else {
+        navigateToCoupon(item.couponId);
+        return ;
+      }
+    } 
+    setAlert(true);
+    setCurrCouponNav(item);
+
+  }, [setcouponClaimed, setAlert, setCurrCouponNav, user]);
 
   const renderCoupon = useCallback(
     ({ item }:{item: Coupon}) => (
       <TouchableOpacity
         key={item.couponId}
-        style={[styles.couponCard, {backgroundColor: item.usersClaimed.includes(user?.id)? "grey":"white"}]}
-        onPress={() => {
-          setAlert(true);
-          setCurrCouponNav(item);
-        }}
-      >
+        style={[styles.couponCard, {backgroundColor: user && user?.id in item.usersClaimed ? "grey" : "white"}]}
+        onPress={() => onCouponPress({ item })}      >
         <Image
           source={{ uri: item.couponImage }}
           style={styles.couponImage}
@@ -152,6 +181,14 @@ export default function VenderItem() {
           justifyContent: "space-between",
         }}
         ListEmptyComponent={<Text>No coupons available.</Text>}
+      />
+      <CustomAlert
+        modalVisible={couponClaimed}
+        setModalVisible={setcouponClaimed}
+        textPrompt={"You have already claimed this coupon"}
+        onConfirm={() => setcouponClaimed(false)}
+        onCancel={() => setcouponClaimed(false)}
+        onDismiss={() => setcouponClaimed(false)}
       />
       <CustomAlert
         modalVisible={alert}

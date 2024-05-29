@@ -26,6 +26,7 @@ import {
   Coupon,
   CouponId,
   VenderId,
+  UserClaims
 } from "../types";
 
 /**
@@ -50,9 +51,9 @@ const getDocument = async (path: string): Promise<any> => {
  * @returns {Promise<any>} - An array of coupon data, empty if no coupons are found.
  */
 const fetchCoupons = async (
-  venderId: CouponId,
+  venderId: VenderId,
   setCoupon: (coupons: { [id: CouponId]: Coupon }) => void
-): Promise<any> => {
+): Promise<Coupon[]> => {
   const couponsQuery = query(
     collection(firestore, "coupon"),
     where("venderId", "==", venderId)
@@ -69,13 +70,44 @@ const fetchCoupons = async (
         ...prevCoupons,
         [doc.ref.id]: coupon,
       }));
+      
       return coupon as Coupon;
     });
     return coupons;
   } catch (error) {
     console.error("Error fetching coupons:", error);
-    return [[], 0];
+    return [];
   }
+};
+/**
+ * Subscribes to all coupons associated with a specific vendor from Firestore.
+ * @param venderId {string} - The ID of the vendor.
+ * @param setCoupon {Function} - Function to update state with the fetched coupons.
+ * @returns {Function} - Unsubscribe function to stop listening to updates.
+ */
+const createCouponsListener = (
+  venderId: VenderId,
+  setCoupon: (coupons: { [id: CouponId]: Coupon }) => void
+): (() => void) => {
+  const couponsQuery = query(
+    collection(firestore, "coupon"),
+    where("venderId", "==", venderId)
+  );
+
+  const unsubscribe = onSnapshot(couponsQuery, (querySnapshot) => {
+    const coupons: { [id: string]: Coupon } = {};
+    querySnapshot.forEach((doc) => {
+      coupons[doc.id] = {
+        couponId: doc.id,
+        ...doc.data() as Coupon
+      };
+    });
+    setCoupon(coupons);  // Update the state with all current coupons
+  }, (error) => {
+    console.error("Error subscribing to coupons:", error);
+  });
+
+  return unsubscribe;
 };
 
 /**
@@ -204,7 +236,7 @@ export const uploadCoupon = async (coupon: {
   isDollar: boolean;
   isPercent: boolean;
   numberOfCoupons: number;
-  usersClaimed: string[]; 
+  usersClaimed: UserClaims; 
   venderId: string; 
 }): Promise<string> => {
   const couponRef = doc(collection(firestore, "coupon"));
@@ -576,5 +608,5 @@ export {
   offerTransaction,
   getVenders,
   getVender,
-  fetchCoupons,
+  createCouponsListener,
 };
