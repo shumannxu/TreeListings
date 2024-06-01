@@ -14,6 +14,7 @@ interface CustomAlertProps {
   textPrompt: string;
   onConfirm: () => void;
   onCancel: () => void;
+  onDismiss?: () => void;
 }
 
 const CustomAlert = ({
@@ -22,6 +23,7 @@ const CustomAlert = ({
   textPrompt,
   onConfirm,
   onCancel,
+  onDismiss,
 }: CustomAlertProps) => {
   return (
     <Modal
@@ -41,6 +43,7 @@ const CustomAlert = ({
       >
         <View style={styles.alertBox}>
           <Text style={styles.alertText}>{textPrompt}</Text>
+          {onDismiss? <TouchableOpacity style={styles.button} onPress={onDismiss}><Text>Dismiss</Text></TouchableOpacity> :
           <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={onConfirm}>
               <Text style={styles.buttonText}>Yes</Text>
@@ -49,6 +52,7 @@ const CustomAlert = ({
               <Text style={styles.buttonText}>No</Text>
             </TouchableOpacity>
           </View>
+        }
         </View>
       </TouchableOpacity>
     </Modal>

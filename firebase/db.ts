@@ -25,6 +25,8 @@ import {
   Vender,
   Coupon,
   CouponId,
+  VenderId,
+  UserClaims
 } from "../types";
 
 /**
@@ -49,9 +51,9 @@ const getDocument = async (path: string): Promise<any> => {
  * @returns {Promise<any>} - An array of coupon data, empty if no coupons are found.
  */
 const fetchCoupons = async (
-  venderId: CouponId,
+  venderId: VenderId,
   setCoupon: (coupons: { [id: CouponId]: Coupon }) => void
-): Promise<any> => {
+): Promise<Coupon[]> => {
   const couponsQuery = query(
     collection(firestore, "coupon"),
     where("venderId", "==", venderId)
@@ -68,13 +70,44 @@ const fetchCoupons = async (
         ...prevCoupons,
         [doc.ref.id]: coupon,
       }));
+      
       return coupon as Coupon;
     });
     return coupons;
   } catch (error) {
     console.error("Error fetching coupons:", error);
-    return [[], 0];
+    return [];
   }
+};
+/**
+ * Subscribes to all coupons associated with a specific vendor from Firestore.
+ * @param venderId {string} - The ID of the vendor.
+ * @param setCoupon {Function} - Function to update state with the fetched coupons.
+ * @returns {Function} - Unsubscribe function to stop listening to updates.
+ */
+const createCouponsListener = (
+  venderId: VenderId,
+  setCoupon: (coupons: { [id: CouponId]: Coupon }) => void
+): (() => void) => {
+  const couponsQuery = query(
+    collection(firestore, "coupon"),
+    where("venderId", "==", venderId)
+  );
+
+  const unsubscribe = onSnapshot(couponsQuery, (querySnapshot) => {
+    const coupons: { [id: string]: Coupon } = {};
+    querySnapshot.forEach((doc) => {
+      coupons[doc.id] = {
+        couponId: doc.id,
+        ...doc.data() as Coupon
+      };
+    });
+    setCoupon(coupons);  // Update the state with all current coupons
+  }, (error) => {
+    console.error("Error subscribing to coupons:", error);
+  });
+
+  return unsubscribe;
 };
 
 /**
@@ -191,15 +224,47 @@ const uploadListing = async ({
 };
 
 // usage for uploading coupon
+// Function to upload a coupon and return the unique coupon ID
 export const uploadCoupon = async (coupon: {
+  couponDescription: string;
+  couponImage: string;
   couponName: string;
-  couponImage: string[];
+  datePosted: Date;
+  discount: number;
+  expDate: Date;
+  isBOGO: boolean;
+  isDollar: boolean;
+  isPercent: boolean;
   numberOfCoupons: number;
-}) => {
+  usersClaimed: UserClaims; 
+  venderId: string; 
+}): Promise<string> => {
   const couponRef = doc(collection(firestore, "coupon"));
-  await setDoc(couponRef, coupon);
+  let imagePath = await uploadImageAsync(coupon.couponImage, couponRef.id)
+  await setDoc(couponRef, {
+    ...coupon,
+    couponId: couponRef.id,
+    couponImage: imagePath 
+  });
+  return couponRef.id;
 };
 
+
+const getVender = async (venderId: VenderId): Promise<Vender | null> => {
+  try {
+    const venderRef = doc(firestore, "vender", venderId);
+    const venderSnap = await getDoc(venderRef);
+    if (venderSnap.exists()) {
+      return venderSnap.data() as Vender;
+    } else {
+      console.log("No such vender!");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching vender:", error);
+    return null;
+  }
+};
 const getVenders = async (): Promise<Vender[] | null> => {
   try {
     const vendorRef = collection(firestore, "vender");
@@ -542,5 +607,6 @@ export {
   getAllOutgoingOffersUser,
   offerTransaction,
   getVenders,
-  fetchCoupons,
+  getVender,
+  createCouponsListener,
 };
