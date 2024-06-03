@@ -11,10 +11,10 @@ function FeedLayout() {
           name="index" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="bikeIndex" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}
-        />
+        /> */}
         <Stack.Screen
           name="postListings" // Note the change here
           options={{ headerShown: false, gestureEnabled: true }}

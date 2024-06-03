@@ -53,7 +53,6 @@ export default function DetailItem() {
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded); // Toggle the state on tap
   };
-
   useEffect(() => {
     if (listing) {
       setTimeAgo(getTimeAgo2(listing.datePosted));
@@ -263,12 +262,7 @@ export default function DetailItem() {
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        alignItems: "center",
-        // paddingVertical: safeAreaInsets.top,
-      }}
-    >
+    <View style={{ flex: 1 }}>
       <TouchableOpacity
         style={{
           position: "absolute",
@@ -280,200 +274,216 @@ export default function DetailItem() {
       >
         <Ionicons name="chevron-back-outline" size={40} color="#38B39C" />
       </TouchableOpacity>
-
-      <View style={{ alignItems: "center" }}>
-        <Image
-          source={{
-            uri: mainImage,
-          }}
-          style={styles.image}
-        />
-
-        <ScrollView
-          horizontal={true} // Enable horizontal scrolling
-          showsHorizontalScrollIndicator={false} // Optionally hide the horizontal scrollbar
-          contentContainerStyle={{
-            height: 5,
-            alignContent: "center",
-            justifyContent: "center",
-          }} // Apply layout properties here
-        >
-          {listing.imagesPath?.map((img, index) => (
-            <TouchableOpacity
-              key={index}
-              style={{
-                backgroundColor: "#e7e7e7",
-                alignItems: "center",
+      <ScrollView
+        contentContainerStyle={{
+          alignItems: "center",
+          paddingTop: safeAreaInsets.top + 50, // Add padding to avoid overlap with the back button
+        }}
+      >
+        <View style={{ alignItems: "center" }}>
+          <Image
+            source={{
+              uri: mainImage,
+            }}
+            style={styles.image}
+          />
+          {listing.imagePath && (
+            <ScrollView
+              horizontal={true} // Enable horizontal scrolling
+              showsHorizontalScrollIndicator={false} // Optionally hide the horizontal scrollbar
+              contentContainerStyle={{
+                height: 5,
+                alignContent: "center",
                 justifyContent: "center",
-                height: 175,
-                width: 175,
-                borderRadius: 5,
-                marginVertical: 10,
-                marginHorizontal: 5,
-              }}
-              onPress={() => setMainImage(img)}
+              }} // Apply layout properties here
             >
-              <Image
-                source={{ uri: img }}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  borderRadius: 5,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  borderColor: "gray",
-                  borderWidth: 1,
-                }}
-              />
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+              {listing.imagesPath
+                ?.filter((img) => img)
+                .map((img, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={{
+                      backgroundColor: "#e7e7e7",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: 175,
+                      width: 175,
+                      borderRadius: 5,
+                      marginVertical: 10,
+                      marginHorizontal: 5,
+                    }}
+                    onPress={() => setMainImage(img)}
+                  >
+                    <Image
+                      source={{ uri: img }}
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        borderRadius: 5,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderColor: "gray",
+                        borderWidth: 1,
+                      }}
+                    />
+                  </TouchableOpacity>
+                ))}
+            </ScrollView>
+          )}
 
-        <View
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: width,
-            paddingVertical: 5,
-            paddingHorizontal: 10,
-            marginTop: -20,
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
-            <Icon height={30} color="black">
-              profile
-            </Icon>
-            <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <Text style={styles.defaultTextSize}>
-              {seller?.sellerRating ? seller.sellerRating : 5}
-            </Text>
-            <Icon height={20} color="black">
-              star
-            </Icon>
-          </View>
-        </View>
-        <View
-          style={{ width: width * 0.95, height: 1, backgroundColor: "grey" }}
-        />
-        <View style={{ width: width, paddingLeft: 10 }}>
-          <Text
-            numberOfLines={1}
-            adjustsFontSizeToFit
+          <View
             style={{
-              width: width * 0.65,
-              fontSize: 30,
-              fontWeight: "bold",
-              letterSpacing: 1,
-              marginTop: 10,
-              marginBottom: 7,
-              color: "#4B6F6E",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: width,
+              paddingVertical: 5,
+              paddingHorizontal: 10,
+              marginTop: -20,
             }}
           >
-            {listing.title}
-          </Text>
-          <Text style={[styles.defaultTextSize, { color: "black" }]}>
-            {"posted " + timeAgo}
-          </Text>
-        </View>
-        <View style={{ width: width }}>
-          <Text
+            <View style={{ flexDirection: "row" }}>
+              <Icon height={30} color="black">
+                profile
+              </Icon>
+              <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
+            </View>
+            <View style={{ flexDirection: "row" }}>
+              <Text style={styles.defaultTextSize}>
+                {seller?.sellerRating ? seller.sellerRating : 5}
+              </Text>
+              <Icon height={20} color="black">
+                star
+              </Icon>
+            </View>
+          </View>
+          <View
+            style={{ width: width * 0.95, height: 1, backgroundColor: "grey" }}
+          />
+          <View style={{ width: width, paddingLeft: 10 }}>
+            <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              style={{
+                width: width * 0.65,
+                fontSize: 30,
+                fontWeight: "bold",
+                letterSpacing: 1,
+                marginTop: 10,
+                marginBottom: 7,
+                color: "#4B6F6E",
+              }}
+            >
+              {listing.title}
+            </Text>
+            <Text style={[styles.defaultTextSize, { color: "black" }]}>
+              {"posted " + timeAgo}
+            </Text>
+          </View>
+          <View style={{ width: width }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "600",
+                letterSpacing: 1,
+                marginHorizontal: 10,
+                marginVertical: 10,
+              }}
+            >
+              {"Description:"}
+            </Text>
+            <TouchableOpacity onPress={toggleExpanded} activeOpacity={0.9}>
+              <Text
+                style={styles.textStyle}
+                numberOfLines={isExpanded ? undefined : 4} // Limit to 4 lines unless expanded
+              >
+                {listing.description}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: "600",
-              letterSpacing: 1,
-              marginHorizontal: 10,
+              flexDirection: "row",
+              alignContent: "flex-end",
+              alignItems: "center",
               marginVertical: 10,
             }}
           >
-            {"Description:"}
-          </Text>
-          <TouchableOpacity onPress={toggleExpanded} activeOpacity={0.9}>
-            <Text
-              style={styles.textStyle}
-              numberOfLines={isExpanded ? undefined : 4} // Limit to 4 lines unless expanded
-            >
-              {listing.description}
+            <Text style={[styles.defaultTextSize, { marginHorizontal: 10 }]}>
+              Asking Price: ${listing.price}
             </Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignContent: "flex-end",
-            alignItems: "center",
-            marginVertical: 10,
-          }}
-        >
-          <Text style={[styles.defaultTextSize, { marginHorizontal: 10 }]}>
-            Asking Price: ${listing.price}
-          </Text>
-          <TouchableOpacity style={styles.button} onPress={onBuyNow}>
-            <Text>Buy Now</Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            alignContent: "flex-end",
-            alignItems: "center",
-            marginVertical: 10,
-          }}
-        >
-          <Text style={styles.defaultTextSize}>Best Offer: $</Text>
-          <TextInput
+            <TouchableOpacity style={styles.button} onPress={onBuyNow}>
+              <Text>Buy Now</Text>
+            </TouchableOpacity>
+          </View>
+          <View
             style={{
-              marginHorizontal: 10,
-              borderWidth: 1,
-              borderColor: "black",
-              height: 30,
+              flexDirection: "row",
+              alignContent: "flex-end",
+              alignItems: "center",
+              marginVertical: 10,
             }}
-            placeholder=" Amount "
-            keyboardType="numeric"
-            value={price}
-            onChangeText={setPrice}
-          />
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: price === "" ? "grey" : "#38B39C" },
-            ]}
-            onPress={onSubmitOffer}
-            disabled={price === ""}
           >
-            <Text>Submit Offer</Text>
-          </TouchableOpacity>
+            <Text style={styles.defaultTextSize}>Best Offer: $</Text>
+            <TextInput
+              style={{
+                marginHorizontal: 10,
+                borderWidth: 1,
+                borderColor: "black",
+                height: 30,
+              }}
+              placeholder=" Amount "
+              keyboardType="numeric"
+              value={price}
+              onChangeText={setPrice}
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: price === "" ? "grey" : "#38B39C" },
+              ]}
+              onPress={onSubmitOffer}
+              disabled={price === ""}
+            >
+              <Text>Submit Offer</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <View
-        style={{
-          width: "100%",
-          height: 2,
-          backgroundColor: "black",
-          margin: 10,
-        }}
-      />
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: "500",
-          letterSpacing: 1,
-          marginVertical: 10,
-          color: "#4B6F6E",
-        }}
-      >
-        Similar Items
-      </Text>
-      <FlatList
-        data={listings ? Object.values(listings) : []}
-        renderItem={renderItem}
-        horizontal
-        keyExtractor={(item) => item.listingId}
-        showsHorizontalScrollIndicator={false}
-        initialNumToRender={5}
-      />
-    </ScrollView>
+        <View
+          style={{
+            width: "100%",
+            height: 2,
+            backgroundColor: "black",
+            margin: 10,
+          }}
+        />
+        <Text
+          style={{
+            fontSize: 20,
+            fontWeight: "500",
+            letterSpacing: 1,
+            marginVertical: 10,
+            color: "#4B6F6E",
+          }}
+        >
+          Similar Items
+        </Text>
+
+        <FlatList
+          data={
+            listings
+              ? Object.values(listings).filter(
+                  (item) => item.listingId !== listingId
+                )
+              : []
+          }
+          renderItem={renderItem}
+          horizontal
+          keyExtractor={(item) => item.listingId}
+          showsHorizontalScrollIndicator={false}
+          initialNumToRender={5}
+        />
+      </ScrollView>
+    </View>
   );
 }

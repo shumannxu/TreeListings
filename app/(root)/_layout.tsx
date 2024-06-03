@@ -14,7 +14,7 @@ export default function HomeLayout() {
             href: "/home",
             tabBarLabel: "Home",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 home
               </Icon>
             ),
@@ -26,7 +26,7 @@ export default function HomeLayout() {
             href: "/coupons",
             tabBarLabel: "Coupons",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={40} width={20}>
+              <Icon color={"#00BF63"} height={40} width={20}>
                 coupon
               </Icon>
             ),
@@ -38,7 +38,7 @@ export default function HomeLayout() {
             href: "/search",
             tabBarLabel: "Search",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 search
               </Icon>
             ),
@@ -50,7 +50,7 @@ export default function HomeLayout() {
             href: "/profile",
             tabBarLabel: "profile",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 user
               </Icon>
             ),
@@ -59,7 +59,6 @@ export default function HomeLayout() {
         <Tabs.Screen
           name="detailitem/[listingId]"
           options={{
-            // href: "/detailitem",
             href: null,
           }}
         />
@@ -69,7 +68,7 @@ export default function HomeLayout() {
             href: "/offers",
             tabBarLabel: "offers",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 offer
               </Icon>
             ),

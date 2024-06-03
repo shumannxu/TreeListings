@@ -9,17 +9,37 @@ import {
   ActivityIndicator,
   FlatList,
   useWindowDimensions,
+  StatusBar,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../../context";
 import { useLocalSearchParams } from "expo-router";
-import { createCouponsListener, getVender, setDocument } from "../../../../firebase/db";
-import { Coupon, CouponId, UserContextType, Vender, VenderId } from "../../../../types";
+import {
+  createCouponsListener,
+  getVender,
+  setDocument,
+} from "../../../../firebase/db";
+import {
+  Coupon,
+  CouponId,
+  UserContextType,
+  Vender,
+  VenderId,
+} from "../../../../types";
 import { router } from "expo-router";
 import CustomAlert from "../../../components/alert";
-import { arrayUnion, collection, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { firestore } from "../../../../firebaseConfig";
-
+import { MainText, HeaderText } from "../../../../components/text";
+import TopNav from "../../../../components/topNav";
+import SubTopNav from "../../../../components/subTopNav";
 
 export default function VenderItem() {
   const { user, setCoupons, coupons } = useAuth() as UserContextType;
@@ -29,10 +49,8 @@ export default function VenderItem() {
   const [couponClaimed, setcouponClaimed] = useState<boolean>(false);
   const [currCoupons, setCurrCoupons] = useState<Coupon[]>([]);
   const [currCouponNav, setCurrCouponNav] = useState<Coupon | null>(null);
-  const [venderItem, setVenderItem] = useState<Vender|null>(null);
-  const {width, height} = useWindowDimensions();
-
-
+  const [venderItem, setVenderItem] = useState<Vender | null>(null);
+  const { width, height } = useWindowDimensions();
 
   useEffect(() => {
     async function fetchVender() {
@@ -43,7 +61,7 @@ export default function VenderItem() {
         }
       }
     }
-  
+
     fetchVender();
   }, [venderId]);
 
@@ -62,7 +80,7 @@ export default function VenderItem() {
       console.error("No vender ID provided");
       return;
     }
-  
+
     setLoading(true);
     const unsubscribe = createCouponsListener(venderId, (coupons) => {
       // Assuming 'coupons' is a dictionary, but your state expects an array
@@ -72,12 +90,12 @@ export default function VenderItem() {
       setCurrCoupons(couponsArray);
       setLoading(false);
     });
-  
+
     // Cleanup function to unsubscribe when the component unmounts
     return () => unsubscribe();
   }, [venderId, setCurrCoupons, setLoading]);
 
-  // user hasn't used the coupon yet or has used but can still access it  
+  // user hasn't used the coupon yet or has used but can still access it
   const onConfirm = useCallback(() => {
     if (currCouponNav && user) {
       const couponRef = doc(firestore, `coupon/${currCouponNav.couponId}`);
@@ -85,13 +103,13 @@ export default function VenderItem() {
         // Build the field path for the specific user's claim date
         const userClaimField = `usersClaimed.${user.id}`;
 
-        const now = new Date();               
+        const now = new Date();
         const tenMinutesLater = new Date(now);
-        tenMinutesLater.setMinutes(now.getMinutes() + 10); 
+        tenMinutesLater.setMinutes(now.getMinutes() + 10);
         const updateData = {
-          [userClaimField]: tenMinutesLater
+          [userClaimField]: tenMinutesLater,
         };
-    
+
         // Update the document with the specific user's claim date
         updateDoc(couponRef, updateData)
           .then(() => {
@@ -99,38 +117,48 @@ export default function VenderItem() {
             setAlert(false);
             navigateToCoupon(currCouponNav.couponId);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Error updating document: ", error);
           });
       });
     }
   }, [currCouponNav, user, navigateToCoupon, setAlert]);
-  
 
-  const onCouponPress = useCallback(({ item }:{item: Coupon}) => {
-    if (item.usersClaimed && user && user?.id in item.usersClaimed) {
-      const deadline = item.usersClaimed[user.id];
-      const claimedDate = new Date(deadline.seconds * 1000 + deadline.nanoseconds / 1000000);
-      const currentTime = new Date();
-      if (currentTime > claimedDate) {
-        setcouponClaimed(true);
-        return ;
-      } else {
-        navigateToCoupon(item.couponId);
-        return ;
+  const onCouponPress = useCallback(
+    ({ item }: { item: Coupon }) => {
+      if (item.usersClaimed && user && user?.id in item.usersClaimed) {
+        const deadline = item.usersClaimed[user.id];
+        const claimedDate = new Date(
+          deadline.seconds * 1000 + deadline.nanoseconds / 1000000
+        );
+        const currentTime = new Date();
+        if (currentTime > claimedDate) {
+          setcouponClaimed(true);
+          return;
+        } else {
+          navigateToCoupon(item.couponId);
+          return;
+        }
       }
-    } 
-    setAlert(true);
-    setCurrCouponNav(item);
-
-  }, [setcouponClaimed, setAlert, setCurrCouponNav, user]);
+      setAlert(true);
+      setCurrCouponNav(item);
+    },
+    [setcouponClaimed, setAlert, setCurrCouponNav, user]
+  );
 
   const renderCoupon = useCallback(
-    ({ item }:{item: Coupon}) => (
+    ({ item }: { item: Coupon }) => (
       <TouchableOpacity
         key={item.couponId}
-        style={[styles.couponCard, {backgroundColor: user && user?.id in item.usersClaimed ? "grey" : "white"}]}
-        onPress={() => onCouponPress({ item })}      >
+        style={[
+          styles.couponCard,
+          {
+            backgroundColor:
+              user && user?.id in item.usersClaimed ? "grey" : "white",
+          },
+        ]}
+        onPress={() => onCouponPress({ item })}
+      >
         <Image
           source={{ uri: item.couponImage }}
           style={styles.couponImage}
@@ -150,9 +178,12 @@ export default function VenderItem() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-
-      {venderItem && (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: "#FFF6EC" }}>
+        <SubTopNav title={venderItem?.venderName} showSearchIcon={false} />
+        {/* {venderItem && (
         <View
         style={{ alignItems: "center", padding: 10, flexDirection: "row"}}
         >
@@ -167,21 +198,34 @@ export default function VenderItem() {
           <Text>"Click the coupon you want to use"</Text>
         </View>
         </View>
-      )}
-      <View style={{width: width, height: 2, backgroundColor: "black"}}/>
-      <FlatList
-        data={currCoupons}
-        renderItem={renderCoupon}
-        numColumns={2} // Ensures that the number of columns is set to 2
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{
-          justifyContent: "space-between",
-        }}
-        columnWrapperStyle={{
-          justifyContent: "space-between",
-        }}
-        ListEmptyComponent={<Text>No coupons available.</Text>}
-      />
+      )} */}
+        {/* <View style={{width: width, height: 2, backgroundColor: "black"}}/> */}
+        <FlatList
+          data={currCoupons}
+          renderItem={renderCoupon}
+          numColumns={2} // Ensures that the number of columns is set to 2
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            justifyContent: "space-between",
+          }}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+            paddingHorizontal: 20,
+            paddingTop: 10,
+          }}
+          ListEmptyComponent={
+            <View style={{ alignItems: "center", marginBottom: 10 }}>
+              <MainText
+                style={{ paddingTop: 50, alignSelf: "center", fontSize: 20 }}
+                color="black"
+              >
+                No coupons available!
+              </MainText>
+              <Image source={require("../../../../assets/sadtreeicon.png")} />
+            </View>
+          }
+        />
+      </View>
       <CustomAlert
         modalVisible={couponClaimed}
         setModalVisible={setcouponClaimed}
