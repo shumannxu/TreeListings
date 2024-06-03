@@ -26,7 +26,7 @@ export default function PostCoupons() {
   const { user } = useAuth() as UserContextType;
   const [loading, setLoading] = useState<boolean>(false);
   const [couponName, setCouponName] = useState("");
-  const [couponImage, setCouponImage] = useState<string[] | null>([]);
+  const [couponImage, setCouponImage] = useState<string | null>();
   const [numberOfCoupons, setNumberOfCoupons] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -70,7 +70,7 @@ export default function PostCoupons() {
     handleImagePicked(pickerResult);
   };
 
-  const handleImagePicked = async (pickerResult) => {
+  const handleImagePicked = async (pickerResult: ImagePicker.ImagePickerResult) => {
     try {
       if (!pickerResult.canceled) {
         let newImage = pickerResult.assets[0]?.uri;
@@ -96,14 +96,23 @@ export default function PostCoupons() {
       } else {
         setLoading(true);
         uploadCoupon({
-          couponName,
+          couponDescription: "",
           couponImage,
+          couponName,
+          datePosted: new Date(),
+          discount: 0,
+          expDate: new Date(),
+          isBOGO: false,
+          isDollar: false,
+          isPercent: false,
           numberOfCoupons: parseFloat(numberOfCoupons),
+          usersClaimed: {},
+          venderId: user.id,
         }).then(() => {
           setLoading(false);
           setCouponName("");
           setCouponImage(null);
-          setNumberOfCoupons(0);
+          setNumberOfCoupons("");
           setError(null);
           router.replace("/home");
           let toast = Toast.show("Coupon Successfully Posted", {

@@ -99,11 +99,29 @@ export type Vender = {
   coupons: CouponId[];
 };
 
+interface FirestoreTimestamp {
+  seconds: number;
+  nanoseconds: number;
+}
+
+export type UserClaims = {
+  [userId: UserId]: FirestoreTimestamp;
+};
+
 export type Coupon = {
-  couponId: CouponId;
+  couponDescription: string;
   couponImage: string;
   couponName: string;
-  couponDescription: string;
+  datePosted: Date;
+  couponId: CouponId;
+  discount: number;
+  expDate: Date;
+  isBOGO: boolean;
+  isDollar: boolean;
+  isPercent: boolean;
+  numberOfCoupons: number;
+  usersClaimed: UserClaims;
+  venderId: VenderId;
 };
 
 // Bike categories
