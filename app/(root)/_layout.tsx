@@ -14,7 +14,7 @@ export default function HomeLayout() {
             href: "/home",
             tabBarLabel: "Home",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 home
               </Icon>
             ),
@@ -26,7 +26,7 @@ export default function HomeLayout() {
             href: "/coupons",
             tabBarLabel: "Coupons",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={40} width={20}>
+              <Icon color={"#00BF63"} height={40} width={20}>
                 coupon
               </Icon>
             ),
@@ -38,43 +38,45 @@ export default function HomeLayout() {
             href: "/search",
             tabBarLabel: "Search",
             tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
+              <Icon color={"#00BF63"} height={20} width={20}>
                 search
               </Icon>
             ),
           }}
         />
         <Tabs.Screen
-          name="profile"
-          options={{
-            href: "/profile",
-            tabBarLabel: "profile",
-            tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
-                user
-              </Icon>
-            ),
-          }}
-        />
+            name="profile"
+            options={{
+              href: null,
+              // href: "/profile",
+              // tabBarLabel: "profile",
+              // tabBarVisible: false,
+              // tabBarIcon: ({}) => (
+              //   <Icon color={"#00BF63"} height={20} width={20}>
+              //     user
+              //   </Icon>
+              // ),
+            }}
+          />
         <Tabs.Screen
-          name="detailitem/[listingId]"
-          options={{
-            // href: "/detailitem",
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="offers"
-          options={{
-            href: "/offers",
-            tabBarLabel: "offers",
-            tabBarIcon: ({}) => (
-              <Icon color={"#B0DCC5"} height={20} width={20}>
-                offer
-              </Icon>
-            ),
-          }}
-        />
+            name="detailitem/[listingId]"
+            options={{
+              href: null,
+            }}
+          />
+          <Tabs.Screen
+            name="offers"
+            options={{
+              href: null,
+              // href: "/offers",
+              // tabBarLabel: "offers",
+              // tabBarIcon: ({}) => (
+              //   <Icon color={"#00BF63"} height={20} width={20}>
+              //     offer
+              //   </Icon>
+              // ),
+            }}
+          />
       </Tabs>
     </SafeAreaProvider>
   );

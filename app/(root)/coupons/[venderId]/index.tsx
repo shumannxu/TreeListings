@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   FlatList,
   useWindowDimensions,
+  StatusBar
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../../../../context";
@@ -19,6 +20,9 @@ import { router } from "expo-router";
 import CustomAlert from "../../../components/alert";
 import { arrayUnion, collection, doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { firestore } from "../../../../firebaseConfig";
+import { MainText, HeaderText } from "../../../../components/text";
+import TopNav from "../../../../components/topNav"
+import SubTopNav from "../../../../components/subTopNav"
 
 
 export default function VenderItem() {
@@ -150,9 +154,12 @@ export default function VenderItem() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-
-      {venderItem && (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+        <SubTopNav title={venderItem?.venderName} showSearchIcon={false} />
+      {/* {venderItem && (
         <View
         style={{ alignItems: "center", padding: 10, flexDirection: "row"}}
         >
@@ -167,8 +174,8 @@ export default function VenderItem() {
           <Text>"Click the coupon you want to use"</Text>
         </View>
         </View>
-      )}
-      <View style={{width: width, height: 2, backgroundColor: "black"}}/>
+      )} */}
+      {/* <View style={{width: width, height: 2, backgroundColor: "black"}}/> */}
       <FlatList
         data={currCoupons}
         renderItem={renderCoupon}
@@ -179,9 +186,21 @@ export default function VenderItem() {
         }}
         columnWrapperStyle={{
           justifyContent: "space-between",
+          paddingHorizontal:20,
+          paddingTop:10
         }}
-        ListEmptyComponent={<Text>No coupons available.</Text>}
+        ListEmptyComponent={
+          <View style={{ alignItems: "center", marginBottom: 10 }}>
+            <MainText style={{ paddingTop:50, alignSelf: "center", fontSize: 20 }} color="black">
+            No coupons available!
+          </MainText>
+          <Image
+            source={require("../../../../assets/sadtreeicon.png")}
+            
+          />
+        </View>}
       />
+      </View>
       <CustomAlert
         modalVisible={couponClaimed}
         setModalVisible={setcouponClaimed}
