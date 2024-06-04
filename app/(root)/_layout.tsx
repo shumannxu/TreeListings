@@ -47,33 +47,35 @@ export default function HomeLayout() {
         <Tabs.Screen
           name="profile"
           options={{
-            href: "/profile",
-            tabBarLabel: "profile",
-            tabBarIcon: ({}) => (
-              <Icon color={"#00BF63"} height={20} width={20}>
-                user
-              </Icon>
-            ),
+            href: null
+            // href: "/profile",
+            // tabBarLabel: "profile",
+            // tabBarIcon: ({}) => (
+            //   <Icon color={"#00BF63"} height={20} width={20}>
+            //     user
+            //   </Icon>
+            // ),
           }}
         />
         <Tabs.Screen
-          name="detailitem/[listingId]"
-          options={{
-            href: null,
-          }}
-        />
-        <Tabs.Screen
-          name="offers"
-          options={{
-            href: "/offers",
-            tabBarLabel: "offers",
-            tabBarIcon: ({}) => (
-              <Icon color={"#00BF63"} height={20} width={20}>
-                offer
-              </Icon>
-            ),
-          }}
-        />
+            name="detailitem/[listingId]"
+            options={{
+              href: null,
+            }}
+          />
+          <Tabs.Screen
+            name="offers"
+            options={{
+              href: null,
+              // href: "/offers",
+              // tabBarLabel: "offers",
+              // tabBarIcon: ({}) => (
+              //   <Icon color={"#00BF63"} height={20} width={20}>
+              //     offer
+              //   </Icon>
+              // ),
+            }}
+          />
       </Tabs>
     </SafeAreaProvider>
   );

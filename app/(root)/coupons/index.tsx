@@ -9,7 +9,7 @@ import {
   Image,
   StyleSheet,
   RefreshControl,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Icon from "../../../components/icon";
@@ -19,7 +19,6 @@ import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getVenders } from "../../../firebase/db";
-import { ref } from "firebase/storage";
 import TopNav from "../../../components/topNav";
 import SubTopNav from "../../../components/subTopNav";
 
@@ -146,12 +145,10 @@ const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
     backgroundColor: '#FFF6EC',
-    paddingTop: 10,
     paddingHorizontal: 10,
   },
   scrollViewContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
   },
   filterButton: {

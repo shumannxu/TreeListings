@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { LinearGradient } from 'expo-linear-gradient';
-import Icon from './icon';
+import { router } from "expo-router";
 
 const TopNav = ({ backgroundColor, iconColor }) => {
   return (
@@ -16,13 +16,22 @@ const TopNav = ({ backgroundColor, iconColor }) => {
           />
         </View>
         <View style={styles.iconsContainer}>
-            <TouchableOpacity style={styles.tab}>
+            <TouchableOpacity 
+              style={styles.tab}
+              onPress={() => router.push('/offers?section=incoming')}
+            >
                 <MaterialCommunityIcons name="offer" size={24} color={ iconColor } />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tab}>
+            <TouchableOpacity 
+              style={styles.tab}
+              onPress={() => router.push('/offers?section=outgoing')}
+            >
             <MaterialCommunityIcons name="cart-variant" size={24} color={ iconColor } />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.tab}>
+            <TouchableOpacity 
+              style={styles.tab}
+              onPress={() => router.push('profile')}
+            >
                 <LinearGradient
                     colors={["#55F1E9", "#FFDF75"]}
                     style={styles.iconCircle}

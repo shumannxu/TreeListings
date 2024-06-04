@@ -1,40 +1,26 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
   Button,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
-  TouchableWithoutFeedback,
-  ScrollView,
+  SectionList,
   StyleSheet,
   RefreshControl,
   Image,
-  SectionList,
 } from "react-native";
-
-import {
-  createOfferListener,
-  getAllIncomingOffersUser,
-  getAllOutgoingOffersUser,
-} from "../../firebase/db";
-import { Listing, ListingId, Offer, UserContextType } from "../../types";
+import { createOfferListener, getAllIncomingOffersUser, getAllOutgoingOffersUser } from "../../firebase/db";
+import { Offer, UserContextType } from "../../types";
 import { useAuth } from "../../context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferItem from "../components/offerItem";
-import { router } from "expo-router";
+import { useGlobalSearchParams } from "expo-router";
 
 export default function Offers() {
-  const {
-    user,
-    outgoingOffers,
-    setOutgoingOffers,
-    incomingOffers,
-    setIncomingOffers,
-  } = useAuth() as UserContextType;
+  const { user, outgoingOffers, setOutgoingOffers, incomingOffers, setIncomingOffers } = useAuth() as UserContextType;
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
+  const sectionListRef = useRef<SectionList>(null);
+  const { section } = useGlobalSearchParams();
 
   const onRefresh = useCallback(async () => {
     if (user) {
@@ -50,6 +36,7 @@ export default function Offers() {
   const navigateToPreference = useCallback(() => {
     router.push("/preferenceSurvey");
   }, []);
+
   useEffect(() => {
     if (user) {
       const unsubscribe = createOfferListener({
@@ -61,6 +48,34 @@ export default function Offers() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (section) {
+      const sectionIndex = section === "incoming" ? 0 : 1;
+      sectionListRef.current?.scrollToLocation({
+        sectionIndex,
+        itemIndex: 0,
+        animated: true,
+      });
+    }
+  }, [section]);
+
+  const getItemLayout = (data, index) => ({
+    length: 100, // approximate height of each item
+    offset: 100 * index,
+    index,
+  });
+
+  const onScrollToIndexFailed = (info) => {
+    const wait = new Promise(resolve => setTimeout(resolve, 500));
+    wait.then(() => {
+      sectionListRef.current?.scrollToLocation({
+        sectionIndex: info.index,
+        itemIndex: 0,
+        animated: true,
+      });
+    });
+  };
+
   const renderIncoming = useCallback(
     ({ item }: { item: Offer }) => <OfferItem item={item} type={"incoming"} />,
     []
@@ -70,6 +85,7 @@ export default function Offers() {
     ({ item }: { item: Offer }) => <OfferItem item={item} type={"outgoing"} />,
     []
   );
+
   const ListEmptyComponent = useCallback(
     ({ section }: { section: { emptyMessage: string; data: any[] } }) => {
       if (section.data.length === 0) {
@@ -89,11 +105,13 @@ export default function Offers() {
     },
     [outgoingOffers, incomingOffers]
   );
+
   return (
     <View style={{ flex: 1, marginTop: insets.top }}>
       <Button onPress={navigateToPreference} title="Navigate" />
       <Text style={styles.headingStyle}>Offer Status</Text>
       <SectionList
+        ref={sectionListRef}
         sections={[
           {
             title: "Incoming Offers",
@@ -121,6 +139,8 @@ export default function Offers() {
           paddingLeft: insets.left + 20,
           paddingRight: insets.right + 20,
         }}
+        getItemLayout={getItemLayout}
+        onScrollToIndexFailed={onScrollToIndexFailed}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
