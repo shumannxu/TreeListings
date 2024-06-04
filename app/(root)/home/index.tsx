@@ -8,13 +8,19 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
+  StatusBar,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  useSafeAreaInsets,
+  SafeAreaView,
+} from "react-native-safe-area-context";
 
-import { MaterialIcons } from "@expo/vector-icons";
-import { Feather } from "@expo/vector-icons";
-import { AntDesign } from "@expo/vector-icons";
-import { Entypo } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  Feather,
+  FontAwesome5,
+  FontAwesome6,
+} from "@expo/vector-icons";
 import { useAuth } from "../../../context";
 import ListingItem from "../../components/listingItem";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -23,6 +29,9 @@ import RecommendItem from "../../components/recommendItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import Icon from "../../../components/icon";
+import { HeaderText, MainText } from "../../../components/text";
+
+import TopNav from "../../../components/topNav";
 
 export default function Home() {
   const { user, setUser, listings, setListings, setSelfListings } =
@@ -33,7 +42,7 @@ export default function Home() {
   const [recCounter, setRecCounter] = useState<number>(1);
   const [histCounter, setHistCounter] = useState<number>(1);
 
-  const [bikeFilter, setBikeFilter] = useState<boolean>(false);
+  // const [bikeFilter, setBikeFilter] = useState<boolean>(false);
 
   const [recList, setRecList] = useState<
     Array<Listing | { listingId: "VIEW_MORE" }>
@@ -58,10 +67,10 @@ export default function Home() {
     () => router.push("/home/postListings"),
     []
   );
-  const toggleBikeFilter = useCallback(
-    () => router.push("/home/bikeIndex"),
-    [bikeFilter]
-  );
+  // const toggleBikeFilter = useCallback(
+  //   () => router.push("/home/bikeIndex"),
+  //   [bikeFilter]
+  // );
 
   const retrieveLists = useCallback(async () => {
     if (listings && user) {
@@ -100,7 +109,7 @@ export default function Home() {
     [histCounter]
   );
   const recommendedListData = useMemo(() => {
-    const slicedRecList = recList.slice(0, recCounter * 5);
+    const slicedRecList = recList.slice(0, recCounter * 4);
     return slicedRecList.length > 0
       ? slicedRecList.concat([{ listingId: "VIEW_MORE" }])
       : slicedRecList;
@@ -197,14 +206,14 @@ export default function Home() {
   const trendingItemsComponent = useMemo(
     () => (
       <View>
-        <View>
+        {/* <View>
           <Image
             style={styles.imageStyle}
             source={require("../../../assets/Logo.png")}
           />
-        </View>
+        </View> */}
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{ alignSelf: "flex-start" }}
           onPress={toggleBikeFilter}
         >
@@ -218,17 +227,17 @@ export default function Home() {
           >
             <Text style={{ fontSize: 14 }}>Bikes</Text>
           </View>
-        </TouchableOpacity>
-
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Trending</Text>
+        </TouchableOpacity> */}
+        <HeaderText style={{ flexDirection: "row" }} color="black">
+          Trending{" "}
           <Feather
-            style={{ marginLeft: 5, color: "#38B39C" }}
+            style={{ color: "#38B39C" }}
             name="trending-up"
-            size={24}
+            size={30}
             color="black"
           />
-        </View>
+        </HeaderText>
+
         <FlatList
           data={listings ? Object.values(listings) : []}
           renderItem={renderTrend}
@@ -238,15 +247,15 @@ export default function Home() {
           keyExtractor={(item) => item.listingId}
           scrollEnabled={true}
         />
-        <View style={{ flexDirection: "row" }}>
-          <Text style={styles.textStyle}>Recommended For You</Text>
-          <AntDesign
+        <HeaderText style={{ flexDirection: "row" }} color="black">
+          For You{" "}
+          <FontAwesome5
             style={{ marginLeft: 5, color: "#38B39C" }}
-            name="heart"
-            size={24}
+            name="hand-holding-heart"
+            size={30}
             color="black"
           />
-        </View>
+        </HeaderText>
       </View>
     ),
     [listings]
@@ -259,9 +268,9 @@ export default function Home() {
           style={styles.icon}
           source={require("../../../assets/sadtreeicon.png")}
         />
-        <Text style={{ alignSelf: "center", fontSize: 20 }}>
+        <MainText style={{ alignSelf: "center", fontSize: 20 }} color="black">
           No Browse History!
-        </Text>
+        </MainText>
       </View>
     );
   }, []);
@@ -269,15 +278,18 @@ export default function Home() {
   const recentlyBrowsedComponents = useMemo(
     () => (
       <>
-        <View style={{ flexDirection: "row", marginTop: 10 }}>
-          <Text style={styles.textStyle}>Recently Browsed</Text>
-          <MaterialIcons
+        <HeaderText
+          style={{ flexDirection: "row", marginTop: 10 }}
+          color="black"
+        >
+          Recently Browsed{" "}
+          <FontAwesome6
             style={{ marginLeft: 5, color: "#38B39C" }}
-            name="access-time"
-            size={24}
+            name="clock-rotate-left"
+            size={30}
             color="black"
           />
-        </View>
+        </HeaderText>
         <View
           style={{
             alignItems: histListData.length === 0 ? "center" : undefined,
@@ -300,7 +312,9 @@ export default function Home() {
   );
 
   return (
-    <View style={{ flex: 1, marginTop: insets.top }}>
+    <SafeAreaView style={{ backgroundColor: "#FFF6EC" }}>
+      <StatusBar backgroundColor="#FFF6EC" barStyle="dark-content" />
+      <TopNav backgroundColor={"#FFF6EC"} iconColor={"#307E79"} />
       <FlatList
         ListHeaderComponent={trendingItemsComponent}
         data={recommendedListData}
@@ -311,6 +325,7 @@ export default function Home() {
         contentContainerStyle={{
           paddingLeft: insets.left + 20,
           paddingRight: insets.right + 20,
+          paddingBottom: insets.bottom + 70,
         }}
         refreshControl={
           <RefreshControl
@@ -330,7 +345,7 @@ export default function Home() {
         </Icon>
         {showPlusIcon && <Text style={styles.postTextStyle}>Post</Text>}
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 }
 

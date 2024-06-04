@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   FlatList,
   ScrollView,
+  StatusBar
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -31,6 +32,9 @@ import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Ionicons } from "@expo/vector-icons";
+import { MainText } from "../../../../../components/text";
+import TopNav from "../../../../../components/topNav";
+import SubTopNav from "../../../../../components/subTopNav";
 
 export default function CouponItem() {
   const { user, coupons, setCoupons } = useAuth() as UserContextType;
@@ -84,14 +88,23 @@ export default function CouponItem() {
     : (undefined as Coupon | undefined);
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+        <SubTopNav title="Redeem Now!" showSearchIcon={false} />
     <View style={{flex: 1, alignItems: "center", alignContent: "center", justifyContent: "center"}}>
         <Image
           source={{ uri: coupon?.couponImage }}
           resizeMode="contain"
           style={{ width: width*0.9, height: width*0.9 }}
         />
-      <Text style={{fontSize: 20, fontWeight: "bold"}}>{coupon?.couponName}</Text>
-      <Text style={{fontSize: 15, fontWeight: "800"}}>Timer: {formatTimeLeft(timeLeft)}</Text>
-    </View>
+        <View style={{paddingVertical:15}}>
+      <MainText style={{fontSize: 30, fontWeight: "bold"}}>{coupon?.couponName}</MainText>
+      <MainText style={{fontSize: 80, fontWeight: "800"}}>{formatTimeLeft(timeLeft)}</MainText>
+      </View>
+      </View>
+      </View>
+    </SafeAreaView>
   );
 }

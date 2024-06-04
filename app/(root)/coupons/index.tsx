@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
+  SafeAreaView,
   Text,
   FlatList,
   TouchableOpacity,
@@ -8,15 +9,19 @@ import {
   Image,
   StyleSheet,
   RefreshControl,
+  StatusBar,
 } from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Icon from "../../../components/icon";
+import { HeaderText, MainText } from "../../../components/text";
 import { useAuth } from "../../../context";
 import { UserContextType, Vender } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { getVenders } from "../../../firebase/db";
 import { ref } from "firebase/storage";
+import TopNav from "../../../components/topNav";
+import SubTopNav from "../../../components/subTopNav";
 
 export default function Coupon() {
   const { listings } = useAuth() as UserContextType;
@@ -30,11 +35,11 @@ export default function Coupon() {
   };
 
   const onRefresh = useCallback(async () => {
-      setRefreshing(true);
-      await extractVenderData();
-      setRefreshing(false);
+    setRefreshing(true);
+    await extractVenderData();
+    setRefreshing(false);
   }, []);
-  
+
   useEffect(() => {
     extractVenderData();
   }, []);
@@ -51,44 +56,19 @@ export default function Coupon() {
   }, []);
 
   const renderCoupon = useCallback(
-    ({ item }:{item:Vender}) => (
+    ({ item }) => (
       <TouchableOpacity
-        style={{
-          padding: 10,
-          marginVertical: 5,
-          backgroundColor: "white",
-          borderRadius: 5,
-          width: "30%",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
+        style={styles.couponContainer}
         onPress={() => navigateToVender(item)}
       >
-        <Image
-          source={{ uri: item.logo }}
-          style={{
-            width: 100,
-            height: 100,
-            marginVertical: 5,
-            alignItems: "center",
-          }}
-        />
-        <Text style={{ fontSize: 13, fontWeight: "bold", textAlign: "center" }}>
+        <Image source={{ uri: item.logo }} style={styles.couponImage} />
+        <MainText style={styles.couponText} color="black">
           {item.venderName}
-        </Text>
-        <View
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            backgroundColor: "#38B39C",
-            borderRadius: 5,
-            padding: 5,
-          }}
-        >
-          <Text style={{ color: "#fff", fontSize: 12 }}>
+        </MainText>
+        <View style={styles.couponBadge}>
+          <MainText style={styles.couponBadgeText} color={"white"}>
             {(item.coupons ?? []).length}
-          </Text>
+          </MainText>
         </View>
       </TouchableOpacity>
     ),
@@ -96,165 +76,112 @@ export default function Coupon() {
   );
 
   return (
-    <View
-      style={{
-        flex: 1,
-        marginTop: safeAreaInsets.top + 10,
-      }}
-    >
-      <View style={{ paddingHorizontal: 20 }}>
-        <Text style={{ fontWeight: "bold", fontSize: 30 }}>Coupons</Text>
-      </View>
-      <View style={{ marginHorizontal: 10 }}>
-        <ScrollView
-          horizontal
-          scrollEnabled={true}
-          contentContainerStyle={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            paddingHorizontal: 0,
-            marginBottom: 5,
-            marginTop: 5,
-          }}
-          showsHorizontalScrollIndicator={false}
-        >
-          <TouchableOpacity
-            style={{
-              padding: 10,
-              borderRadius: 25,
-              backgroundColor: "#E6E6E6",
-              marginRight: 10,
-              alignItems: "center",
-              flexDirection: "row",
-            }}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: "#FFF6EC" }}>
+        <SubTopNav title="Coupons" showSearchIcon={true} />
+        <View style={styles.contentContainer}>
+          {/* <ScrollView
+            horizontal
+            scrollEnabled={true}
+            contentContainerStyle={styles.scrollViewContent}
+            showsHorizontalScrollIndicator={false}
           >
-            <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
-            <MaterialIcons name="access-time" size={24} color="#38B39C" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: 10,
-              borderRadius: 25,
-              backgroundColor: "#E6E6E6",
-              marginRight: 10,
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 17 }}>
-              Price Descending{" "}
-            </Text>
-            <MaterialCommunityIcons
-              name="order-numeric-descending"
-              size={24}
-              color="#38B39C"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: 10,
-              borderRadius: 25,
-              backgroundColor: "#E6E6E6",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 17 }}>
-              Price Ascending{" "}
-            </Text>
-            <MaterialCommunityIcons
-              name="order-numeric-ascending"
-              size={24}
-              color="#38B39C"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={{
-              padding: 10,
-              borderRadius: 25,
-              backgroundColor: "#E6E6E6",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
-          >
-            <Text style={{ textAlign: "center", fontSize: 17 }}>
-              Distance{" "}
-            </Text>
-            <MaterialCommunityIcons
-              name="order-numeric-ascending"
-              size={24}
-              color="#38B39C"
-            />
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-      <View
-        style={{ alignItems: "center", justifyContent: "center", flexGrow: 1 }}
-      >
-        <FlatList
-          data={venders}
-          renderItem={renderCoupon}
-          numColumns={3}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            justifyContent: "space-between",
-          }}
-          columnWrapperStyle={{
-            justifyContent: "space-between",
-          }}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#B0DCC5"]}
-              tintColor={"#B0DCC5"}
-            />
-          }
-        />
-      </View>
-
-      <View
-        style={{
-          position: "absolute",
-          right: 20,
-          bottom: 20,
-        }}
-      >
-        <View style={{ position: "absolute", right: -30, bottom: -20 }}>
-          <TouchableOpacity
-            style={styles.plusIconStyle}
-            onPress={navigateToPostCoupons}
-          >
-            <Icon color={"white"} height={20} width={20}>
-              pluspost
-            </Icon>
-            {<Text style={styles.postTextStyle}>Post Coupon</Text>}
-          </TouchableOpacity>
+            <FilterButton text="Recent" icon={<MaterialIcons name="access-time" size={24} color="#38B39C" />} useMainText />
+            <FilterButton text="Price Descending" icon={<MaterialCommunityIcons name="order-numeric-descending" size={24} color="#38B39C" />} useMainText />
+            <FilterButton text="Price Ascending" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
+            <FilterButton text="Distance" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
+          </ScrollView> */}
+          <FlatList
+            style={{ paddingTop: 10 }}
+            data={venders}
+            renderItem={renderCoupon}
+            numColumns={3}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.flatListContent}
+            columnWrapperStyle={styles.flatListColumn}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#B0DCC5"]}
+                tintColor="#B0DCC5"
+              />
+            }
+          />
         </View>
       </View>
-    </View>
+      {/* <View style={styles.floatingButtonContainer}>
+        <TouchableOpacity style={styles.plusIconStyle} onPress={navigateToPostCoupons}>
+          <Icon color="white" height={20} width={20}>pluspost</Icon>
+          <MainText style={styles.postTextStyle} color={"white"}>Post Coupon</MainText>
+        </TouchableOpacity>
+      </View> */}
+    </SafeAreaView>
   );
 }
 
+const FilterButton = ({ text, icon, useMainText = false }) => (
+  <TouchableOpacity style={styles.filterButton}>
+    {useMainText ? (
+      <MainText style={styles.filterButtonText} color="black">
+        {text}{" "}
+      </MainText>
+    ) : (
+      <Text style={styles.filterButtonText}>{text} </Text>
+    )}
+    {icon}
+  </TouchableOpacity>
+);
+
 const styles = StyleSheet.create({
-  textStyle: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  imageStyle: {
+  safeArea: {
     flex: 1,
-    height: 75,
-    width: 358.5,
-    alignSelf: "center",
-    margin: 20,
+    backgroundColor: "#00BF63",
   },
-  icon: {
+  headerText: {
+    marginHorizontal: 10,
+  },
+  contentContainer: {
     flex: 1,
-    height: 120,
-    width: 90,
-    alignSelf: "center",
-    margin: 30,
+    backgroundColor: "#FFF6EC",
+    paddingTop: 10,
+    paddingHorizontal: 10,
+  },
+  scrollViewContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  filterButton: {
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: "#DEF4D9",
+    marginRight: 10,
+    alignItems: "center",
+    flexDirection: "row",
+  },
+  filterButtonText: {
+    textAlign: "center",
+    fontSize: 17,
+  },
+  listContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  flatListContent: {
+    justifyContent: "space-between",
+  },
+  flatListColumn: {
+    justifyContent: "space-between",
+    padding: 10,
+  },
+  floatingButtonContainer: {
+    position: "absolute",
+    right: 5,
+    bottom: 20,
   },
   plusIconStyle: {
     position: "absolute",
@@ -279,6 +206,40 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "white",
     fontWeight: "bold",
+    fontSize: 20,
+  },
+  couponContainer: {
+    padding: 10,
+    marginVertical: 5,
+    backgroundColor: "white",
+    borderRadius: 5,
+    width: "30%",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  couponImage: {
+    width: 100,
+    height: 100,
+    marginVertical: 5,
+    alignItems: "center",
+  },
+  couponText: {
     fontSize: 18,
+    fontWeight: "bold",
+  },
+  couponBadge: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    height: 30,
+    width: 30,
+    backgroundColor: "#38B39C",
+    borderRadius: 1000,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  couponBadgeText: {
+    color: "#fff",
+    fontSize: 15,
   },
 });
