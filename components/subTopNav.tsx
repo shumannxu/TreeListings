@@ -15,7 +15,6 @@ const SubTopNav = ({
   title,
   image,
   showSearchIcon,
-  logoImage,
 }: SubTopNavProps) => {
   const navigation = useNavigation();
 

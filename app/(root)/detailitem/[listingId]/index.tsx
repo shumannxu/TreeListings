@@ -220,7 +220,7 @@ export default function DetailItem() {
 
   const renderItem = useCallback(
     ({ item }: { item: Listing }) => <ListingItem item={item} />,
-    []
+    [listing]
   );
 
   if (!listingId) {
@@ -278,6 +278,7 @@ export default function DetailItem() {
         contentContainerStyle={{
           alignItems: "center",
           paddingTop: safeAreaInsets.top + 50, // Add padding to avoid overlap with the back button
+          paddingBottom: 100
         }}
       >
         <View style={{ alignItems: "center" }}>
@@ -292,7 +293,7 @@ export default function DetailItem() {
               horizontal={true} // Enable horizontal scrolling
               showsHorizontalScrollIndicator={false} // Optionally hide the horizontal scrollbar
               contentContainerStyle={{
-                height: 5,
+                // height: 5,
                 alignContent: "center",
                 justifyContent: "center",
               }} // Apply layout properties here
