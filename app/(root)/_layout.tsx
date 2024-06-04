@@ -3,8 +3,17 @@ import { StyleSheet } from "react-native";
 import { Tabs } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Icon from "../../components/icon";
+import {
+  useFonts,
+  JosefinSans_500Medium,
+  Pacifico_400Regular,
+} from "@expo-google-fonts/dev";
 
 export default function HomeLayout() {
+  const [fontsLoaded] = useFonts({
+    JosefinSans_500Medium,
+    Pacifico_400Regular,
+  });
   return (
     <SafeAreaProvider>
       <Tabs screenOptions={{ headerShown: false }}>

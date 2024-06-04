@@ -9,7 +9,7 @@ import {
   Image,
   StyleSheet,
   RefreshControl,
-  StatusBar
+  StatusBar,
 } from "react-native";
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import Icon from "../../../components/icon";
@@ -61,10 +61,7 @@ export default function Coupon() {
         style={styles.couponContainer}
         onPress={() => navigateToVender(item)}
       >
-        <Image
-          source={{ uri: item.logo }}
-          style={styles.couponImage}
-        />
+        <Image source={{ uri: item.logo }} style={styles.couponImage} />
         <MainText style={styles.couponText} color="black">
           {item.venderName}
         </MainText>
@@ -82,7 +79,7 @@ export default function Coupon() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
       <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
       <TopNav backgroundColor="#00BF63" iconColor="white" />
-      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+      <View style={{ flex: 1, backgroundColor: "#FFF6EC" }}>
         <SubTopNav title="Coupons" showSearchIcon={true} />
         <View style={styles.contentContainer}>
           {/* <ScrollView
@@ -96,7 +93,8 @@ export default function Coupon() {
             <FilterButton text="Price Ascending" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
             <FilterButton text="Distance" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
           </ScrollView> */}
-          <FlatList style={{paddingTop:10}}
+          <FlatList
+            style={{ paddingTop: 10 }}
             data={venders}
             renderItem={renderCoupon}
             numColumns={3}
@@ -114,12 +112,12 @@ export default function Coupon() {
           />
         </View>
       </View>
-      <View style={styles.floatingButtonContainer}>
+      {/* <View style={styles.floatingButtonContainer}>
         <TouchableOpacity style={styles.plusIconStyle} onPress={navigateToPostCoupons}>
           <Icon color="white" height={20} width={20}>pluspost</Icon>
           <MainText style={styles.postTextStyle} color={"white"}>Post Coupon</MainText>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
@@ -127,7 +125,9 @@ export default function Coupon() {
 const FilterButton = ({ text, icon, useMainText = false }) => (
   <TouchableOpacity style={styles.filterButton}>
     {useMainText ? (
-      <MainText style={styles.filterButtonText} color="black">{text} </MainText>
+      <MainText style={styles.filterButtonText} color="black">
+        {text}{" "}
+      </MainText>
     ) : (
       <Text style={styles.filterButtonText}>{text} </Text>
     )}
@@ -145,41 +145,41 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: '#FFF6EC',
+    backgroundColor: "#FFF6EC",
     paddingTop: 10,
     paddingHorizontal: 10,
   },
   scrollViewContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   filterButton: {
     padding: 10,
     borderRadius: 25,
     backgroundColor: "#DEF4D9",
     marginRight: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
+    alignItems: "center",
+    flexDirection: "row",
   },
   filterButtonText: {
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 17,
   },
   listContainer: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   flatListContent: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   flatListColumn: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     padding: 10,
   },
   floatingButtonContainer: {
-    position: 'absolute',
+    position: "absolute",
     right: 5,
     bottom: 20,
   },

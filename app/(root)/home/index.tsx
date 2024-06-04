@@ -30,18 +30,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
 import Icon from "../../../components/icon";
 import { HeaderText, MainText } from "../../../components/text";
-import {
-  useFonts,
-  JosefinSans_500Medium,
-  Pacifico_400Regular,
-} from "@expo-google-fonts/dev";
+
 import TopNav from "../../../components/topNav";
 
 export default function Home() {
-  const [fontsLoaded] = useFonts({
-    JosefinSans_500Medium,
-    Pacifico_400Regular,
-  });
   const { user, setUser, listings, setListings, setSelfListings } =
     useAuth() as UserContextType;
   const insets = useSafeAreaInsets();
