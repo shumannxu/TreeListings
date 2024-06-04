@@ -60,10 +60,7 @@ export default function Coupon() {
         style={styles.couponContainer}
         onPress={() => navigateToVender(item)}
       >
-        <Image
-          source={{ uri: item.logo }}
-          style={styles.couponImage}
-        />
+        <Image source={{ uri: item.logo }} style={styles.couponImage} />
         <MainText style={styles.couponText} color="black">
           {item.venderName}
         </MainText>
@@ -81,7 +78,7 @@ export default function Coupon() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
       <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
       <TopNav backgroundColor="#00BF63" iconColor="white" />
-      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+      <View style={{ flex: 1, backgroundColor: "#FFF6EC" }}>
         <SubTopNav title="Coupons" showSearchIcon={true} />
         <View style={styles.contentContainer}>
           {/* <ScrollView
@@ -95,7 +92,8 @@ export default function Coupon() {
             <FilterButton text="Price Ascending" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
             <FilterButton text="Distance" icon={<MaterialCommunityIcons name="order-numeric-ascending" size={24} color="#38B39C" />} useMainText />
           </ScrollView> */}
-          <FlatList style={{paddingTop:10}}
+          <FlatList
+            style={{ paddingTop: 10 }}
             data={venders}
             renderItem={renderCoupon}
             numColumns={3}
@@ -113,12 +111,12 @@ export default function Coupon() {
           />
         </View>
       </View>
-      <View style={styles.floatingButtonContainer}>
+      {/* <View style={styles.floatingButtonContainer}>
         <TouchableOpacity style={styles.plusIconStyle} onPress={navigateToPostCoupons}>
           <Icon color="white" height={20} width={20}>pluspost</Icon>
           <MainText style={styles.postTextStyle} color={"white"}>Post Coupon</MainText>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 }
@@ -126,7 +124,9 @@ export default function Coupon() {
 const FilterButton = ({ text, icon, useMainText = false }) => (
   <TouchableOpacity style={styles.filterButton}>
     {useMainText ? (
-      <MainText style={styles.filterButtonText} color="black">{text} </MainText>
+      <MainText style={styles.filterButtonText} color="black">
+        {text}{" "}
+      </MainText>
     ) : (
       <Text style={styles.filterButtonText}>{text} </Text>
     )}
