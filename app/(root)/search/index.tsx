@@ -23,6 +23,9 @@ import { CategoryType, Listing, UserContextType } from "../../../types";
 import { router } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CATEGORIES } from "../../../constants";
+import { MainText } from "../../../components/text";
+import TopNav from "../../../components/topNav";
+import SubTopNav from "../../../components/subTopNav";
 
 /* Search Result Screen */
 export default function Search() {

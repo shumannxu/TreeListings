@@ -7,6 +7,7 @@ import { getDocument, offerTransaction, setDocument } from "../../firebase/db";
 import Toast from "react-native-root-toast";
 import * as MailComposer from "expo-mail-composer";
 import { router } from "expo-router";
+import { MainText } from "../../components/text";
 interface ItemProps {
   item: Offer;
   type: "incoming" | "outgoing";
@@ -117,7 +118,7 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
 
   return (
     <TouchableOpacity style={styles.container} onPress={navigateToDetail}>
-      <Text style={styles.title}>{listing?.title}</Text>
+      <MainText style={styles.title}>{listing?.title}</MainText>
       <View
         style={{
           flexDirection: "row",
@@ -151,20 +152,20 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
                   marginLeft: 10,
                 }}
               >
-                <Text style={styles.title}>{buyer?.fullName}</Text>
-                <Text>Want&apos;s to offer {item.price}</Text>
+                <MainText style={styles.title}>{buyer?.fullName}</MainText>
+                <MainText>Want&apos;s to offer {item.price}</MainText>
                 <View style={{ flexDirection: "row", alignItems: "center" }}>
                   <TouchableOpacity
                     style={[styles.button, { backgroundColor: "#3ac981" }]}
                     onPress={acceptOffer}
                   >
-                    <Text>Accept</Text>
+                    <MainText>Accept</MainText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.button, { backgroundColor: "#f44336" }]}
                     onPress={declineOffer}
                   >
-                    <Text>Decline</Text>
+                    <MainText>Decline</MainText>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -176,38 +177,38 @@ const OfferItem: React.FC<ItemProps> = ({ item, type }) => {
                   flex: 1,
                 }}
               >
-                <Text style={styles.title}>{seller?.fullName}</Text>
+                <MainText style={styles.title}>{seller?.fullName}</MainText>
                 {item.accepted ? (
-                  <Text
+                  <MainText
                     style={{
-                      color: "#3ac981",
                       fontSize: 20,
                       fontWeight: "bold",
                     }}
+                    color={"#3ac981"}
                   >
                     Offer Accepted
-                  </Text>
+                  </MainText>
                 ) : item.accepted === null ? (
-                  <Text
+                  <MainText
                     style={{
-                      color: "#f9a825",
                       fontSize: 20,
                       fontWeight: "bold",
                       textAlign: "center",
                     }}
+                    color={"#f9a825"}
                   >
                     Offer is Pending
-                  </Text>
+                  </MainText>
                 ) : (
-                  <Text
+                  <MainText
                     style={{
-                      color: "#f44336",
                       fontSize: 20,
                       fontWeight: "bold",
                     }}
+                    color={"#f44336"}
                   >
                     Offer Rejected
-                  </Text>
+                  </MainText>
                 )}
               </View>
             )}

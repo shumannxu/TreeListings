@@ -7,13 +7,18 @@ import {
   StyleSheet,
   RefreshControl,
   Image,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
 import { createOfferListener, getAllIncomingOffersUser, getAllOutgoingOffersUser } from "../../firebase/db";
 import { Offer, UserContextType } from "../../types";
 import { useAuth } from "../../context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferItem from "../components/offerItem";
-import { useGlobalSearchParams } from "expo-router";
+import { useGlobalSearchParams, router } from "expo-router";
+import { MainText } from "../../components/text";
+import TopNav from "../../components/topNav";
+import SubTopNav from "../../components/subTopNav";
 
 export default function Offers() {
   const { user, outgoingOffers, setOutgoingOffers, incomingOffers, setIncomingOffers } = useAuth() as UserContextType;
@@ -61,7 +66,7 @@ export default function Offers() {
 
   const getItemLayout = (data, index) => ({
     length: 100, // approximate height of each item
-    offset: 100 * index,
+    offset: 120 * index,
     index,
   });
 
@@ -107,9 +112,12 @@ export default function Offers() {
   );
 
   return (
-    <View style={{ flex: 1, marginTop: insets.top }}>
-      <Button onPress={navigateToPreference} title="Navigate" />
-      <Text style={styles.headingStyle}>Offer Status</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      {/* <Button onPress={navigateToPreference} title="Navigate" /> */}
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+      <SubTopNav title="Offer Status" showSearchIcon={false} />
       <SectionList
         ref={sectionListRef}
         sections={[
@@ -131,7 +139,7 @@ export default function Offers() {
         keyExtractor={(item) => item.offerId}
         initialNumToRender={10}
         renderSectionHeader={({ section }) => (
-          <Text style={styles.textStyle}>{section.title}</Text>
+          <MainText style={ styles.textStyle } color={"#38B39C"}>{section.title}</MainText>
         )}
         renderSectionFooter={ListEmptyComponent}
         renderItem={({ item, section }) => section.renderItem({ item })}
@@ -150,7 +158,8 @@ export default function Offers() {
           />
         }
       />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -162,10 +171,10 @@ const styles = StyleSheet.create({
     color: "#2F9C95",
   },
   textStyle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#38B39C",
-    margin: 10,
+    fontSize: 25,
+    fontWeight: "bold",
+    marginTop: 30,
+    marginBottom: 20
   },
   icon: {
     flex: 1,
