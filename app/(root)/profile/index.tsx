@@ -10,6 +10,8 @@ import {
   TextInput,
   ViewProps,
   Image,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { signOutUser } from "../../../firebase/auth";
@@ -36,6 +38,8 @@ import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchItem from "../../components/searchItem";
+import { MainText } from "../../../components/text";
+import TopNav from "../../../components/topNav";
 
 export default function Profile() {
   const { user, setUser, selfListings, listings, outgoingOffers } =
@@ -100,7 +104,7 @@ export default function Profile() {
   const renderItem = useCallback(({ item }: { item: String }) => {
     return (
       <TouchableOpacity style={[styles.recentSearchTag, styles.itemSpacing]}>
-        <Text>{item}</Text>
+        <MainText style={{textAlign:"left"}}>{item}</MainText>
       </TouchableOpacity>
     );
   }, []);
@@ -108,7 +112,7 @@ export default function Profile() {
   const ListEmptyComponent = useMemo(() => {
     return (
       <View style={[styles.itemSpacing]}>
-        <Text style={styles.headerText}>No Recent Searches</Text>
+        <MainText style={styles.headerText}>No Recent Searches</MainText>
       </View>
     );
   }, []);
@@ -169,8 +173,8 @@ export default function Profile() {
                 justifyContent: "center",
               }}
             >
-              <Text>{user?.fullName}</Text>
-              <Text>{user?.sellerRating}</Text>
+              <MainText style={{textAlign:"left"}}>{user?.fullName}</MainText>
+              <MainText style={{textAlign:"left"}}>{user?.sellerRating}</MainText>
             </View>
           </View>
         </Animated.View>
@@ -198,6 +202,9 @@ export default function Profile() {
   }, [listings, user]);
 
   return (
+    <SafeAreaView style={{ backgroundColor: "#FFF6EC" }}>
+      <StatusBar backgroundColor="#FFF6EC" barStyle="dark-content" />
+      <TopNav backgroundColor={"#FFF6EC"} iconColor={"#307E79"} />
     <ScrollView style={[styles.container]}>
       <View style={{ height: safeAreaInsets.top }} />
       <View style={[styles.profileContainer, styles.itemSpacing]}>
@@ -212,14 +219,14 @@ export default function Profile() {
             style={styles.viewProfile}
             onPress={navigateToEditProfile}
           >
-            <Text>View Profile</Text>
+            <MainText style={{textAlign:"left"}}>View Profile</MainText>
           </TouchableOpacity>
         </View>
       </View>
       <View>
-        <Text style={[styles.headerText, styles.itemSpacing]}>
+        <MainText style={[styles.headerText, styles.itemSpacing]}>
           Recently Visited
-        </Text>
+        </MainText>
         <FlatList
           ListEmptyComponent={ListEmptyComponent}
           showsHorizontalScrollIndicator={false}
@@ -229,16 +236,16 @@ export default function Profile() {
         />
       </View>
       <View style={[styles.itemLinkContainer]}>
-        <Text style={[styles.headerText, styles.itemSpacing]}>
+        <MainText style={[styles.headerText, styles.itemSpacing]}>
           Buying & Selling
-        </Text>
+        </MainText>
         <TouchableOpacity
           style={[styles.align, styles.horizontal, styles.itemSpacing]}
         >
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Favorites</Text>
+          <MainText style={[styles.itemLinkText]}>Favorites</MainText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToProfileListings}
@@ -247,7 +254,7 @@ export default function Profile() {
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Listings</Text>
+          <MainText style={[styles.itemLinkText]}>Listings</MainText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.align, styles.horizontal, styles.itemSpacing]}
@@ -255,7 +262,7 @@ export default function Profile() {
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Purchases</Text>
+          <MainText style={[styles.itemLinkText]}>Purchases</MainText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToOffers}
@@ -264,7 +271,7 @@ export default function Profile() {
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Offers</Text>
+          <MainText style={[styles.itemLinkText]}>Offers</MainText>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToProfilePreferences}
@@ -273,35 +280,36 @@ export default function Profile() {
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Preferences</Text>
+          <MainText style={[styles.itemLinkText]}>Preferences</MainText>
         </TouchableOpacity>
       </View>
       <View style={[styles.itemLinkContainer]}>
-        <Text style={[styles.headerText, styles.itemSpacing]}>Business</Text>
+        <MainText style={[styles.headerText, styles.itemSpacing]}>Business</MainText>
         <TouchableOpacity
           style={[styles.align, styles.horizontal, styles.itemSpacing]}
         >
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={[styles.itemLinkText]}>Manage Business Profile</Text>
+          <MainText style={[styles.itemLinkText]}>Manage Business Profile</MainText>
         </TouchableOpacity>
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: "white",
     paddingHorizontal: 15,
+    paddingBottom: 200
   },
   recentSearchTag: {
     borderRadius: 999,
     marginRight: 8,
-    padding: 6,
-    backgroundColor: "gray",
+    padding: 10,
+    backgroundColor: "#38B39C",
   },
   align: {
     alignItems: "center",
@@ -322,7 +330,7 @@ const styles = StyleSheet.create({
   viewProfile: {
     borderRadius: 6,
     padding: 10,
-    backgroundColor: "gray",
+    backgroundColor: "#38B39C",
   },
   itemSpacing: {
     marginBottom: 20,
@@ -342,7 +350,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   button: {
-    backgroundColor: "#2F9C95",
+    backgroundColor: "#38B39C",
     paddingVertical: 15,
     paddingHorizontal: 10,
     marginVertical: 10,

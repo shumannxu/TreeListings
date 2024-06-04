@@ -24,6 +24,8 @@ import {
 } from "react-native-collapsible-tab-view";
 import { CATEGORIES } from "../../../constants";
 import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
+import { MainText } from "../../../components/text";
+import TopNav from "../../../components/topNav";
 
 const preferencesData = CATEGORIES.map((category) => ({
   id: category.value,

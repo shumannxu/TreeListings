@@ -31,6 +31,8 @@ import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchItem from "../../components/searchItem";
+import { MainText } from "../../../components/text";
+import TopNav from "../../../components/topNav";
 
 const preferencesData = CATEGORIES.map((category) => ({
   id: category.value,
