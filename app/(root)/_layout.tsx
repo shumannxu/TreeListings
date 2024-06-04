@@ -60,7 +60,7 @@ export default function HomeLayout() {
             tabBarLabel: "profile",
             tabBarIcon: ({}) => (
               <Icon color={"#00BF63"} height={20} width={20}>
-                user
+                profile
               </Icon>
             ),
           }}
