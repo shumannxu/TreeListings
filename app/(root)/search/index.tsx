@@ -9,6 +9,8 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   Keyboard,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -266,6 +268,12 @@ export default function Search() {
 
   return (
     // dropdown menu dissapears if user touches anywhere else on the screen
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+        <SubTopNav title="Browse" showSearchIcon={false} />
+
     <ScrollView showsVerticalScrollIndicator={false}>
       <TouchableWithoutFeedback
         onPress={() => {
@@ -278,11 +286,10 @@ export default function Search() {
         <View
           style={{
             flex: 1,
-            marginTop: safeAreaInsets.top + 10,
+            marginTop: 0,
             paddingHorizontal: 20,
           }}
         >
-          <Text style={{ fontWeight: "bold", fontSize: 30 }}>Browse</Text>
 
           <View
             style={{
@@ -339,17 +346,17 @@ export default function Search() {
           >
             {/* Remove the extra parentheses */}
             <MaterialIcons name="bike-scooter" size={40} color="#fff" />
-            <Text
+            <MainText
               style={{
-                color: "white",
                 fontWeight: "bold",
                 fontSize: 20,
                 justifyContent: "center",
                 alignItems: "center",
               }}
+              color={"white"}
             >
               Tap Here to Explore Bikes
-            </Text>
+            </MainText>
           </TouchableOpacity>
           <View
             style={{
@@ -361,9 +368,9 @@ export default function Search() {
               marginTop: 5,
             }}
           >
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            <MainText style={{ fontWeight: "bold", fontSize: 20 }}>
               General Categories
-            </Text>
+            </MainText>
             <TouchableOpacity
               style={{
                 marginBottom: 5,
@@ -371,7 +378,7 @@ export default function Search() {
               }}
               onPress={toggleAllCategories}
             >
-              <Text
+              <MainText
                 style={{
                   fontWeight: "bold",
                   fontSize: 16,
@@ -381,7 +388,7 @@ export default function Search() {
                 {selectedCategories.length === CATEGORIES.length
                   ? "Deselect All"
                   : "Select All"}
-              </Text>
+              </MainText>
             </TouchableOpacity>
           </View>
 
@@ -507,7 +514,7 @@ export default function Search() {
                       />
                     )}
 
-                    <Text
+                    <MainText
                       style={{
                         textAlign: "center",
                         fontSize: 9.5, // set the fontsize
@@ -516,7 +523,7 @@ export default function Search() {
                       }}
                     >
                       {item.label}
-                    </Text>
+                    </MainText>
                   </TouchableOpacity>
                 )}
               />
@@ -544,7 +551,7 @@ export default function Search() {
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>Recent </Text>
+              <MainText style={{ textAlign: "center", fontSize: 17 }}>Recent </MainText>
               <MaterialIcons name="access-time" size={24} color="#38B39C" />
             </TouchableOpacity>
             <TouchableOpacity
@@ -558,9 +565,9 @@ export default function Search() {
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>
+              <MainText style={{ textAlign: "center", fontSize: 17 }}>
                 Price Descending{" "}
-              </Text>
+              </MainText>
               <MaterialCommunityIcons
                 name="order-numeric-descending"
                 size={24}
@@ -577,9 +584,9 @@ export default function Search() {
                 flexDirection: "row",
               }}
             >
-              <Text style={{ textAlign: "center", fontSize: 17 }}>
+              <MainText style={{ textAlign: "center", fontSize: 17 }}>
                 Price Ascending{" "}
-              </Text>
+              </MainText>
               <MaterialCommunityIcons
                 name="order-numeric-ascending"
                 size={24}
@@ -588,7 +595,7 @@ export default function Search() {
             </TouchableOpacity>
           </ScrollView>
           <View>
-            <Text
+            <MainText
               style={{
                 fontWeight: "bold",
                 fontSize: 25,
@@ -596,7 +603,7 @@ export default function Search() {
               }}
             >
               Search Results
-            </Text>
+            </MainText>
           </View>
 
           <FlatList
@@ -622,5 +629,7 @@ export default function Search() {
         </View>
       </TouchableWithoutFeedback>
     </ScrollView>
+    </View>
+    </SafeAreaView>
   );
 }

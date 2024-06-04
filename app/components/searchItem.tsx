@@ -8,6 +8,7 @@ import {getTimeAgo} from "./getTimeAgo";
 import { getUserProfile } from "../../firebase/db";
 import { router } from "expo-router";
 import { AntDesign } from "@expo/vector-icons";
+import { MainText } from "../../components/text";
 
 interface ItemProps {
   item: Listing;
@@ -42,21 +43,21 @@ const SearchItem: React.FC<ItemProps> = ({ item }) => {
           }} style={styles.image} />
       </TouchableOpacity>
       <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{item.title}</Text>
+        <MainText style={styles.title}>{item.title}</MainText>
         <View style={styles.rowContainer}>
-          <Text style={styles.username}>
+          <MainText style={styles.username}>
             {userProfile?.fullName ?? "Name 1"}
-          </Text>
-          <Text>{"•"} </Text>
-          <Text style={styles.rating}>
+          </MainText>
+          <MainText style={{textAlign:"left"}}>{"•"} </MainText>
+          <MainText style={styles.rating} color={"#66BB6A"}>
             {(userProfile?.sellerRating ?? 5.0).toFixed(1)}
-          </Text>
+          </MainText>
           <AntDesign name="star" size={14} color="#66BB6A" />
         </View>
       </View>
       <View style={styles.rightContainer}>
-        <Text style={styles.price}>${item.price}</Text>
-        <Text style={styles.time}>{getTimeAgo(item.datePosted)}</Text>
+        <MainText style={styles.price} color="#333">${item.price}</MainText>
+        <MainText style={styles.time} color="#888">{getTimeAgo(item.datePosted)}</MainText>
       </View>
     </View>
   );
@@ -84,6 +85,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "left"
   },
   rowContainer: {
     flexDirection: "row",
