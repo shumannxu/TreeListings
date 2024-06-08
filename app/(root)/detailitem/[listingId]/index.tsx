@@ -9,6 +9,7 @@ import {
   useWindowDimensions,
   FlatList,
   ScrollView,
+  StatusBar
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import {
@@ -31,6 +32,9 @@ import Toast from "react-native-root-toast";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Ionicons } from "@expo/vector-icons";
+import { MainText } from "../../../../components/text"
+import TopNav from "../../../../components/topNav";
+import SubTopNav from "../../../../components/subTopNav";
 
 export default function DetailItem() {
   const { user, setUser, listings, setListings, selfListings } =
@@ -196,7 +200,7 @@ export default function DetailItem() {
     return (
       <SafeAreaView>
         <View>
-          <Text>No item ID provided</Text>
+          <MainText>No item ID provided</MainText>
         </View>
       </SafeAreaView>
     );
@@ -206,7 +210,7 @@ export default function DetailItem() {
     return (
       <SafeAreaView>
         <View>
-          <Text>Loading...</Text>
+          <MainText>Loading...</MainText>
         </View>
       </SafeAreaView>
     );
@@ -231,23 +235,17 @@ export default function DetailItem() {
   };
 
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+        <SubTopNav title="Listing" showSearchIcon={false} />
     <ScrollView
       contentContainerStyle={{
         alignItems: "center",
         // paddingVertical: safeAreaInsets.top,
       }}
     >
-      <TouchableOpacity
-        style={{
-          position: "absolute",
-          top: safeAreaInsets.top + 10,
-          left: 10,
-          zIndex: 10, // Ensure it's above other elements
-        }}
-        onPress={() => router.back()}
-      >
-        <Ionicons name="chevron-back-outline" size={40} color="#38B39C" />
-      </TouchableOpacity>
 
       <View style={{ alignItems: "center" }}>
         <Image source={{ uri: listing.imagePath }} style={styles.image} />
@@ -265,12 +263,12 @@ export default function DetailItem() {
             <Icon height={30} color="black">
               profile
             </Icon>
-            <Text style={styles.defaultTextSize}>{seller?.fullName} </Text>
+            <MainText style={styles.defaultTextSize}>{seller?.fullName} </MainText>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <Text style={styles.defaultTextSize}>
+            <MainText style={styles.defaultTextSize}>
               {seller?.sellerRating ? seller.sellerRating : 5}
-            </Text>
+            </MainText>
             <Icon height={20} color="black">
               star
             </Icon>
@@ -280,7 +278,7 @@ export default function DetailItem() {
           style={{ width: width * 0.95, height: 1, backgroundColor: "grey" }}
         />
         <View style={{ width: width, paddingLeft: 10 }}>
-          <Text
+          <MainText
             numberOfLines={1}
             adjustsFontSizeToFit
             style={{
@@ -294,13 +292,13 @@ export default function DetailItem() {
             }}
           >
             {listing.title}
-          </Text>
-          <Text style={[styles.defaultTextSize, { color: "black" }]}>
+          </MainText>
+          <MainText style={[styles.defaultTextSize, { color: "black" }]}>
             {"posted " + timeAgo}
-          </Text>
+          </MainText>
         </View>
         <View style={{ width: width }}>
-          <Text
+          <MainText
             style={{
               fontSize: 18,
               fontWeight: "600",
@@ -310,14 +308,14 @@ export default function DetailItem() {
             }}
           >
             {"Description:"}
-          </Text>
+          </MainText>
           <TouchableOpacity onPress={toggleExpanded} activeOpacity={0.9}>
-            <Text
+            <MainText
               style={styles.textStyle}
               numberOfLines={isExpanded ? undefined : 4} // Limit to 4 lines unless expanded
             >
               {listing.description}
-            </Text>
+            </MainText>
           </TouchableOpacity>
         </View>
         <View
@@ -328,11 +326,11 @@ export default function DetailItem() {
             marginVertical: 10,
           }}
         >
-          <Text style={[styles.defaultTextSize, { marginHorizontal: 10 }]}>
+          <MainText style={[styles.defaultTextSize, { marginHorizontal: 10 }]}>
             Asking Price: ${listing.price}
-          </Text>
+          </MainText>
           <TouchableOpacity style={styles.button} onPress={onBuyNow}>
-            <Text>Buy Now</Text>
+            <MainText>Buy Now</MainText>
           </TouchableOpacity>
         </View>
         <View
@@ -343,7 +341,7 @@ export default function DetailItem() {
             marginVertical: 10,
           }}
         >
-          <Text style={styles.defaultTextSize}>Best Offer: $</Text>
+          <MainText style={styles.defaultTextSize}>Best Offer: $</MainText>
           <TextInput
             style={{
               marginHorizontal: 10,
@@ -364,7 +362,7 @@ export default function DetailItem() {
             onPress={onSubmitOffer}
             disabled={price === ""}
           >
-            <Text>Submit Offer</Text>
+            <MainText>Submit Offer</MainText>
           </TouchableOpacity>
         </View>
       </View>
@@ -376,17 +374,17 @@ export default function DetailItem() {
           margin: 10,
         }}
       />
-      <Text
+      <MainText
         style={{
           fontSize: 20,
           fontWeight: "500",
           letterSpacing: 1,
           marginVertical: 10,
-          color: "#4B6F6E",
         }}
+        color={"#4B6F6E"}
       >
         Similar Items
-      </Text>
+      </MainText>
       <FlatList
         data={listings ? Object.values(listings) : []}
         renderItem={renderItem}
@@ -396,5 +394,7 @@ export default function DetailItem() {
         initialNumToRender={5}
       />
     </ScrollView>
+    </View>
+    </SafeAreaView>
   );
 }

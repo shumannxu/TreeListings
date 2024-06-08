@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Listing } from "../../types";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MainText } from "../../components/text"
 interface ItemProps {
   item: Listing;
 }
@@ -24,11 +25,11 @@ const RecommendItem: React.FC<ItemProps> = ({ item }) => {
            }} style={styles.image} />
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text numberOfLines={1} style={styles.description}>
+        <MainText style={styles.title} color={"#333"}>{item.title}</MainText>
+        <MainText numberOfLines={1} style={styles.description} color={"#666"}>
           {item.description}
-        </Text>
-        <Text style={styles.price}>{`$${item.price}`}</Text>
+        </MainText>
+        <MainText style={styles.price} color={"#333"}>{`$${item.price}`}</MainText>
       </View>
       <TouchableOpacity
         style={styles.heartButton}
@@ -72,16 +73,19 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
+    textAlign: "left",
     fontWeight: "bold",
     color: "#333",
   },
   description: {
     fontSize: 14,
+    textAlign: "left",
     color: "#666",
     marginVertical: 4,
   },
   price: {
     fontSize: 16,
+    textAlign: "left",
     fontWeight: "bold",
     color: "#333",
   },

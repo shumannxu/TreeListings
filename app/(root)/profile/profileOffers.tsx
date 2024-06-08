@@ -23,6 +23,8 @@ import { Listing, ListingId, Offer, UserContextType } from "../../../types";
 import { useAuth } from "../../../context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferItem from "../../components/offerItem";
+import { MainText } from "../../../components/text";
+import TopNav from "../../../components/topNav";
 
 export default function Offers() {
   const {

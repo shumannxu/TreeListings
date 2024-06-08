@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { Listing } from "../../types";
 import { Ionicons } from "@expo/vector-icons"; // Make sure to install @expo/vector-icons if you haven't already
 import { router } from "expo-router";
+import { MainText } from "../../components/text";
 interface ItemProps {
   item: Listing;
 }
@@ -28,10 +29,10 @@ const ListingItem: React.FC<ItemProps> = ({ item }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.textContainer}>
-        <Text style={styles.title} numberOfLines={1}>
+        <MainText style={styles.title} numberOfLines={1}>
           {item.title}
-        </Text>
-        <Text style={styles.price}>{`$${item.price}`}</Text>
+        </MainText>
+        <MainText style={styles.price} color={"#CFB284"}>{`$${item.price}`}</MainText>
       </View>
     </TouchableOpacity>
   );

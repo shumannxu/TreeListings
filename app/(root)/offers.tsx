@@ -1,40 +1,31 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
   View,
   Text,
   Button,
-  FlatList,
-  TouchableOpacity,
-  TextInput,
-  TouchableWithoutFeedback,
-  ScrollView,
+  SectionList,
   StyleSheet,
   RefreshControl,
   Image,
-  SectionList,
+  SafeAreaView,
+  StatusBar
 } from "react-native";
-
-import {
-  createOfferListener,
-  getAllIncomingOffersUser,
-  getAllOutgoingOffersUser,
-} from "../../firebase/db";
-import { Listing, ListingId, Offer, UserContextType } from "../../types";
+import { createOfferListener, getAllIncomingOffersUser, getAllOutgoingOffersUser } from "../../firebase/db";
+import { Offer, UserContextType } from "../../types";
 import { useAuth } from "../../context";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import OfferItem from "../components/offerItem";
-import { router } from "expo-router";
+import { useGlobalSearchParams, router } from "expo-router";
+import { MainText } from "../../components/text";
+import TopNav from "../../components/topNav";
+import SubTopNav from "../../components/subTopNav";
 
 export default function Offers() {
-  const {
-    user,
-    outgoingOffers,
-    setOutgoingOffers,
-    incomingOffers,
-    setIncomingOffers,
-  } = useAuth() as UserContextType;
+  const { user, outgoingOffers, setOutgoingOffers, incomingOffers, setIncomingOffers } = useAuth() as UserContextType;
   const insets = useSafeAreaInsets();
   const [refreshing, setRefreshing] = useState(false);
+  const sectionListRef = useRef<SectionList>(null);
+  const { section } = useGlobalSearchParams();
 
   const onRefresh = useCallback(async () => {
     if (user) {
@@ -50,6 +41,7 @@ export default function Offers() {
   const navigateToPreference = useCallback(() => {
     router.push("/preferenceSurvey");
   }, []);
+
   useEffect(() => {
     if (user) {
       const unsubscribe = createOfferListener({
@@ -61,6 +53,34 @@ export default function Offers() {
     }
   }, [user]);
 
+  useEffect(() => {
+    if (section) {
+      const sectionIndex = section === "incoming" ? 0 : 1;
+      sectionListRef.current?.scrollToLocation({
+        sectionIndex,
+        itemIndex: 0,
+        animated: true,
+      });
+    }
+  }, [section]);
+
+  const getItemLayout = (data, index) => ({
+    length: 100, // approximate height of each item
+    offset: 120 * index,
+    index,
+  });
+
+  const onScrollToIndexFailed = (info) => {
+    const wait = new Promise(resolve => setTimeout(resolve, 500));
+    wait.then(() => {
+      sectionListRef.current?.scrollToLocation({
+        sectionIndex: info.index,
+        itemIndex: 0,
+        animated: true,
+      });
+    });
+  };
+
   const renderIncoming = useCallback(
     ({ item }: { item: Offer }) => <OfferItem item={item} type={"incoming"} />,
     []
@@ -70,6 +90,7 @@ export default function Offers() {
     ({ item }: { item: Offer }) => <OfferItem item={item} type={"outgoing"} />,
     []
   );
+
   const ListEmptyComponent = useCallback(
     ({ section }: { section: { emptyMessage: string; data: any[] } }) => {
       if (section.data.length === 0) {
@@ -89,11 +110,16 @@ export default function Offers() {
     },
     [outgoingOffers, incomingOffers]
   );
+
   return (
-    <View style={{ flex: 1, marginTop: insets.top }}>
-      <Button onPress={navigateToPreference} title="Navigate" />
-      <Text style={styles.headingStyle}>Offer Status</Text>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#00BF63" }}>
+      <StatusBar backgroundColor="#00BF63" barStyle="dark-content" />
+      <TopNav backgroundColor="#00BF63" iconColor="white" />
+      {/* <Button onPress={navigateToPreference} title="Navigate" /> */}
+      <View style={{ flex: 1, backgroundColor: '#FFF6EC' }}>
+      <SubTopNav title="Offer Status" showSearchIcon={false} />
       <SectionList
+        ref={sectionListRef}
         sections={[
           {
             title: "Incoming Offers",
@@ -113,7 +139,7 @@ export default function Offers() {
         keyExtractor={(item) => item.offerId}
         initialNumToRender={10}
         renderSectionHeader={({ section }) => (
-          <Text style={styles.textStyle}>{section.title}</Text>
+          <MainText style={ styles.textStyle } color={"#38B39C"}>{section.title}</MainText>
         )}
         renderSectionFooter={ListEmptyComponent}
         renderItem={({ item, section }) => section.renderItem({ item })}
@@ -121,6 +147,8 @@ export default function Offers() {
           paddingLeft: insets.left + 20,
           paddingRight: insets.right + 20,
         }}
+        getItemLayout={getItemLayout}
+        onScrollToIndexFailed={onScrollToIndexFailed}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -130,7 +158,8 @@ export default function Offers() {
           />
         }
       />
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -142,10 +171,10 @@ const styles = StyleSheet.create({
     color: "#2F9C95",
   },
   textStyle: {
-    fontSize: 20,
-    fontWeight: "600",
-    color: "#38B39C",
-    margin: 10,
+    fontSize: 25,
+    fontWeight: "bold",
+    marginTop: 30,
+    marginBottom: 20
   },
   icon: {
     flex: 1,
