@@ -289,6 +289,7 @@ export default function DetailItem() {
               marginTop: 10,
               marginBottom: 7,
               color: "#4B6F6E",
+              alignItems: "center"
             }}
           >
             {listing.title}
