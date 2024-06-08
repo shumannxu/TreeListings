@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   View,
   StyleSheet,
+  SafeAreaView
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { router } from "expo-router";
 import { registerUserEmailPassword } from "../../firebase/auth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { MainText, HeaderText } from "../../components/text";
 
 export default function RegistrationScreen() {
   const [fullName, setFullName] = useState("");
@@ -38,14 +40,14 @@ export default function RegistrationScreen() {
   };
 
   return (
-    <View style={[styles.container, { marginTop: safeAreaInsets.top }]}>
+    <View style={[styles.container]}>
       <KeyboardAwareScrollView
         style={{ flex: 1, width: "100%" }}
         keyboardShouldPersistTaps="always"
       >
         <Image
           style={styles.logo}
-          source={require("../../assets/treelisting.png")}
+          source={require("../../assets/fullLogo.png")}
         />
         <TextInput
           style={styles.input}
@@ -86,18 +88,18 @@ export default function RegistrationScreen() {
           autoCapitalize="none"
         />
         <TouchableOpacity
-          style={styles.button}
+          style={[ styles.button, {backgroundColor: "#38B39C"} ]}
           onPress={() => onRegisterPress()}
         >
-          <Text style={styles.buttonTitle}>Create account</Text>
+          <HeaderText style={styles.buttonTitle} color="white">Create account</HeaderText>
         </TouchableOpacity>
         <View style={styles.footerView}>
-          <Text style={styles.footerText}>
+          <MainText style={styles.footerText}>
             Already got an account?{" "}
-            <Text onPress={onFooterLinkPress} style={styles.footerLink}>
+            <MainText onPress={onFooterLinkPress} style={styles.footerLink} color="#38B39C">
               Log in
-            </Text>
-          </Text>
+            </MainText>
+          </MainText>
         </View>
       </KeyboardAwareScrollView>
     </View>
@@ -107,18 +109,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: "#FFF6EC",
+    paddingTop: 100
   },
   title: {},
   logo: {
     flex: 1,
-    height: 120,
-    width: 90,
+    resizeMode: 'contain',
     alignSelf: "center",
+    width: 150,
+    height: 150,
     margin: 30,
   },
   input: {
     height: 48,
-    borderRadius: 5,
+    borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "white",
     marginTop: 10,
@@ -133,13 +138,13 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginTop: 20,
     height: 48,
-    borderRadius: 5,
+    borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonTitle: {
     color: "white",
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "bold",
   },
   footerView: {
@@ -152,7 +157,7 @@ const styles = StyleSheet.create({
     color: "#2e2e2d",
   },
   footerLink: {
-    color: "#788eec",
+    color: "#38B39C",
     fontWeight: "bold",
     fontSize: 16,
   },

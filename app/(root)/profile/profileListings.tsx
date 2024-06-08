@@ -106,8 +106,8 @@ export default function ProfileListings() {
             flexDirection: "column",
           }}
         >
-          <View style={{ height: 100, backgroundColor: "black" }} />
-          <View style={{ height: 100, backgroundColor: "white" }} />
+          <View style={{ height: 100, backgroundColor: "#38B39C" }} />
+          <View style={{ height: 100, backgroundColor: "#FFF6EC" }} />
           <TouchableOpacity
             style={{
               position: "absolute",

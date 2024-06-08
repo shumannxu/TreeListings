@@ -29,7 +29,7 @@ const RecommendItem: React.FC<ItemProps> = ({ item }) => {
         <MainText numberOfLines={1} style={styles.description} color={"#666"}>
           {item.description}
         </MainText>
-        <MainText style={styles.price} color={"#333"}>{`$${item.price}`}</MainText>
+        <MainText style={styles.price} color={"#38B39C"}>{`$${item.price}`}</MainText>
       </View>
       <TouchableOpacity
         style={styles.heartButton}
@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FCFBF4",
     borderRadius: 10,
-    padding: 10,
+    // padding: 10,
+    marginHorizontal: 15,
     marginVertical: 10,
     elevation: 1, // for Android shadow
     shadowColor: "#000", // for iOS shadow
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    paddingHorizontal: 10,
+    paddingLeft: 20,
   },
   title: {
     fontSize: 16,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   heartButton: {
-    padding: 20,
+    padding: 10,
   },
   buttonText: {
     color: "#fff",

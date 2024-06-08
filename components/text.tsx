@@ -1,8 +1,4 @@
 import { View, Text as RNText, StyleSheet } from "react-native";
-import {
-  JosefinSans_500Medium,
-  Pacifico_400Regular,
-} from "@expo-google-fonts/dev";
 
 interface HeaderTextProps {
   children: React.ReactNode;

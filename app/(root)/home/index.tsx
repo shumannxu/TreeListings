@@ -159,7 +159,7 @@ export default function Home() {
     }) => {
       if (item.listingId === "VIEW_MORE") {
         if (index == recList.length) return null;
-        return <Button title="View More" onPress={incrementRec} />;
+        return <Button title="View More" onPress={incrementRec} color="#16524E"/>;
       } else {
         return <RecommendItem item={item} />;
       }

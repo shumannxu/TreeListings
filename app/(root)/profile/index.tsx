@@ -38,7 +38,7 @@ import Animated, { SharedValue, useSharedValue } from "react-native-reanimated";
 import { router } from "expo-router";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import SearchItem from "../../components/searchItem";
-import { MainText } from "../../../components/text";
+import { HeaderText, MainText } from "../../../components/text";
 import TopNav from "../../../components/topNav";
 
 export default function Profile() {
@@ -111,7 +111,7 @@ export default function Profile() {
 
   const ListEmptyComponent = useMemo(() => {
     return (
-      <View style={[styles.itemSpacing]}>
+      <View style={[styles.itemSpacing, {paddingLeft:20}]}>
         <MainText style={styles.headerText}>No Recent Searches</MainText>
       </View>
     );
@@ -207,26 +207,26 @@ export default function Profile() {
       <TopNav backgroundColor={"#FFF6EC"} iconColor={"#307E79"} />
     <ScrollView style={[styles.container]}>
       <View style={{ height: safeAreaInsets.top }} />
-      <View style={[styles.profileContainer, styles.itemSpacing]}>
+      <View style={[styles.profileContainer, styles.itemSpacing, {paddingLeft:20}]}>
         <View style={[styles.align, styles.horizontal]}>
           <Icon color={"#664147"} height={30}>
             profile
           </Icon>
-          <Text style={styles.itemLinkText}>{user?.fullName}</Text>
+          <MainText style={styles.itemLinkText} color="#16524E">{user?.fullName}</MainText>
         </View>
-        <View style={[styles.align, styles.horizontal]}>
+        <View style={[styles.align, styles.horizontal, {paddingRight:20}]}>
           <TouchableOpacity
             style={styles.viewProfile}
             onPress={navigateToEditProfile}
           >
-            <MainText style={{textAlign:"left"}}>View Profile</MainText>
+            <MainText style={{textAlign:"left"}} color="white">View Profile</MainText>
           </TouchableOpacity>
         </View>
       </View>
       <View>
-        <MainText style={[styles.headerText, styles.itemSpacing]}>
+        <HeaderText style={[styles.headerText, styles.itemSpacing]}>
           Recently Visited
-        </MainText>
+        </HeaderText>
         <FlatList
           ListEmptyComponent={ListEmptyComponent}
           showsHorizontalScrollIndicator={false}
@@ -236,11 +236,11 @@ export default function Profile() {
         />
       </View>
       <View style={[styles.itemLinkContainer]}>
-        <MainText style={[styles.headerText, styles.itemSpacing]}>
+        <HeaderText style={[styles.headerText, styles.itemSpacing]}>
           Buying & Selling
-        </MainText>
+        </HeaderText>
         <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -249,7 +249,7 @@ export default function Profile() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToProfileListings}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -257,7 +257,7 @@ export default function Profile() {
           <MainText style={[styles.itemLinkText]}>Listings</MainText>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -266,7 +266,7 @@ export default function Profile() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToOffers}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -275,7 +275,7 @@ export default function Profile() {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={navigateToProfilePreferences}
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -284,9 +284,9 @@ export default function Profile() {
         </TouchableOpacity>
       </View>
       <View style={[styles.itemLinkContainer]}>
-        <MainText style={[styles.headerText, styles.itemSpacing]}>Business</MainText>
+        <HeaderText style={[styles.headerText, styles.itemSpacing]}>Business</HeaderText>
         <TouchableOpacity
-          style={[styles.align, styles.horizontal, styles.itemSpacing]}
+          style={[styles.align, styles.horizontal, styles.itemSpacing, {paddingLeft:20}]}
         >
           <Icon color={"#664147"} height={30}>
             profile
@@ -302,7 +302,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    paddingHorizontal: 15,
+    paddingHorizontal: 5,
     paddingBottom: 200
   },
   recentSearchTag: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   headerText: {
-    fontSize: 23,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "left",
   },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
   },
   itemLinkContainer: {
     flexDirection: "column",
-    width: "100%",
+    width: "80%",
     justifyContent: "flex-start",
   },
   buttonContainer: {

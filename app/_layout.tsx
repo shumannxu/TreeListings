@@ -14,8 +14,20 @@ import { RootSiblingParent } from "react-native-root-siblings";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 import Toast from "react-native-toast-message";
+import {
+  useFonts,
+  JosefinSans_500Medium,
+  Pacifico_400Regular,
+} from "@expo-google-fonts/dev";
+import { preventAutoHideAsync, hideAsync } from 'expo-splash-screen';
+
+preventAutoHideAsync();
 
 export default function AppLayout() {
+  const [fontsLoaded] = useFonts({
+    JosefinSans_500Medium,
+    Pacifico_400Regular,
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<User | null>(null);
   const [listings, setListings] = useState<{ [id: ListingId]: Listing } | null>(
@@ -73,6 +85,11 @@ export default function AppLayout() {
   useEffect(() => {
     initAuthenticatedUser();
   }, []); // Added dependency array to ensure it runs only once
+  useEffect(() => {
+    if (fontsLoaded) {
+      hideAsync();
+    }
+  }, [fontsLoaded]);
 
   return (
     <RootSiblingParent>

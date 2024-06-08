@@ -32,7 +32,7 @@ const ListingItem: React.FC<ItemProps> = ({ item }) => {
         <MainText style={styles.title} numberOfLines={1}>
           {item.title}
         </MainText>
-        <MainText style={styles.price} color={"#CFB284"}>{`$${item.price}`}</MainText>
+        <MainText style={styles.price} color={"#38B39C"}>{`$${item.price}`}</MainText>
       </View>
     </TouchableOpacity>
   );
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     borderRadius: 10, // Rounded corners for the image
   },
   heartContainer: {
-    padding: 5,
+    padding: 2,
     borderRadius: 20,
     backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
   },
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     color: "#666",
   },
   price: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: "bold",
     color: "#CFB284",
   },
